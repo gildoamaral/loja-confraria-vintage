@@ -1,25 +1,25 @@
 # TÍTULO DO PROJETO
 
-`CURSO`
+`Análise e Desvolvimento de Sistemas`
 
-`DISCIPLINA`
+`EIXO 5 - PROJETO - DESENVOLVIMENTO DE UM SISTEMA SOCIOTÉCNICO INOVADOR`
 
-`SEMESTRE`
+`2025/1`
 
 Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
 
 ## Integrantes
 
-* Nome completo do aluno 1
-* Nome completo do aluno 2
-* Nome completo do aluno 3
-* Nome completo do aluno 4
-* Nome completo do aluno 5
-* Nome completo do aluno 6
+* Carlos Eduardo Dos Santos Lima
+* Lais Barbosa de Oliveira
+* Lucas Henrique da Silva Vaz
+* Lucas Oliveira Soares
+* Marco Antonio Gil do Amaral Oliveira
+* Matheus Soares da Silva
 
 ## Orientador
 
-* Nome completo do professor orientador
+* José Wilson da Costa
 
 ## Instruções de utilização
 
