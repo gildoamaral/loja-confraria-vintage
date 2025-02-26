@@ -7,7 +7,7 @@ A extensão universitária desempenha um papel fundamental na aplicação práti
 
 A situação-problema identificada refere-se à dificuldade que muitos vendedores enfrentam para divulgar seus produtos e facilitar o contato com clientes sem depender de marketplaces ou plataformas complexas. Para resolver essa questão, será desenvolvido um sistema sociotécnico que consiste em uma aplicação web e mobile, permitindo que os clientes acessem um catálogo digital e entrem em contato diretamente com a vendedora via WhatsApp.
 
-O desenvolvimento do sistema priorizará tecnologias acessíveis e de fácil implementação, garantindo uma solução funcional dentro do prazo disponível. Além disso, o projeto se alinha com os princípios da extensão universitária ao criar uma ferramenta que pode beneficiar pequenos negócios e fortalecer a economia local.
+O desenvolvimento do sistema priorizará tecnologias acessíveis e de fácil implementação, garantindo uma solução funcional dentro do prazo disponível. Além disso, o projeto se alinha com os princípios da extensão universitária ao criar uma ferramenta que pode beneficiar pequenos negócios e fortalecer economias locais.
 
 ## Problema
 Nesse momento o grupo deve apresentar a situação-problema (dor/oportunidade) do parceiro onde será desenvolvido sistema sociotécnico.
