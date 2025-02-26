@@ -10,16 +10,24 @@ A situação-problema identificada refere-se à dificuldade que muitos vendedore
 O desenvolvimento do sistema priorizará tecnologias acessíveis e de fácil implementação, garantindo uma solução funcional dentro do prazo disponível. Além disso, o projeto se alinha com os princípios da extensão universitária ao criar uma ferramenta que pode beneficiar pequenos negócios e fortalecer economias locais.
 
 ## Problema
-Nesse momento o grupo deve apresentar a situação-problema (dor/oportunidade) do parceiro onde será desenvolvido sistema sociotécnico.
+        Nesse momento o grupo deve apresentar a situação-problema (dor/oportunidade) do parceiro onde será desenvolvido sistema sociotécnico.
 
-> **Links Úteis**:
-> - [Objetivos, Problema de pesquisa e Justificativa](https://medium.com/@versioparole/objetivos-problema-de-pesquisa-e-justificativa-c98c8233b9c3)
-> - [Matriz Certezas, Suposições e Dúvidas](https://medium.com/educa%C3%A7%C3%A3o-fora-da-caixa/matriz-certezas-suposi%C3%A7%C3%B5es-e-d%C3%BAvidas-fa2263633655)
-> - [Brainstorming](https://www.euax.com.br/2018/09/brainstorming/)
+    > **Links Úteis**:
+    > - [Objetivos, Problema de pesquisa e Justificativa](https://medium.com/@versioparole/objetivos-problema-de-pesquisa-e-justificativa-c98c8233b9c3)
+    > - [Matriz Certezas, Suposições e Dúvidas](https://medium.com/educa%C3%A7%C3%A3o-fora-da-caixa/matriz-certezas-suposi%C3%A7%C3%B5es-e-d%C3%BAvidas-fa2263633655)
+    > - [Brainstorming](https://www.euax.com.br/2018/09/brainstorming/)
+
+Pequenos empreendedores e autônomos enfrentam desafios para expor seus produtos de forma acessível e eficiente, sem depender de plataformas complexas ou custos elevados. A divulgação muitas vezes ocorre por meio de redes sociais e aplicativos de mensagens, mas sem um catálogo organizado, o processo pode ser desorganizado e dificultar a experiência do cliente.
+
+Diante dessa realidade, há uma oportunidade de otimizar essa comunicação, oferecendo uma solução que permita aos vendedores estruturarem melhor a apresentação de seus produtos e facilitarem o contato com os clientes de maneira prática e acessível.
 
 ## Objetivos
 
-Aqui o grupo deve descrever os objetivos do trabalho indicando que o objetivo é aplicar os conceitos de extensão universitária no desenvolvimento de um sistema sociotécnico que impacte positivamente a comunidade.
+        Aqui o grupo deve descrever os objetivos do trabalho indicando que o objetivo é aplicar os conceitos de extensão universitária no desenvolvimento de um sistema sociotécnico que impacte positivamente a comunidade.
+
+O objetivo deste projeto é aplicar os conceitos de extensão universitária no desenvolvimento de um sistema sociotécnico que atenda às necessidades de pequenos empreendedores e autônomos, impactando positivamente a comunidade. Para isso, busca-se criar uma solução tecnológica acessível que permita a organização e apresentação de produtos de forma simples, facilitando a comunicação entre vendedores e clientes.
+
+Além disso, o projeto visa proporcionar uma experiência prática de desenvolvimento de software, unindo teoria e aplicação real para resolver um problema concreto do mercado. Dessa forma, pretende-se não apenas oferecer uma ferramenta útil para os empreendedores, mas também contribuir para a formação acadêmica e profissional dos envolvidos.
 
 ## Justificativa
 
