@@ -1,6 +1,7 @@
 # Introdução
 
-    Texto descritivo apresentando a compreensão sobre extensão universitária discutido no microfundamento de nivelamento, relacionando a situação-problema da organização e ao sistema sociotécnico que será desenvolvido e implantado.
+    Texto descritivo apresentando a compreensão sobre extensão universitária discutido no microfundamento de nivelamento, 
+    relacionando a situação-problema da organização e ao sistema sociotécnico que será desenvolvido e implantado.
 
 A extensão universitária desempenha um papel fundamental na aplicação prática do conhecimento acadêmico para a sociedade, promovendo a interação entre a universidade e as demandas do mercado. No contexto deste projeto, buscamos desenvolver uma solução para pequenos empreendedores e autônomos que desejam digitalizar suas vendas de forma simples e acessível.
 
