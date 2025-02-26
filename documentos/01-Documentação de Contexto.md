@@ -3,9 +3,9 @@
     Texto descritivo apresentando a compreensão sobre extensão universitária discutido no microfundamento de nivelamento, 
     relacionando a situação-problema da organização e ao sistema sociotécnico que será desenvolvido e implantado.
 
-A extensão universitária desempenha um papel fundamental na aplicação prática do conhecimento acadêmico para a sociedade, promovendo a interação entre a universidade e as demandas do mercado. No contexto deste projeto, buscamos desenvolver uma solução para pequenos empreendedores e autônomos que desejam digitalizar suas vendas de forma simples e acessível.
+A extensão universitária desempenha um papel fundamental na aplicação prática do conhecimento acadêmico para a sociedade, promovendo a interação entre a universidade e as demandas do mercado. No contexto deste projeto, o objetivo é desenvolver uma solução para pequenos empreendedores e autônomos, facilitando a digitalização de suas vendas de forma simples e acessível.
 
-A situação-problema identificada refere-se à dificuldade que muitos vendedores enfrentam para divulgar seus produtos e facilitar o contato com clientes sem depender de marketplaces ou plataformas complexas. Para resolver essa questão, será desenvolvido um sistema sociotécnico que consiste em uma aplicação web e mobile, permitindo que os clientes acessem um catálogo digital e entrem em contato diretamente com a vendedora via WhatsApp.
+A situação-problema identificada refere-se à dificuldade que muitos vendedores enfrentam para divulgar seus produtos e manter um contato direto com os clientes sem depender de marketplaces ou plataformas complexas. Para solucionar essa questão, será desenvolvido um sistema sociotécnico composto por uma aplicação web e mobile, permitindo que os clientes acessem um catálogo digital e entrem em contato diretamente com a vendedora via WhatsApp, de maneira prática e eficiente.
 
 O desenvolvimento do sistema priorizará tecnologias acessíveis e de fácil implementação, garantindo uma solução funcional dentro do prazo disponível. Além disso, o projeto se alinha com os princípios da extensão universitária ao criar uma ferramenta que pode beneficiar pequenos negócios e fortalecer economias locais.
 
