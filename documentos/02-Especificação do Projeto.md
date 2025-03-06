@@ -83,7 +83,9 @@ Enumere as restrições à sua solução. Lembre-se de que as restrições geral
 ## Projeto da Base de Dados
 
 O projeto da base de dados corresponde à representação das entidades e relacionamentos identificadas no Modelo ER, no formato de tabelas, com colunas e chaves primárias/estrangeiras necessárias para representar corretamente as restrições de integridade.
- 
+
+![Diagrama ER](img/02-diagrama-ER.png)
+
 | Entidade   | Descrição |
 |------------------|-----------|
 | **Produto** | Representa os itens vendidos no e-commerce |
