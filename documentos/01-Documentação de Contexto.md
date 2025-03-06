@@ -54,3 +54,11 @@ Além de atender a essa demanda específica, o projeto também contribui para a 
 ## Descrição do Parceiro
 
     Apresente uma descrição resumida sobre a organização onde o projeto será desenvolvido para que possa ser compreendido o cenário do sistema sociotécnico.
+
+A Confraria Vintage é um pequeno negócio independente administrado por Camila Oliveira, focado na venda de roupas e acessórios femininos, incluindo bijuterias. Seu público-alvo abrange mulheres de aproximadamente 25 a 60 anos, que buscam peças únicas e acessíveis.
+
+Atualmente, Camila realiza suas vendas por meio das redes sociais, como Instagram, e pelo WhatsApp, onde mantém contato direto com suas clientes. O modelo de pagamento inclui PIX, cartão de crédito e dinheiro, oferecendo flexibilidade para diferentes preferências de compra.
+
+Uma das principais dificuldades enfrentadas no gerenciamento do negócio é a organização financeira e a ausência de uma plataforma própria, que permita expor os produtos de maneira estruturada e facilite a comunicação com as clientes. Além disso, os preços, descrições e disponibilidade dos itens mudam com frequência, tornando a atualização das informações um desafio.
+
+Diante desse cenário, o projeto propõe o desenvolvimento de uma solução digital acessível e intuitiva, que ajude a organizar e divulgar os produtos de forma eficiente, fortalecendo a presença digital da Confraria Vintage e facilitando as interações com as clientes.
