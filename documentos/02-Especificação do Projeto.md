@@ -84,5 +84,12 @@ Enumere as restrições à sua solução. Lembre-se de que as restrições geral
 
 O projeto da base de dados corresponde à representação das entidades e relacionamentos identificadas no Modelo ER, no formato de tabelas, com colunas e chaves primárias/estrangeiras necessárias para representar corretamente as restrições de integridade.
  
-Para mais informações, consulte o microfundamento "Modelagem de Dados".
-
+| Entidade   | Descrição |
+|------------------|-----------|
+| **Produto** | Representa os itens vendidos no e-commerce |
+| **Catálogo** | Organiza os produtos em categorias |
+| **Usuário** | Representa os clientes do e-commerce |
+| **Carrinho** | Cada usuário pode ter um carrinho associado |
+| **Itens do Carrinho** | Armazena os produtos adicionados ao carrinho |
+| **Pedido** | Quando um carrinho é finalizado, ele vira um pedido |
+| **Itens do Pedido** | Registra quais produtos foram comprados |
