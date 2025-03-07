@@ -42,3 +42,11 @@ Assim que a primeira versão do sistema estiver disponível, deverá complementa
 # Apresentação
 
 <li><a href="apresentacao/README.md"> Apresentação da solução</a></li>
+
+
+#### Etapa 1 - 09/03/2025
+
+O arquivo .pdf abaixo inclui a apresentação inicial do projeto a ser desenvolvido.
+
+
+[Apresentação - Confraria Vintage Camila Oliveira.pdf](https://github.com/user-attachments/files/19132614/Apresentacao.-.Confraria.Vintage.Camila.Oliveira.pdf)
