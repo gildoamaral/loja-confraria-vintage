@@ -43,6 +43,7 @@ Para mais informações, consulte os microfundamentos Fundamentos de Engenharia 
 | RF-004| O sistema deve exibir as formas de pagamento aceitas na loja física | ALTA |
 | RF-005 | O sistema deve permitir a aplicação de filtros. | MÉDIA |
 | RF-006 | O sistema deve permitir que o cliente adicione produtos ao carrinho. | ALTA |
+| RF-007 | O sistema deve permitir a criação de relátorios de metricas de vendas. | ALTA |
 
 ### Requisitos não Funcionais
 
