@@ -23,7 +23,8 @@ Descreva brevemente a arquitetura definida para o projeto e as tecnologias a ser
 
 ## Project Model Canvas
 
-![Project model canva](https://github.com/user-attachments/assets/c359b46b-5efe-4f2d-bbf6-6851c1e768ca)
+![PM Canvas](https://github.com/user-attachments/assets/53d5ee88-0217-4d03-89ab-6593b2958ccf)
+
 
 
 ## Requisitos
@@ -80,13 +81,11 @@ O projeto está restrito pelos itens apresentados na tabela a seguir.
 
 Enumere as restrições à sua solução. Lembre-se de que as restrições geralmente limitam a solução candidata.
 
-> **Links Úteis**:
-> - [O que são Requisitos Funcionais e Requisitos Não Funcionais?](https://codificar.com.br/requisitos-funcionais-nao-funcionais/)
-> - [O que são requisitos funcionais e requisitos não funcionais?](https://analisederequisitos.com.br/requisitos-funcionais-e-requisitos-nao-funcionais-o-que-sao/)
 
 ## Diagrama de Caso de Uso
 
-![Diagrama caso de uso](https://github.com/user-attachments/assets/be322243-4eda-4743-baeb-93cd7cfc3914)
+![Diagrama Caso de uso](https://github.com/user-attachments/assets/3a155e2f-5470-4332-b207-93e54fe8d01a)
+
 
 ## Projeto da Base de Dados
 
