@@ -6,6 +6,9 @@
 
 `2025/1`
 
+
+![Logomarca secundária -  cor 3](https://github.com/user-attachments/assets/92a74bae-38fc-4f3c-ae29-9f27bbd242ad)
+
 Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
 
 ## Integrantes
