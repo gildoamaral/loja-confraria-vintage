@@ -1,0 +1,16 @@
+{
+  "name": "codigo-fonte",
+  "version": "1.0.0",
+  "description": "Descrever orientações essenciais para utilização da aplicação. Sugere-se anexar um pequeno manual de usuário.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --watch server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
