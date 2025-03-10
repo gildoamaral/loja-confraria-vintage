@@ -29,6 +29,12 @@ Um servidor criado com node.js integrado com o DB em MySql;
 #### Mobile
 Para a necessidade de uma aplicação mobile, utilizaremos React Native;
 
+#### Gerenciamento de Fluxo
+Para gerenciar as atividades feitas, utilizamos a metodologia Kanban através do GitHub Projects, conforme imagem abaixo
+
+![image](https://github.com/user-attachments/assets/6d20968f-dce4-4933-b1e5-8eed44b67911)
+
+
 ## Project Model Canvas
 
 ![PM Canvas](https://github.com/user-attachments/assets/53d5ee88-0217-4d03-89ab-6593b2958ccf)
