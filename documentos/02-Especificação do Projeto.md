@@ -18,8 +18,16 @@ Definição do problema e ideia de solução a partir da perspectiva do usuário
 
 
 ## Arquitetura e Tecnologias
+Conforme aprendizados anteriores da PUC para o curso de ADS, seguiremos utilizando as tecnologias já aprendidas, as quais são citadas abaixo:
 
-Descreva brevemente a arquitetura definida para o projeto e as tecnologias a serem utilizadas. Sugere-se a criação de um diagrama de componentes da solução.
+#### Frontend
+Utizaremos React para realização do site em Desktop e responsivo para Mobile;
+
+#### Backend
+Um servidor criado com node.js integrado com o DB em MySql;
+
+#### Mobile
+Para a necessidade de uma aplicação mobile, utilizaremos React Native;
 
 ## Project Model Canvas
 
