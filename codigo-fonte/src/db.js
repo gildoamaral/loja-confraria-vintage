@@ -1,13 +1,8 @@
-// src/db.js
 const mysql = require('mysql2');
+require('dotenv').config();
 
-// Configuração da conexão com o banco de dados
-const connection = mysql.createConnection({
-  host: 'localhost', // ou o host onde seu MySQL está
-  user: 'root', // seu usuário do MySQL
-  password: 'Xr8!w2Qs9$kP', // sua senha do MySQL
-  database: 'confraria_vintage', // nome do banco de dados que você está usando
-});
+// Usando DATABASE_URL diretamente para se conectar ao banco
+const connection = mysql.createConnection(process.env.DATABASE_URL);
 
 connection.connect((err) => {
   if (err) {

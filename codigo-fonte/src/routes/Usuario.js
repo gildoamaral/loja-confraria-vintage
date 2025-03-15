@@ -22,7 +22,7 @@ router.post('/', (req, res) => {
   const { nome, email, senha } = req.body;  // Recebe os dados do corpo da requisição
 
   // Consulta para inserir um novo usuário
-  const query = 'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)';
+  const query = 'INSERT INTO Usuarios (nome, email, senha) VALUES (?, ?, ?)';
 
   connection.query(query, [nome, email, senha], (err, results) => {
     if (err) {
