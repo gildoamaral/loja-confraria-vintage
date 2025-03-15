@@ -1,7 +1,7 @@
 // server.js
 const express = require('express');
-const Usuario = require('./src/routes/Usuario'); // Importa as rotas de usuário
-const Produtos = require('./src/routes/Produtos'); // Importa as rotas de produtos
+const Usuario = require('./codigo-fonte/src/routes/Usuario'); // Importa as rotas de usuário
+const Produtos = require('./codigo-fonte/src/routes/Produtos'); // Importa as rotas de produtos
 
 const app = express();
 
