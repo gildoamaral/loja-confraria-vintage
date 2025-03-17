@@ -1,39 +1,49 @@
 // src/routes/Usuario.js
 const express = require('express');
-const connection = require('../db');  // Importando a conexão com o banco de dados
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const router = express.Router();
 
 // Rota GET para obter todos os usuários
-router.get('/', (req, res) => {
-  const query = 'SELECT * FROM usuarios';  // Consulta para obter todos os usuários
+router.get('/', async (req, res) => {
+  
+  try {
 
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error('Erro ao obter usuários:', err);
-      return res.status(500).send('Erro no servidor');
-    }
-    res.json(results);  // Envia os usuários no formato JSON
-  });
+    const usuarios = await prisma.usuarios.findMany();
+    res.json(usuarios);
+
+  } catch (err) {
+
+    console.error('Erro ao obter usuários:', err);
+    res.status(500).send('Erro na rota GET /usuario. Erro de servidor');
+
+  }
+
 });
 
 // Rota POST para adicionar um novo usuário
-router.post('/', (req, res) => {
-  const { nome, email, senha } = req.body;  // Recebe os dados do corpo da requisição
+router.post('/', async (req, res) => {
 
-  // Consulta para inserir um novo usuário
-  const query = 'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)';
+  const { nome, email, senha } = req.body;
 
-  connection.query(query, [nome, email, senha], (err, results) => {
-    if (err) {
-      console.error('Erro ao registrar usuário:', err);
-      return res.status(500).send('Erro no servidor');
-    }
+  try {
+    const novoUsuario = await prisma.usuarios.create({
+      data: {
+        nome,
+        email,
+        senha,
+      },
+    });
 
-    console.log(`Novo usuário registrado: ${nome}, ${email}`);  // Adicionando log de sucesso
-
+    console.log(`Novo usuário registrado: ${nome}, ${email}`);
     res.status(201).send('Usuário registrado com sucesso!');
-  });
+
+  } catch (err) {
+    console.error('Erro ao registrar usuário:', err);
+    res.status(500).send('Erro no servidor');
+  }
+
 });
 
 module.exports = router;

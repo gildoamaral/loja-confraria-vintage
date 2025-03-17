@@ -1,38 +1,51 @@
 // src/routes/Produtos.js
 const express = require('express');
-const connection = require('../db');  // Importando a conexão com o banco de dados
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const router = express.Router();
 
 // Rota GET para obter todos os produtos
-router.get('/', (req, res) => {
-  const query = 'SELECT * FROM produtos';  // Consulta para obter todos os produtos
+router.get('/', async (req, res) => {
 
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error('Erro ao obter produtos:', err);
-      return res.status(500).send('Erro no servidor');
-    }
-    res.json(results);  // Envia os produtos no formato JSON
-  });
+  try {
+
+    const produtos = await prisma.produtos.findMany();
+    res.json(produtos);
+
+  } catch (err) {
+
+    console.error('Erro ao obter produtos:', err);
+    res.status(500).send('Erro no servidor');
+
+  }
 });
 
+
 // Rota POST para adicionar um novo produto
-router.post('/', (req, res) => {
-  const { nome, descricao, preco } = req.body;  // Recebe os dados do corpo da requisição
+router.post('/', async (req, res) => {
+  const { nome, descricao, preco, imagem } = req.body;
 
-  // Consulta para inserir um novo produto
-  const query = 'INSERT INTO produtos (nome, descricao, preco) VALUES (?, ?, ?)';
+  try {
 
-  connection.query(query, [nome, descricao, preco], (err, results) => {
-    if (err) {
-      console.error('Erro ao registrar produto:', err);
-      return res.status(500).send('Erro no servidor');
-    }
+    const novoProduto = await prisma.produtos.create({
+      data: {
+        nome,
+        descricao,
+        preco,
+        imagem
+      },
+    });
 
-    console.log(`Novo produto registrado: ${nome}, ${descricao}, ${preco}`);  // Log de sucesso
-    res.status(201).send('Produto registrado com sucesso!');  // Mensagem de sucesso
-  });
+    console.log(`Novo produto registrado: ${nome}, ${descricao}, ${preco}`);
+    res.status(201).send('Produto registrado com sucesso!');
+
+  } catch (err) {
+
+    console.error('Erro ao registrar produto:', err);
+    res.status(500).send('Erro no servidor');
+
+  }
 });
 
 module.exports = router;
