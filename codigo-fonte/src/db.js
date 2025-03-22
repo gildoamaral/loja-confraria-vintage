@@ -1,5 +1,7 @@
-const mysql = require('mysql2');
-require('dotenv').config();
+import mysql from 'mysql2';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Usando DATABASE_URL diretamente para se conectar ao banco
 const connection = mysql.createConnection(process.env.DATABASE_URL);
@@ -12,4 +14,4 @@ connection.connect((err) => {
   }
 });
 
-module.exports = connection;
+export default connection;

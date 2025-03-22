@@ -10,7 +10,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
-
+node_modules
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -129,10 +129,8 @@ dist
 ### Node Patch ###
 # Serverless Webpack directories
 .webpack/
-
 # Optional stylelint cache
 
 # SvelteKit build / generate output
 .svelte-kit
-
 # End of https://www.toptal.com/developers/gitignore/api/node

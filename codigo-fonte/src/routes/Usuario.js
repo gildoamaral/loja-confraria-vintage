@@ -1,8 +1,8 @@
 // src/routes/Usuario.js
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 const router = express.Router();
 
 // Rota GET para obter todos os usuários
@@ -46,4 +46,4 @@ router.post('/', async (req, res) => {
 
 });
 
-module.exports = router;
+export default router;

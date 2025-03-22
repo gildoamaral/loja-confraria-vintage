@@ -1,6 +1,7 @@
 {
   "name": "codigo-fonte",
   "version": "1.0.0",
+  "type": "module",
   "description": "Descrever orientações essenciais para utilização da aplicação. Sugere-se anexar um pequeno manual de usuário.",
   "main": "index.js",
   "scripts": {
@@ -12,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mysql2": "^3.13.0"
