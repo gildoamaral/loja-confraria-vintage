@@ -20,7 +20,7 @@ app.use('/usuarios', Usuario);
 app.use('/produtos', Produtos);
 app.post('/login', Login)
 
-// ROTAS PRIVADAS
+// ROTA PRIVADAS de login
 app.get("/user/:id", auth, async (req, res) => {
   const id = req.params.id;
   
