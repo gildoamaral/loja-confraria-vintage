@@ -33,12 +33,12 @@ router.post('/', async (req, res) => {
   const { nome, email, senha } = req.body;
 
   // Verifica se o e-mail enviado já foi cadastrado anteriormente
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  const existingUser = await prisma.usuarios.findUnique({ where: { email } });
   if (existingUser) return res.status(400).json({ message: "E-mail já cadastrado" });
 
   // Encripta a senha
   const salt = await bcrypt.genSalt(12);
-  const hashedPassword = await bcrypt.hash(password, salt);
+  const hashedPassword = await bcrypt.hash(senha, salt);
 
   
   try {
