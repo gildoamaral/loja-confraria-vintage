@@ -2,7 +2,6 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
@@ -60,4 +59,4 @@ router.post('/', async (req, res) => {
 
 });
 
-export default router;
+module.exports = router;

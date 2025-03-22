@@ -32,7 +32,7 @@ app.get("/user/:id", auth, async (req, res) => {
   if (user) {
     // Remove o campo senha do objeto user
     const { senha, ...userWithoutPassword } = user;
-
+    
     res.json({ message: "Perfil acessado!", user: userWithoutPassword });
   } else {
     res.status(404).json({ message: "Usuário não encontrado" });
