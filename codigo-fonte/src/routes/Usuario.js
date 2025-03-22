@@ -1,13 +1,17 @@
 // src/routes/Usuario.js
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
+const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+require("dotenv").config();
 
 const prisma = new PrismaClient();
 const router = express.Router();
 
 // Rota GET para obter todos os usuários
 router.get('/', async (req, res) => {
-  
+
   try {
 
     const usuarios = await prisma.usuarios.findMany();
@@ -25,14 +29,24 @@ router.get('/', async (req, res) => {
 // Rota POST para adicionar um novo usuário
 router.post('/', async (req, res) => {
 
+
   const { nome, email, senha } = req.body;
 
+  // Verifica se o e-mail enviado já foi cadastrado anteriormente
+  const existingUser = await prisma.usuarios.findUnique({ where: { email } });
+  if (existingUser) return res.status(400).json({ message: "E-mail já cadastrado" });
+
+  // Encripta a senha
+  const salt = await bcrypt.genSalt(12);
+  const hashedPassword = await bcrypt.hash(senha, salt);
+
+  
   try {
     const novoUsuario = await prisma.usuarios.create({
       data: {
         nome,
         email,
-        senha,
+        senha: hashedPassword,
       },
     });
 
