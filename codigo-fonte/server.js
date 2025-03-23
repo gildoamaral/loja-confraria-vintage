@@ -4,6 +4,7 @@ const Usuario = require('./src/routes/Usuario'); // Importa as rotas de usuário
 const Produtos = require('./src/routes/Produtos'); // Importa as rotas de produtos
 const Login = require('./src/routes/Login')
 const auth = require('./src/middlewares/Auth'); // Importa o middleware de autenticação
+const authAdmin = require('./src/middlewares/AuthAdmin'); // Importa o middleware de autenticação de administrador
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -17,10 +18,11 @@ app.use(cors())//Modificar posteriormesnte para o dominio
 // ROTAS PÚBLICAS
 app.get('/', (req, res) => {res.send('Servidor rodando...');});
 app.use('/usuarios', Usuario);
-app.use('/produtos', Produtos);
+app.use('/produtos', authAdmin, Produtos);
 app.post('/login', Login)
 
-// ROTA PRIVADAS de login
+// ROTAS PRIVADAS
+//  //  Área de usuário
 app.get("/user/:id", auth, async (req, res) => {
   const id = req.params.id;
   
@@ -34,6 +36,25 @@ app.get("/user/:id", auth, async (req, res) => {
     const { senha, ...userWithoutPassword } = user;
     
     res.json({ message: "Perfil acessado!", user: userWithoutPassword });
+  } else {
+    res.status(404).json({ message: "Usuário não encontrado" });
+  }
+});
+
+//  //  Área de administrador
+app.get("/admin/:id", authAdmin, async (req, res) => {
+  const id = req.params.id;
+  
+  //Verificar se o User existe
+  const user = await prisma.usuarios.findUnique({
+    where: { id },
+  });
+
+  if (user) {
+    // Remove o campo senha do objeto user
+    const { senha, ...userWithoutPassword } = user;
+    
+    res.json({ message: "Perfil ADM acessado!", user: userWithoutPassword });
   } else {
     res.status(404).json({ message: "Usuário não encontrado" });
   }

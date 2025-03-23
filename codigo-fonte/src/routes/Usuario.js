@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
 
 
-  const { nome, email, senha } = req.body;
+  const { nome, email, senha, posicao } = req.body;
 
   // Verifica se o e-mail enviado já foi cadastrado anteriormente
   const existingUser = await prisma.usuarios.findUnique({ where: { email } });
@@ -46,6 +46,7 @@ router.post('/', async (req, res) => {
         nome,
         email,
         senha: hashedPassword,
+        posicao: posicao || "USER",
       },
     });
 

@@ -8,14 +8,16 @@ datasource db {
 }
 
 model usuarios {
-  id    String @id @default(uuid())
-  nome  String
-  email String @unique
-  senha String
+  id      String   @id @default(uuid())
+  nome    String
+  email   String   @unique
+  senha   String
+  posicao String   @default("USER") // USER, ADMIN
+  criacao DateTime @default(now())
 }
 
 model produtos {
-  id         String           @id @default(uuid())
+  id         String @id @default(uuid())
   nome       String
   descricao  String
   preco      Float
