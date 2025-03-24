@@ -33,13 +33,8 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { nome, sobrenome, dataNascimento, endereco, email, telefone, senha, posicao } = req.body;
 
-<<<<<<< HEAD
   // Converte a dataNascimento para o formato ISO-8601
   const dataNascimentoISO = new Date(dataNascimento).toISOString();
-=======
-  // Consulta para inserir um novo usuário
-  const query = 'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)';
->>>>>>> 3873ccbcd67f673a328bffefd3926911cb725d1d
 
   // Verifica se o e-mail enviado já foi cadastrado anteriormente
   const existingUser = await prisma.usuarios.findUnique({ where: { email } });
