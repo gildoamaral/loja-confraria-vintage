@@ -7,14 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model usuarios {
-  id      String   @id @default(uuid())
-  nome    String
-  email   String   @unique
-  senha   String
-  posicao String   @default("USER") // USER, ADMIN
-  criacao DateTime @default(now())
+model Usuarios {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  sobrenome     String
+  dataNascimento DateTime
+  endereco      String
+  email         String   @unique
+  telefone      String
+  senha         String
+  posicao       String   @default("USER") // Definindo um valor padrão caso não seja passado
 }
+
 
 model produtos {
   id         String @id @default(uuid())
