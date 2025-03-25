@@ -22,12 +22,25 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST - Criar produto
+// POST
 router.post('/', async (req, res) => {
-  const { nome, descricao, preco, imagem, quantidade } = req.body;
+  const { nome, descricao, preco, imagem, quantidade, tamanho, cor } = req.body;
 
-  if (!nome || !preco || !imagem || quantidade === undefined) {
-    return res.status(400).json({ error: 'Campos obrigatórios faltando' });
+  if (!nome || !preco || !imagem || quantidade === undefined || !tamanho || !cor) {
+    return res.status(400).json({ 
+      error: 'Campos obrigatórios faltando: nome, preco, imagem, quantidade, tamanho ou cor' 
+    });
+  }
+
+  const tamanhosValidos = ['P', 'M', 'G', 'GG'];
+  const coresValidas = ['VERMELHO', 'AZUL', 'AMARELO', 'VERDE', 'PRETO', 'BRANCO', 'ROSA'];
+
+  if (!tamanhosValidos.includes(tamanho.toUpperCase())) {
+    return res.status(400).json({ error: `Tamanho inválido. Valores permitidos: ${tamanhosValidos.join(', ')}` });
+  }
+
+  if (!coresValidas.includes(cor.toUpperCase())) {
+    return res.status(400).json({ error: `Cor inválida. Valores permitidos: ${coresValidas.join(', ')}` });
   }
 
   try {
@@ -38,11 +51,14 @@ router.post('/', async (req, res) => {
         preco,
         imagem,
         quantidade,
+        tamanho: tamanho.toUpperCase(),
+        cor: cor.toUpperCase(),         
       },
     });
     res.status(201).json(novoProduto);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao criar produto' });
+    console.error("Erro detalhado:", error); 
+    res.status(500).json({ error: 'Erro ao criar produto', details: error.message });
   }
 });
 
