@@ -25,7 +25,11 @@ const HomeProdutos = () => {
     fetchProdutos();
   }, []);
 
-  const handleExcluir = async (id) => {
+  const handleExcluir = async (id, nome) => {
+    if (!window.confirm(`Tem certeza que deseja excluir o produto "${nome}"?`)) {
+      return;
+    }
+
     try {
       await fetch(`http://localhost:3000/produtos/${id}`, {
         method: 'DELETE'
@@ -40,7 +44,7 @@ const HomeProdutos = () => {
     setEditando(produto.id);
     setFormData({
       nome: produto.nome,
-      descricao: produto.descricao, 
+      descricao: produto.descricao,
       preco: produto.preco.toString(),
       quantidade: produto.quantidade.toString(),
       imagem: produto.imagem
@@ -135,17 +139,19 @@ const HomeProdutos = () => {
             </div>
           ) : (
             <div>
-              <h2>{produto.nome}</h2>
-              <p>{produto.descricao}</p>
-              <p>Preço: R$ {produto.preco}</p>
-              <p>Quantidade: {produto.quantidade}</p>
-              <img
-                src={produto.imagem}
-                alt={produto.nome}
-              />
+              <h2><strong>Nome:</strong> {produto.nome}</h2>
+              <p><strong>Descrição:</strong> {produto.descricao}</p>
+              <p><strong>Preço:</strong> R$ {produto.preco}</p>
+              <p><strong>Quantidade:</strong> {produto.quantidade}</p>
+              <div>
+                <img
+                  src={produto.imagem}
+                  alt={produto.nome}
+                />
+              </div>
               <div>
                 <button onClick={() => abrirEdicao(produto)}>Editar</button>
-                <button onClick={() => handleExcluir(produto.id)}>Excluir</button>
+                <button onClick={() => handleExcluir(produto.id, produto.nome)}>Excluir</button>
               </div>
             </div>
           )}
