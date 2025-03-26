@@ -1,10 +1,12 @@
 // src/routes/Produtos.js
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
+const AuthAdmin = require('../middlewares/AuthAdmin'); // Importa o middleware AuthAdmin
 
 const prisma = new PrismaClient();
 const router = express.Router();
-//GET
+
+// GET - Obter todos os produtos
 router.get('/', async (req, res) => {
   try {
     const produtos = await prisma.produtos.findMany({
@@ -23,8 +25,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST
-router.post('/', async (req, res) => {
+// POST 
+router.post('/', AuthAdmin, async (req, res) => {
   const { nome, descricao, preco, imagem, quantidade, tamanho, cor } = req.body;
 
   if (!nome || !preco || !imagem || quantidade === undefined || !tamanho || !cor) {
@@ -64,7 +66,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT - Atualizar produto
-router.put('/:id', async (req, res) => {
+router.put('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
   const { nome, descricao, preco, imagem, quantidade } = req.body;
 
@@ -95,7 +97,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE - Excluir produto
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {

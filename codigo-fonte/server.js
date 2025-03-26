@@ -25,7 +25,7 @@ app.use(express.urlencoded({
 // ROTAS PÚBLICAS
 app.get('/', (req, res) => { res.send('Servidor rodando...'); });
 app.use('/usuarios', Usuario);
-app.use('/produtos', /*authAdmin,*/ Produtos); 
+app.use('/produtos', authAdmin, Produtos); 
 app.post('/login', Login)
 
 // ROTAS PRIVADAS
