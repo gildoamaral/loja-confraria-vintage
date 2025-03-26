@@ -25,7 +25,7 @@ app.use(express.urlencoded({
 // ROTAS PÚBLICAS
 app.get('/', (req, res) => { res.send('Servidor rodando...'); });
 app.use('/usuarios', Usuario);
-app.use('/produtos', authAdmin, Produtos);
+app.use('/produtos', /*authAdmin,*/ Produtos); 
 app.post('/login', Login)
 
 // ROTAS PRIVADAS
@@ -69,7 +69,7 @@ app.get("/admin/:id", authAdmin, async (req, res) => {
 
 
 // Define a porta a partir da variável de ambiente do Heroku ou usa 3030 localmente
-const PORT = process.env.PORT || 3030;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

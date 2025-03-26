@@ -1,56 +1,89 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Compressor from 'compressorjs';
 
 const CadastroProduto = () => {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [preco, setPreco] = useState('');
-  const [imagem, setImagem] = useState('');
+  const [imagens, setImagens] = useState([]);
   const [quantidade, setQuantidade] = useState('');
   const [tamanho, setTamanho] = useState('');
   const [cor, setCor] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagem(reader.result);
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files);
+    
+    if (files.length + imagens.length > 5) {
+      setMessage('Máximo de 5 imagens permitidas');
+      return;
     }
+
+    const compressedImages = [];
+    
+    files.forEach(file => {
+      new Compressor(file, {
+        quality: 0.6,
+        success(result) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            compressedImages.push(reader.result);
+            if (compressedImages.length === files.length) {
+              setImagens(prev => [...prev, ...compressedImages]);
+            }
+          };
+          reader.readAsDataURL(result);
+        },
+        error(err) {
+          console.error('Erro ao comprimir imagem:', err);
+          setMessage('Erro ao processar imagens');
+        }
+      });
+    });
+  };
+
+  const handleRemoveImage = (indexToRemove) => {
+    setImagens(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    if (!nome || !preco || !imagem || quantidade === '' || !tamanho || !cor) {
-      setMessage('Campos obrigatórios faltando');
+    if (!nome || !preco || imagens.length === 0 || quantidade === '' || !tamanho || !cor) {
+      setMessage('Preencha todos os campos obrigatórios');
+      setIsSubmitting(false);
       return;
     }
 
     try {
+      const imagensJSON = JSON.stringify(imagens);
+
       await axios.post('http://localhost:3000/produtos', {
         nome,
         descricao,
         preco: parseFloat(preco),
-        imagem,
+        imagem: imagensJSON,
         quantidade: parseInt(quantidade, 10),
         tamanho,
         cor,
       });
+
       setMessage('Produto criado com sucesso!');
       setNome('');
       setDescricao('');
       setPreco('');
-      setImagem('');
+      setImagens([]);
       setQuantidade('');
       setTamanho('');
       setCor('');
     } catch (error) {
-      console.error('Erro ao criar produto:', error.response ? error.response.data : error.message);
-      setMessage('Erro ao criar produto');
+      console.error('Erro ao criar produto:', error);
+      setMessage(error.response?.data?.message || 'Erro ao criar produto');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -60,7 +93,7 @@ const CadastroProduto = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label>Nome:</label>
-          <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} />
+          <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />
         </div>
         <div>
           <label>Descrição:</label>
@@ -68,15 +101,15 @@ const CadastroProduto = () => {
         </div>
         <div>
           <label>Preço:</label>
-          <input type="number" step="0.01" value={preco} onChange={(e) => setPreco(e.target.value)} />
+          <input type="number" step="0.01" value={preco} onChange={(e) => setPreco(e.target.value)} required />
         </div>
         <div>
           <label>Quantidade:</label>
-          <input type="number" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} />
+          <input type="number" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} required />
         </div>
         <div>
           <label>Tamanho:</label>
-          <select value={tamanho} onChange={(e) => setTamanho(e.target.value)}>
+          <select value={tamanho} onChange={(e) => setTamanho(e.target.value)} required>
             <option value="">Selecione</option>
             <option value="P">P</option>
             <option value="M">M</option>
@@ -86,11 +119,11 @@ const CadastroProduto = () => {
         </div>
         <div>
           <label>Cor:</label>
-          <select value={cor} onChange={(e) => setCor(e.target.value)}>
+          <select value={cor} onChange={(e) => setCor(e.target.value)} required>
             <option value="">Selecione</option>
             <option value="VERMELHO">Vermelho</option>
             <option value="AZUL">Azul</option>
-            <option value="AMARELO">Aamarelo</option>
+            <option value="AMARELO">Amarelo</option>
             <option value="VERDE">Verde</option>
             <option value="PRETO">Preto</option>
             <option value="BRANCO">Branco</option>
@@ -98,13 +131,52 @@ const CadastroProduto = () => {
           </select>
         </div>
         <div>
-          <label>Imagem:</label>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-          {imagem && <img src={imagem} alt="Preview" style={{ width: '100px', marginTop: '10px' }} />}
+          <label>Imagens (máx. 5):</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            multiple
+            disabled={imagens.length >= 5}
+          />
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+            {imagens.map((img, index) => (
+              <div key={index} style={{ position: 'relative' }}>
+                <img
+                  src={img}
+                  alt={`Preview ${index}`}
+                  style={{ width: '100px', height: 'auto', borderRadius: '4px' }}
+                />
+                <button 
+                  type="button"
+                  style={{ 
+                    position: 'absolute', 
+                    top: '0', 
+                    right: '0', 
+                    backgroundColor: 'black', 
+                    color: 'white',
+                    border: 'none',  
+                    cursor: 'pointer',
+                    width: '20px',
+                    height: '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onClick={() => handleRemoveImage(index)}
+                  aria-label="Remover imagem"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-        <button type="submit">Criar Produto</button>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Enviando...' : 'Criar Produto'}
+        </button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p style={{ color: message.includes('sucesso') ? 'green' : 'red' }}>{message}</p>}
     </div>
   );
 };

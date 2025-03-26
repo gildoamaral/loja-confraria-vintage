@@ -25,7 +25,7 @@ model produtos {
   nome       String
   descricao  String
   preco      Float
-  imagem     String   @db.Text
+  imagem     Json 
   quantidade Int
   tamanho    Tamanho  
   cor        Cor      
