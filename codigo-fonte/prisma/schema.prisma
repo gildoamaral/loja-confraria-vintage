@@ -25,6 +25,26 @@ model produtos {
   nome       String
   descricao  String
   preco      Float
-  imagem     String
+  imagem     String   @db.Text
   quantidade Int
+  tamanho    Tamanho  
+  cor        Cor      
 }
+
+enum Tamanho {
+  P
+  M
+  G
+  GG
+}
+
+enum Cor {
+  VERMELHO
+  AZUL
+  AMARELO
+  VERDE
+  PRETO
+  BRANCO
+  ROSA
+}
+
