@@ -1,0 +1,82 @@
+import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Styles from'./Login.module.css';
+
+const Login = () => {
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+    const [loginSucesso, setLoginSucesso] = useState(false);
+    const [erroLogin, setErroLogin] = useState('');
+
+    const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await axios.post('http://localhost:3000/login', {
+                email,
+                senha,
+            });
+
+            console.log('Login bem-sucedido', response.data);
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userId', response.data.id);
+            setLoginSucesso(true);
+            setErroLogin('');
+
+            navigate('/app');
+
+        } catch (error) {
+            console.error('Erro no login', error);
+            setErroLogin(error.response?.data.message || 'Erro no login');
+            setLoginSucesso(false);
+        }
+    };
+
+    return (
+        <div className={Styles.container}>
+            <div className={Styles.header}>
+                <h1>Bem-vindo de volta a <span className={Styles.highlight}>Confraria Vintage</span></h1>
+                <h3>Moda elegante com personalidade e graciosidade</h3>
+            </div>
+            <div className={Styles.formContainer}>
+                <h2>Login</h2>
+
+                <form onSubmit={handleLogin}>
+                    <div className={Styles.inputGroup}>
+                        <label htmlFor="email">E-mail</label>
+                        <input 
+                            id="email" 
+                            type="email" 
+                            placeholder="E-mail" 
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            />
+                    </div>
+                    <div className={Styles.inputGroup}>
+                        <label htmlFor="senha">Senha</label>
+                        <input 
+                            id="senha" 
+                            type="password" 
+                            placeholder="Senha"
+                            value={senha} 
+                            onChange={(e) => setSenha(e.target.value)}
+                            required
+                            />
+                    </div>
+                    <button type="submit" className={Styles.button}>LOGIN</button>
+                </form>
+
+                {/* Adicionei para mostrar mensagens de erro e sucesso */}
+                {loginSucesso && <p className={Styles.successMessage}>Login realizado com sucesso!</p>}
+                {erroLogin && <p className={Styles.errorMessage}>{erroLogin}</p>}
+                <p>Ainda não possui uma conta? <a href="/cadastro-usuario" className={Styles.signupLink}>Cadastre-se</a></p>
+            </div>
+        </div>
+    );
+};
+
+export default Login;
