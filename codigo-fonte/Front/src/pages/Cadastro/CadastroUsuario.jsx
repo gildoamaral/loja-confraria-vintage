@@ -90,9 +90,13 @@ const CadastroUsuario = () => {
                     </div>
                     <div className={Styles.inputGroup}>
                         <label>Posição:</label>
-                        <input type="text" value={posicao} onChange={(e) => setPosicao(e.target.value)} />
+                        <select value={posicao} onChange={(e) => setPosicao(e.target.value)} >
+                            <option value="">Selecione</option>
+                            <option value="USER">Usuário</option>
+                            <option value="ADMIN">Administrador</option>
+                        </select>
                     </div>
-
+                    
                     <button type="submit" disabled={isSubmitting} className={Styles.button}>
                     {isSubmitting ? 'Enviando...' : 'Cadastrar'}
                     </button>
