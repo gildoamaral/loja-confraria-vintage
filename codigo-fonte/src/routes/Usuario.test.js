@@ -33,7 +33,7 @@ describe('Usuario Routes', () => {
   });
 
   describe('GET /usuario', () => {
-    it('should fetch all users', async () => {
+    it('Deve resgatar todos os usuários com o status 200', async () => {
       const mockUsers = [
         { id: 1, nome: 'John', sobrenome: 'Doe', email: 'john@example.com' },
       ];
@@ -47,7 +47,7 @@ describe('Usuario Routes', () => {
   });
 
   describe('POST /usuario', () => {
-    it('should create a new user', async () => {
+    it('Deve criar um novo usuário com o status 201', async () => {
       const newUser = {
         nome: 'Jane',
         sobrenome: 'Doe',
@@ -72,7 +72,7 @@ describe('Usuario Routes', () => {
       expect(prisma.usuarios.create).toHaveBeenCalledTimes(1);
     });
 
-    it('should return 400 if email already exists', async () => {
+    it('Deve retornar o status 400 caso o usuário já exista.', async () => {
       jest.setTimeout(10000); // Increase timeout to 10 seconds
 
       prisma.usuarios.findUnique.mockResolvedValue({ id: 1 });
@@ -94,7 +94,7 @@ describe('Usuario Routes', () => {
   });
 
   describe('PUT /usuario/:id', () => {
-    it('should update an existing user', async () => {
+    it('Deve atualizar o usuário existente', async () => {
       const updatedUser = {
         nome: 'Updated',
         sobrenome: 'User',
@@ -109,7 +109,7 @@ describe('Usuario Routes', () => {
       expect(prisma.usuarios.update).toHaveBeenCalledTimes(1);
     });
 
-    it('should return 404 if user not found', async () => {
+    it('Deve retornar 401 se o usuário não for encontrado', async () => {
       prisma.usuarios.findUnique.mockResolvedValue(null);
 
       const res = await request(app).put('/usuario/1').send({});
@@ -119,7 +119,7 @@ describe('Usuario Routes', () => {
   });
 
   describe('DELETE /usuario/:id', () => {
-    it('should delete a user', async () => {
+    it('Deve deletar um usuário do DB', async () => {
       prisma.usuarios.findUnique.mockResolvedValue({ id: 1 });
       prisma.usuarios.delete.mockResolvedValue({ id: 1 });
 
@@ -128,7 +128,7 @@ describe('Usuario Routes', () => {
       expect(prisma.usuarios.delete).toHaveBeenCalledTimes(1);
     });
 
-    it('should return 404 if user not found', async () => {
+    it('Deve retornar 400 se o usuário não existir.', async () => {
       prisma.usuarios.findUnique.mockResolvedValue(null);
 
       const res = await request(app).delete('/usuario/1');
