@@ -3,10 +3,12 @@
 Apresente os casos de testes utilizados na realização da verificação e validação da aplicação. Escolha cenários de testes que demonstrem os requisitos sendo satisfeitos bem como o tratamento de erros (robustez da aplicação).
 
 ### Tipo de Teste
+
 - **Sucesso**: Tem o objetivo de verificar se as funcionalidades funcionam corretamente.
 - **Insucesso**: Tem o objetivo de verificar se o sistema trata erros de maneira correta.
 
 #### Exemplo de Caso de Teste de Sucesso
+
 <table>
   <tr>
     <th colspan="2" width="1000">CT-001<br>Login com credenciais válidas</th>
@@ -49,6 +51,7 @@ Apresente os casos de testes utilizados na realização da verificação e valid
 </table>
 
 #### Exemplo de Caso de Teste de Insucesso
+
 <table>
   <tr>
     <th colspan="2" width="1000">CT-001<br>Login com credenciais inválidas</th>
@@ -90,15 +93,16 @@ Apresente os casos de testes utilizados na realização da verificação e valid
   </tr>
 </table>
 
- 
 # Evidências de Testes de Software
 
 Apresente imagens e/ou vídeos que comprovam que um determinado teste foi executado, e o resultado esperado foi obtido. Normalmente são screenshots de telas, ou vídeos do software em funcionamento.
 
 ## Parte 1 - Testes Unitários
+
 Cada funcionalidade desenvolvida deve ser testada utilizando os casos de testes (sucesso e insucesso) criados pelo responsável pela funcionalidade. Todos os testes devem ser evidenciados.
 
 ### Exemplo
+
 <table>
   <tr>
     <th colspan="6" width="1000">CT-001<br>Login com credenciais válidas</th>
@@ -126,9 +130,11 @@ Cada funcionalidade desenvolvida deve ser testada utilizando os casos de testes 
 </table>
 
 ## Parte 2 - Testes por pares
+
 A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade deve ser testada por um colega e os testes devem ser evidenciados. O colega "Tester" deve utilizar o caso de teste criado pelo desenvolvedor responsável pela funcionalidade (desenvolveu a funcionalidade e criou o caso de testes descrito no plano de testes).
 
 ### Exemplo
+
 <table>
   <tr>
     <th colspan="6" width="1000">CT-001<br>Login com credenciais válidas</th>
@@ -157,5 +163,35 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
   </tr>
 </table>
 
+### Teste de Cadastro de Usuário
 
-
+<table>
+  <tr>
+    <th colspan="6" width="1000">Cadastro de Usuário</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve permitir que um usuário seja criado</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Lucas Oliveira Soares </td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430">Marco Antonio Gil </td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">03/04/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema está permitindo o cadastro corretamente.</td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><strong>Evidência</strong></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center">
+    <img src="img/testeUser1.png" style="height: 20em;"/>
+    <img src="img/testeUser3.jpg" style="height: 20em;"/>
+    </td>
+  </tr>
+</table>
