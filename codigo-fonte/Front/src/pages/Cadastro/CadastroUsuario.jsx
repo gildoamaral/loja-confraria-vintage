@@ -10,14 +10,12 @@ const CadastroUsuario = () => {
   const [email, setEmail] = useState('');
   const [telefone, setTelefone] = useState('');
   const [senha, setSenha] = useState('');
-  const [posicao, setPosicao] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
 
     try {
 
@@ -29,7 +27,6 @@ const CadastroUsuario = () => {
         email,
         telefone,
         senha,
-        posicao,
       });
 
       setMessage('Usuario criado com sucesso!');
@@ -40,7 +37,6 @@ const CadastroUsuario = () => {
       setEmail('');
       setTelefone('');
       setSenha('');
-      setPosicao('');
     } catch (error) {
       console.error('Erro ao criar usuario:', error);
       setMessage(error.response?.data?.message || 'Erro ao criar usuario');
@@ -87,14 +83,6 @@ const CadastroUsuario = () => {
                     <div className={Styles.inputGroup}>
                         <label>Senha:</label>
                         <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
-                    </div>
-                    <div className={Styles.inputGroup}>
-                        <label>Posição:</label>
-                        <select value={posicao} onChange={(e) => setPosicao(e.target.value)} >
-                            <option value="">Selecione</option>
-                            <option value="USER">Usuário</option>
-                            <option value="ADMIN">Administrador</option>
-                        </select>
                     </div>
                     
                     <button type="submit" disabled={isSubmitting} className={Styles.button}>
