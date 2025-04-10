@@ -1,14 +1,17 @@
 import { BrowserRouter } from "react-router-dom";
-import Navbar from "./components/navbar.jsx";
 import AppRoutes from "./routes/AppRoutes.jsx";
-import logo from "./assets/image-Photoroom.png";
+import Header from './components/header.jsx';
+import Footer from './components/Footer.jsx';
+
 
 function App() {
   return (
     <BrowserRouter>
-      <img src={logo} alt="Logo" style={{ width: "40em", margin: "20px" }} />
-      <Navbar />  {}
+
+      <Header />
       <AppRoutes />
+      <Footer />
+      
     </BrowserRouter>
   );
 }

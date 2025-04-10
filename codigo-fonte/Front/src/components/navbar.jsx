@@ -2,10 +2,15 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
-    <nav style={{ padding: "10px", backgroundColor: "#f4f4f4" }}>
+    <nav style={{
+        padding: "0.1rem 10rem", 
+        backgroundColor: "var(--cor-secundaria)",
+        borderRadius: "10px", 
+        }}>
+
       <Link to="/" style={{ marginRight: "15px" }}>Home</Link>
-      <Link to="/cadastro" style={{ marginRight: "15px" }}>Cadastro</Link>
-      <Link to="/login" style={{ marginRight: "15px" }}>Login</Link>
+      <Link to="/cadastro-produto" style={{ marginRight: "15px" }}>Cadastro</Link>
+      <Link to="/login">Login</Link>
     </nav>
   );
 }
