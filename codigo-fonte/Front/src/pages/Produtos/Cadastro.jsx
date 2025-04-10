@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';                                                  // Não é necessário, pois estamos usando a instância configurada
+import api from '../../services/api';                                          // Importando a instância do axios configurada
 import Compressor from 'compressorjs';
 
 const CadastroProduto = () => {
@@ -61,7 +62,8 @@ const CadastroProduto = () => {
     try {
       const imagensJSON = JSON.stringify(imagens);
 
-      await axios.post('http://localhost:3000/produtos', {
+      // await axios.post('http://localhost:3000/produtos', {                  // <--- Não é necessário, pois estamos usando a instância configurada do axios
+        await api.post('/produtos', {
         nome,
         descricao,
         preco: parseFloat(preco),
@@ -69,8 +71,6 @@ const CadastroProduto = () => {
         quantidade: parseInt(quantidade, 10),
         tamanho,
         cor,
-      }, {
-        withCredentials: true // <- envia o cookie junto
       });
 
       setMessage('Produto criado com sucesso!');

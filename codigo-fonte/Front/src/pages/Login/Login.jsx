@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';                                                  // <-- Não é necessário, pois estamos usando a instância configurada
+import api from '../../services/api';                                          // Importando a instância do axios configurada
 import { useNavigate } from 'react-router-dom';
 import Styles from'./Login.module.css';
 
@@ -15,14 +16,11 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:3000/login', 
-                { email, senha },
-                { withCredentials: true } // << ISSO AQUI é o que manda o cookie
-            );
+            const response = await api.post('/login', { email, senha });
 
             console.log('Login bem-sucedido', response.data);
-            // localStorage.setItem('token', response.data.token);  // <--- TOKEN é retornado no cookie, não precisa guardar no localStorage
-            // localStorage.setItem('userId', response.data.id);   // <--- USERID é retornado no cookie, não precisa guardar no localStorage
+            // localStorage.setItem('token', response.data.token);             // <--- TOKEN é retornado no cookie, não precisa guardar no localStorage
+            // localStorage.setItem('userId', response.data.id);               // <--- USERID está junto com o token
             setLoginSucesso(true);
             setErroLogin('');
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Styles from './Home.module.css';
 import Compressor from 'compressorjs';
+import api from '../../services/api';                                          // Importando a instância do axios configurada
 
 const HomeProdutos = () => {
   const [produtos, setProdutos] = useState([]);
@@ -16,10 +17,14 @@ const HomeProdutos = () => {
   useEffect(() => {
     const fetchProdutos = async () => {
       try {
-        const response = await fetch('http://localhost:3000/produtos');
-        const data = await response.json();
-        console.log('Produtos carregados:', data);
-        setProdutos(data);
+        // const response = await fetch('http://localhost:3000/produtos');     //  Usando fetch padrão
+        // const data = await response.json();
+        // console.log('Produtos carregados:', data);
+        // setProdutos(data);
+
+        const response = await api.get('/produtos');                           // Usando a instância personalizada do axios
+        console.log('Produtos carregados:', response.data);
+        setProdutos(response.data);
       } catch (error) {
         console.error('Erro ao buscar produtos:', error);
       }
@@ -51,10 +56,14 @@ const HomeProdutos = () => {
     }
 
     try {
-      await fetch(`http://localhost:3000/produtos/${id}`, {
-        method: 'DELETE'
-      });
+      // await fetch(`http://localhost:3000/produtos/${id}`, {                 // Usando fetch padrão
+      //   method: 'DELETE'
+      // });
+      // setProdutos(produtos.filter(produto => produto.id !== id));
+
+      await api.delete(`/produtos/${id}`);                                     // Usando a instância personalizada do axios
       setProdutos(produtos.filter(produto => produto.id !== id));
+      console.log(`Produto "${nome}" excluído com sucesso!`);                  // Adicionando log de sucesso
     } catch (error) {
       console.error('Erro ao excluir produto:', error);
     }
