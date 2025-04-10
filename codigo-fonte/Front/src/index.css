@@ -1,11 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Caudex:wght@400;700&family=Darker+Grotesque:wght@400;700&display=swap');
+
+/*
+"Caudex" fonte para o fundo
+"Darker Grotesque" fonte para o texto
+*/
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Caudex', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #a0a0a0;
+  color: #202215;
+  background-color: #FFB89C;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
