@@ -33,6 +33,10 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { nome, sobrenome, dataNascimento, endereco, email, telefone, senha, posicao } = req.body;
 
+  if (!dataNascimento || isNaN(Date.parse(dataNascimento))) {
+    return res.status(400).json({ message: 'Data de nascimento inválida' });
+  }
+
   // Converte a dataNascimento para o formato ISO-8601
   const dataNascimentoISO = new Date(dataNascimento).toISOString();
 
@@ -75,6 +79,10 @@ router.put('/:id', async (req, res) => {
   const parsedId = parseInt(id, 10);
   if (isNaN(parsedId)) {
     return res.status(400).json({ message: "ID inválido" });
+  }
+
+  if (dataNascimento && isNaN(Date.parse(dataNascimento))) {
+    return res.status(400).json({ message: 'Data de nascimento inválida' });
   }
 
   // Converte a dataNascimento para o formato ISO-8601, caso fornecida
