@@ -69,6 +69,8 @@ const CadastroProduto = () => {
         quantidade: parseInt(quantidade, 10),
         tamanho,
         cor,
+      }, {
+        withCredentials: true // <- envia o cookie junto
       });
 
       setMessage('Produto criado com sucesso!');

@@ -15,14 +15,14 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:3000/login', {
-                email,
-                senha,
-            });
+            const response = await axios.post('http://localhost:3000/login', 
+                { email, senha },
+                { withCredentials: true } // << ISSO AQUI é o que manda o cookie
+            );
 
             console.log('Login bem-sucedido', response.data);
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('userId', response.data.id);
+            // localStorage.setItem('token', response.data.token);  // <--- TOKEN é retornado no cookie, não precisa guardar no localStorage
+            // localStorage.setItem('userId', response.data.id);   // <--- USERID é retornado no cookie, não precisa guardar no localStorage
             setLoginSucesso(true);
             setErroLogin('');
 
