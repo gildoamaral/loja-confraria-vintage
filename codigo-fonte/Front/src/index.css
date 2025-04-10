@@ -24,14 +24,18 @@
   color: #202215;
   background-color: var(--cor-principal);
 
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-
+body {
+  /* display: flex; */
+  /* place-items: center; */
+  min-width: 320px;
+  min-height: 100vh;
+}
 
 a {
   font-family: 'Darker Grotesque', system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -41,14 +45,6 @@ a {
 }
 a:hover {
   color: white;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {

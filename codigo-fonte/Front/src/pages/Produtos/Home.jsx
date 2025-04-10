@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Styles from './Home.module.css';
 import Compressor from 'compressorjs';
 import api from '../../services/api';                                          // Importando a instância do axios configurada
+import Header from '../../components/Header';                                 // Importando o Header
+import Footer from '../../components/Footer';                                 // Importando o Footer
 
 const HomeProdutos = () => {
   const [produtos, setProdutos] = useState([]);
@@ -168,6 +170,7 @@ const HomeProdutos = () => {
 
   return (
     <div>
+      <Header />
     <h1>Lista de Produtos</h1>
     {produtos.map(produto => (
       <div key={produto.id} className={Styles.produtoContainer}>
@@ -291,6 +294,7 @@ const HomeProdutos = () => {
           )}
         </div>
       ))}
+      <Footer />
     </div>
   );
 };

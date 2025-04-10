@@ -1,6 +1,6 @@
 import React from 'react'
 import Logo from './logo'
-import Navbar from './navbar'
+import Navbar from './Navbar'
 
 
 const Header = () => {
@@ -20,8 +20,8 @@ const styles = {
     alignItems: 'center',
     marginBottom: '1rem',
     width: '100%',
-    position: 'absolute',
-    top: '0',
+    // position: 'absolute',
+    // top: '0',
     // backgroundColor: 'red',
     height: '9rem',
   },

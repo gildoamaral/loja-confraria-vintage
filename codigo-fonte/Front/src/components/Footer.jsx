@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer style={styles.footer}>
 
-      <h5>Encontre-nos nas redes sociais:</h5>
+      <h4>Encontre-nos nas redes sociais:</h4>
       <div style={styles.footerDiv}>
         <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={{ margin: '0 0.5rem', color: '#4B2626' }}>
           <FontAwesomeIcon icon={faFacebook} size="2x" />
@@ -24,9 +24,9 @@ const Footer = () => {
         <span style={{ margin: '0 1rem' }}>|</span>
         <p>Telefone: (11) 98765-4321</p>
       </div>
-      <div style={styles.footerDiv3}>
+      {/* <div style={styles.footerDiv3}>
         <p>Todos os direitos reservados © 2025 bla bla bla...</p>
-      </div>
+      </div> */}
 
     </footer>
   )
@@ -38,12 +38,13 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '1rem 0',
+    padding: '0.6rem 0 0 0',
     width: '100%',
-    height: '8.2rem',
-    position: 'absolute',
-    bottom: '0',
+    height: '7.4rem',
+    // position: 'absolute',
+    // bottom: '0',
     backgroundColor: 'var(--cor-secundaria)',
+    fontSize: '1rem',
   },
   linhaDivisoria: {
     width: '86%',
@@ -59,11 +60,9 @@ const styles = {
     height: '100%',
     color: '#4B2626',
     fontFamily: 'Darker Grotesque',
-    fontSize: '0.8rem',
+    fontSize: '1rem',
   },
   footerDiv3: {
-    position: 'absolute',
-    bottom: '0rem',
     fontFamily: 'Darker Grotesque',
     fontSize: '0.8rem',
   }
