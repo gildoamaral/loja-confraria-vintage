@@ -3,6 +3,7 @@ import HomeProdutos from "../pages/Produtos/Home.jsx";
 import CadastroProduto from "../pages/Produtos/CadastroProduto.jsx";
 import Login from "../pages/Login/Login.jsx";
 import CadastroUsuario from "../pages/Cadastro/CadastroUsuario.jsx";
+import Conta from "../pages/Conta/Conta.jsx";
 
 function AppRoutes() {
   return (
@@ -11,6 +12,7 @@ function AppRoutes() {
       <Route path="/cadastro-produto" element={<CadastroProduto />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro-usuario" element={<CadastroUsuario />} />
+      <Route path="/conta" element={<Conta />} />
     </Routes>
   );
 }

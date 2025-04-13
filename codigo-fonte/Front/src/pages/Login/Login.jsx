@@ -24,7 +24,7 @@ const Login = () => {
             setLoginSucesso(true);
             setErroLogin('');
 
-            navigate('/app');
+            navigate('/conta');
 
         } catch (error) {
             console.error('Erro no login', error);
