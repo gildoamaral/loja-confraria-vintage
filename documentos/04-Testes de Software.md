@@ -165,3 +165,25 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
     </td>
   </tr>
 </table>
+
+### Teste de Cadastro de Produto
+
+<table>
+  <tr>
+    <th colspan="6" width="1000">Cadastro de Produto</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve permitir que o produto seja excluído, criado corretamente e que tenha a validação dos campos ( Tamanho e Cor</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Matheus Soares </td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430">Lucas Henrique </td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">05/04/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema está permitindo a validação dos campos, criação e exclusão corretamente.</td>
