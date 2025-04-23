@@ -1,8 +1,8 @@
 import { useState } from 'react';
-// import axios from 'axios';                                                  // <-- Não é necessário, pois estamos usando a instância configurada
 import api from '../../services/api';                                          // Importando a instância do axios configurada
 import { useNavigate } from 'react-router-dom';
 import Styles from'./Login.module.css';
+import Footer from '../../components/Footer';  
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -24,7 +24,7 @@ const Login = () => {
             setLoginSucesso(true);
             setErroLogin('');
 
-            navigate('/app');
+            navigate('/conta');
 
         } catch (error) {
             console.error('Erro no login', error);
@@ -68,11 +68,11 @@ const Login = () => {
                     <button type="submit" className={Styles.button}>LOGIN</button>
                 </form>
 
-                {/* Adicionei para mostrar mensagens de erro e sucesso */}
                 {loginSucesso && <p className={Styles.successMessage}>Login realizado com sucesso!</p>}
                 {erroLogin && <p className={Styles.errorMessage}>{erroLogin}</p>}
                 <p>Ainda não possui uma conta? <a href="/cadastro-usuario" className={Styles.signupLink}>Cadastre-se</a></p>
             </div>
+            <Footer />
         </div>
     );
 };

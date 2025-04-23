@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Styles from '../Login/Login.module.css';
+import Footer from '../../components/Footer';  
 
 const CadastroUsuario = () => {
   const [nome, setNome] = useState('');
@@ -93,6 +94,7 @@ const CadastroUsuario = () => {
                 </form>
                 {message && <p style={{ color: message.includes('sucesso') ? 'green' : 'red' }}>{message}</p>}
             </div>
+            <Footer />
         </div>
     );
 }
