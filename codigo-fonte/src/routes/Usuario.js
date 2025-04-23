@@ -202,4 +202,9 @@ router.get('/conta', auth, async (req, res) => {
   }
 });
 
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ message: "Deslogado com sucesso" });
+});
+
 module.exports = router;
