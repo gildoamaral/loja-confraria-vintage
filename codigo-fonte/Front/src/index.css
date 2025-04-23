@@ -1,35 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Caudex:wght@400;700&family=Darker+Grotesque:wght@400;700&display=swap');
+
+/*
+"Caudex" fonte para o fundo
+"Darker Grotesque" fonte para o texto
+*/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --cor-principal: #FFB89C;
+  --cor-secundaria: #FF967E;
+  --cor-fonte: #4B2626;
+
+  font-family: 'Caudex', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: 600;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #a0a0a0;
+  color: #202215;
+  background-color: var(--cor-principal);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
+  /* display: flex; */
+  /* place-items: center; */
   min-width: 320px;
   min-height: 100vh;
+}
+
+a {
+  font-family: 'Darker Grotesque', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  color: var(--cor-fonte);
+  text-decoration: inherit;
+}
+a:hover {
+  color: white;
 }
 
 h1 {

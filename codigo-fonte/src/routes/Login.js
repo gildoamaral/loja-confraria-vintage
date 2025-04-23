@@ -24,7 +24,14 @@ const login = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({ msg: "Autenticação realizada com sucesso", token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // só funciona com HTTPS
+      sameSite: "Strict", // ou "Lax" se tiver domínio diferente
+      maxAge: 60 * 60 * 1000 // 1 hora
+    });
+
+    res.status(200).json({ msg: "Autenticação realizada com sucesso"});
 
   } catch (error) {
     res.status(500).json({ error: "Erro ao fazer login" });

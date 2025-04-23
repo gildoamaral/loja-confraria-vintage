@@ -2,12 +2,24 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
-    <nav style={{ padding: "10px", backgroundColor: "#f4f4f4" }}>
-      <Link to="/" style={{ marginRight: "15px" }}>Home</Link>
-      <Link to="/cadastro" style={{ marginRight: "15px" }}>Cadastro</Link>
-      <Link to="/login" style={{ marginRight: "15px" }}>Login</Link>
+    <nav style={styles.navbar}>
+      <Link to="/" style={styles.link}>Home</Link>
+      <Link to="/cadastro-produto" style={styles.link}>Cadastro</Link>
+      <Link to="/login" style={styles.link}>Login</Link>
     </nav>
   );
 }
+
+const styles = {
+  navbar: {
+    width: "80%",
+    backgroundColor: "var(--cor-secundaria)",
+    borderRadius: "10px", 
+    textAlign: "center",
+  },
+  link: {
+    padding: "0 3rem",
+  },
+};
 
 export default Navbar;
