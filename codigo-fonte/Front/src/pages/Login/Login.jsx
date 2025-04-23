@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import api from '../../services/api';                                          // Importando a instância do axios configurada
+import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import Styles from'./Login.module.css';
 import Footer from '../../components/Footer';  
@@ -77,7 +77,4 @@ const Login = () => {
     );
 };
 
-
-
-  
 export default Login;
