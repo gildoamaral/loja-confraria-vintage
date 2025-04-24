@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 function Navbar() {
+  const [usuario, setUsuario] = useState(null);
   const [logado, setLogado] = useState(false);
   const navigate = useNavigate();
 
@@ -10,7 +11,9 @@ function Navbar() {
     async function verificarLogin() {
       try {
         const res = await api.get("/usuarios/conta", { withCredentials: true });
+        
         if (res) {
+          setUsuario(res.data);
           setLogado(true);
         } 
       } catch (error) {
@@ -35,11 +38,20 @@ function Navbar() {
   return (
     <nav style={styles.navbar}>
       <Link to="/" style={styles.link}>Home</Link>
-      <Link to="/cadastro-produto" style={styles.link}>Cadastro</Link>
+      
       {logado ? (
         <>
+        {usuario?.posicao == 'ADMIN' ? 
+        (
+          <>
+            <Link to="/estoque" style={styles.link}>Estoque</Link>
+            <Link to="/cadastro-produto" style={styles.link}>Cadastro</Link>
+          </>
+        ) : (
+          <></>
+        )}
           <Link to="/conta" style={styles.link}>Conta</Link>
-          <button onClick={handleLogout} style={styles.link}>Logout</button>
+          <Link to="/login" onClick={handleLogout} style={styles.link}>Logout</Link>
         </>
       ) : (
         <Link to="/login" style={styles.link}>Login</Link>
