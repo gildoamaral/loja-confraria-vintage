@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 
-function Navbar() {
+function Navbar({ invisivel }) {
+  if (invisivel) {
+    return null; // Não renderiza nada se "invisivel" for passado
+  }
+
   return (
     <nav style={styles.navbar}>
       <Link to="/" style={styles.link}>Home</Link>
