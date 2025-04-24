@@ -10,6 +10,7 @@ function Navbar({ invisivel }) {
       <Link to="/" style={styles.link}>Home</Link>
       <Link to="/cadastro-produto" style={styles.link}>Cadastro</Link>
       <Link to="/login" style={styles.link}>Login</Link>
+      <Link to="/conta" style={styles.link}>Conta</Link>
     </nav>
   );
 }
