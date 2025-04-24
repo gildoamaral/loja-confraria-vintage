@@ -23,12 +23,12 @@ function Navbar({ invisivel }) {
       }
     }
 
-    if (invisivel) {
-      return null; // Não renderiza nada se "invisivel" for passado
-    }
-
     verificarLogin();
   }, []);
+
+  if (invisivel) {
+    return null; // Não renderiza nada se "invisivel" for passado
+  }
 
   const handleLogout = async () => {
     try {
