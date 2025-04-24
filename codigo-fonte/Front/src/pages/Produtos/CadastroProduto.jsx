@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 // import axios from 'axios';                                                  // Não é necessário, pois estamos usando a instância configurada
 import api from '../../services/api';                                          // Importando a instância do axios configurada
 import Compressor from 'compressorjs';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 const CadastroProduto = () => {
   const [nome, setNome] = useState('');
@@ -91,6 +93,7 @@ const CadastroProduto = () => {
 
   return (
     <div>
+      <Header />
       <h2>Criar Produto</h2>
       <form onSubmit={handleSubmit}>
         <div>
@@ -179,6 +182,7 @@ const CadastroProduto = () => {
         </button>
       </form>
       {message && <p style={{ color: message.includes('sucesso') ? 'green' : 'red' }}>{message}</p>}
+      <Footer />
     </div>
   );
 };
