@@ -17,16 +17,52 @@ router.get('/', async (req, res) => {
         preco: true,
         imagem: true,
         quantidade: true,
+        cor: true,
+        tamanho: true
       },
     });
     res.json(produtos);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar produtos' });
+    console.error("Erro detalhado:", error); 
+    res.status(500).json({ error: 'Erro ao buscar produtos', details: error.message });
   }
 });
 
+// Obter produto especifico
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const produto = await prisma.produtos.findUnique({
+      where: {
+        id: String(id),
+      },
+      select: {
+        id: true,
+        nome: true,
+        descricao: true,
+        preco: true,
+        imagem: true,
+        quantidade: true,
+        cor: true,
+        tamanho: true
+      },
+    });
+
+    if (!produto) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    res.json(produto);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao buscar o produto' });
+  }
+});
+
+
 // POST 
-router.post('/', AuthAdmin, async (req, res) => {
+router.post('/', /*AuthAdmin,*/ async (req, res) => {
   const { nome, descricao, preco, imagem, quantidade, tamanho, cor } = req.body;
 
   if (!nome || !preco || !imagem || quantidade === undefined || !tamanho || !cor) {
@@ -66,7 +102,7 @@ router.post('/', AuthAdmin, async (req, res) => {
 });
 
 // PUT - Atualizar produto
-router.put('/:id', AuthAdmin, async (req, res) => {
+router.put('/:id', /*AuthAdmin,*/ async (req, res) => {
   const { id } = req.params;
   const { nome, descricao, preco, imagem, quantidade } = req.body;
 
@@ -97,7 +133,7 @@ router.put('/:id', AuthAdmin, async (req, res) => {
 });
 
 // DELETE - Excluir produto
-router.delete('/:id', AuthAdmin, async (req, res) => {
+router.delete('/:id', /*AuthAdmin,*/ async (req, res) => {
   const { id } = req.params;
 
   try {

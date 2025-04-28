@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 function Navbar() {
   return (
     <nav style={styles.navbar}>
-      <Link to="/" style={styles.link}>Home</Link>
+      <Link to="/home" style={styles.link}>Home</Link>
       <Link to="/cadastro-produto" style={styles.link}>Cadastro</Link>
       <Link to="/login" style={styles.link}>Login</Link>
     </nav>
@@ -12,7 +12,7 @@ function Navbar() {
 
 const styles = {
   navbar: {
-    width: "80%",
+    width: "100%",
     backgroundColor: "var(--cor-secundaria)",
     borderRadius: "10px", 
     textAlign: "center",

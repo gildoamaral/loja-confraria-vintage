@@ -1,0 +1,240 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+button{
+  width: 50px;
+}
+
+.breadcrumb {
+  padding: 15px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.breadcrumb a {
+  color: #666;
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.productWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mainImage img {
+  width: 100%;
+  height: 500px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.thumbnails {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.thumbnail:hover {
+  border-color: #333;
+}
+
+.productInfo {
+  padding: 20px;
+}
+
+.productTitle {
+  font-size: 2rem;
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.productPrice {
+  font-size: 1.8rem;
+  color: #2a7f62;
+  font-weight: bold;
+  margin: 0 0 25px 0;
+}
+
+.productDescription {
+  margin-bottom: 30px;
+}
+
+.productDescription h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.variantSelector {
+  margin-bottom: 30px;
+}
+
+.optionGroup {
+  margin-bottom: 25px;
+}
+
+.optionGroup h4 {
+  margin: 0 0 15px 0;
+  font-size: 1rem;
+  color: #444;
+}
+
+.colorOptions {
+  display: flex;
+  gap: 10px;
+}
+
+.colorOption {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.colorOption.selected {
+  border-color: #333;
+  transform: scale(1.1);
+}
+
+.sizeOptions {
+  display: flex;
+  gap: 10px;
+}
+
+.sizeOption {
+  padding: 10px 15px;
+  border: 1px solid #000000;
+  background: white;
+  color: black;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.sizeOption.selected {
+  background-color: #333;
+  color: white;
+  border-color: #333;
+}
+
+.quantitySelector {
+  margin-bottom: 30px;
+}
+
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantityControls button {
+  background-color: white;
+  color: #000000;
+  padding: 5px 15px;
+  border: 1px solid #000000;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.addToCartButton {
+  width: 80%;
+  padding: 15px;
+  background-color: #2a7f62;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addToCartButton:hover {
+  background-color: #1f5f4a;
+}
+
+.colorOption {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.colorOption:hover {
+  transform: scale(1.1);
+}
+
+.selected {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #000;
+}
+
+.vermelho {
+  background-color: #b60d0d;
+}
+
+.azul {
+  background-color: #0101ce;
+}
+
+.amarelo {
+  background-color: #fafa35;
+}
+
+.verde {
+  background-color: #02a702;
+}
+
+.preto {
+  background-color: #000000;
+}
+
+.branco {
+  background-color: #ffffff;
+  border: 1px solid #ccc !important;
+}
+
+.rosa {
+  background-color: #ff69b4;
+}
+
+.loading {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ccc;
+  border-top: 4px solid #333;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 50px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
