@@ -1,12 +1,10 @@
 .container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    border-radius: 3px;
-    box-shadow: 0 4px 8px #00000027;
-    padding: 15px;
-    background-color: #d3d3d3da;
+    align-items: center;
+    min-height: 60vh;
+    box-sizing: border-box;
+    flex-direction: column;
 }
 
 .header h1 {
@@ -19,6 +17,8 @@
     color: #333;
     font-size: 18px;
     text-align: left;
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
 .header span {
@@ -27,9 +27,13 @@
 }
 
 .formContainer {
-    padding: 20px;
-    width: 300px;
-    text-align: center;
+    background-color: #ff967e;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 2rem;
 }
 
 .formContainer h2 {
@@ -50,7 +54,7 @@
     color: #555;
 }
 
-.inputGroup input {
+.inputGroup input, select {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -87,11 +91,10 @@ button:hover {
 }
 
 .signupLink {
-    color: #f38b66;
+    color: #ffffff;
     text-decoration: none;
 }
 
 .signupLink:hover {
-    text-decoration: underline;
-    color: #f3a386;
+    color: #000000;
 }

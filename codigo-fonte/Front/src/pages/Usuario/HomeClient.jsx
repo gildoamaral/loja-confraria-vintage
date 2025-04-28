@@ -32,87 +32,60 @@ const HomeCliente = () => {
         fetchProdutos();
     }, []);
 
-    const handleTamanhoChange = (tamanho) => {
-        setSelectedTamanhos(prev =>
-            prev.includes(tamanho)
-                ? prev.filter(t => t !== tamanho)
-                : [...prev, tamanho]
+    const handleFilterChange = (setter, state) => (value) => {
+        setter((prev) =>
+            prev.includes(value) ? prev.filter(item => item !== value) : [...prev, value]
         );
-    };
-
-    const handleCorChange = (cor) => {
-        setSelectedCores(prev =>
-            prev.includes(cor)
-                ? prev.filter(c => c !== cor)
-                : [...prev, cor]
-        );
-    };
-
-    const handleSortChange = (e) => {
-        setSortOption(e.target.value);
     };
 
     const parseImagens = (imagemData) => {
         if (!imagemData) return [];
-        if (Array.isArray(imagemData)) return imagemData;
         try {
-            return JSON.parse(imagemData);
+            return Array.isArray(imagemData) ? imagemData : JSON.parse(imagemData);
         } catch {
             return [imagemData];
         }
     };
 
     const filteredProdutos = produtos.filter(produto => {
-        const matchTamanho = selectedTamanhos.length > 0
-            ? selectedTamanhos.includes(produto.tamanho)
-            : true;
-
-        const matchCor = selectedCores.length > 0
-            ? selectedCores.includes(produto.cor)
-            : true;
-
+        const matchTamanho = !selectedTamanhos.length || selectedTamanhos.includes(produto.tamanho);
+        const matchCor = !selectedCores.length || selectedCores.includes(produto.cor);
         return matchTamanho && matchCor;
     });
 
-    const sortedProdutos = [...filteredProdutos].sort((a, b) => {
+    const sortedProdutos = filteredProdutos.sort((a, b) => {
         switch (sortOption) {
-            case 'preco-asc':
-                return a.preco - b.preco;
-            case 'preco-desc':
-                return b.preco - a.preco;
-            case 'nome-asc':
-                return a.nome.localeCompare(b.nome);
-            case 'nome-desc':
-                return b.nome.localeCompare(a.nome);
-            default:
-                return 0;
+            case 'preco-asc': return a.preco - b.preco;
+            case 'preco-desc': return b.preco - a.preco;
+            case 'nome-asc': return a.nome.localeCompare(b.nome);
+            case 'nome-desc': return b.nome.localeCompare(a.nome);
+            default: return 0;
         }
     });
 
-    if (produtos.length === 0) {
+    if (!produtos.length) {
         return (
             <div>
                 <Header />
                 <div className={Styles.loading}>
-                    <div className={Styles.hourglass}>
-                        <span></span>
-                    </div>
+                    <div className={Styles.hourglass}></div>
                 </div>
                 <Footer />
             </div>
         );
     }
+
     return (
         <div className={Styles.container}>
             <Header />
-
             <div className={Styles.contentWrapper}>
                 <div className={Styles.filtersSidebar}>
+                    {/* Ordenação */}
                     <div className={Styles.filterGroup}>
                         <h3>Ordenar por</h3>
                         <select
                             value={sortOption}
-                            onChange={handleSortChange}
+                            onChange={(e) => setSortOption(e.target.value)}
                             className={Styles.sortSelect}
                         >
                             <option value="">Selecione...</option>
@@ -124,6 +97,7 @@ const HomeCliente = () => {
                         </select>
                     </div>
 
+                    {/* Filtro de Tamanho */}
                     <div className={Styles.filterGroup}>
                         <h3>Tamanho</h3>
                         {TAMANHOS.map(tamanho => (
@@ -131,13 +105,14 @@ const HomeCliente = () => {
                                 <input
                                     type="checkbox"
                                     checked={selectedTamanhos.includes(tamanho)}
-                                    onChange={() => handleTamanhoChange(tamanho)}
+                                    onChange={() => handleFilterChange(setSelectedTamanhos, selectedTamanhos)(tamanho)}
                                 />
                                 {tamanho}
                             </label>
                         ))}
                     </div>
 
+                    {/* Filtro de Cor */}
                     <div className={Styles.filterGroup}>
                         <h3>Cor</h3>
                         {CORES.map(cor => (
@@ -145,7 +120,7 @@ const HomeCliente = () => {
                                 <input
                                     type="checkbox"
                                     checked={selectedCores.includes(cor)}
-                                    onChange={() => handleCorChange(cor)}
+                                    onChange={() => handleFilterChange(setSelectedCores, selectedCores)(cor)}
                                 />
                                 <span className={`${Styles.colorIndicator} ${Styles[cor.toLowerCase()]}`} />
                                 {cor.charAt(0) + cor.slice(1).toLowerCase()}
@@ -155,35 +130,35 @@ const HomeCliente = () => {
                 </div>
 
                 <div className={Styles.produtosGrid}>
-                    {sortedProdutos.map((produto) => (
-                        <Link
-                            to={`/produto/${produto.id}`}
-                            key={produto.id}
-                            className={Styles.produtoCardLink}
-                        >
-                            <div className={Styles.produtoCard}>
-                                {parseImagens(produto.imagem)[0] && (
-                                    <img
-                                        src={parseImagens(produto.imagem)[0]}
-                                        alt={produto.nome}
-                                        className={Styles.produtoImagem}
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                        }}
-                                    />
-                                )}
-                                <div className={Styles.produtoInfo}>
-                                    <h3 className={Styles.produtoNome}>{produto.nome}</h3>
-                                    <p className={Styles.produtoPreco}>
-                                        R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
-                                    </p>
+                    {sortedProdutos.map((produto) => {
+                        const produtoImagens = parseImagens(produto.imagem);
+                        return (
+                            <Link
+                                to={`/produto/${produto.id}`}
+                                key={produto.id}
+                                className={Styles.produtoCardLink}
+                            >
+                                <div className={Styles.produtoCard}>
+                                    {produtoImagens[0] && (
+                                        <img
+                                            src={produtoImagens[0]}
+                                            alt={produto.nome}
+                                            className={Styles.produtoImagem}
+                                            onError={(e) => e.target.style.display = 'none'}
+                                        />
+                                    )}
+                                    <div className={Styles.produtoInfo}>
+                                        <h3 className={Styles.produtoNome}>{produto.nome}</h3>
+                                        <p className={Styles.produtoPreco}>
+                                            R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
-                    ))}
+                            </Link>
+                        );
+                    })}
                 </div>
             </div>
-
             <Footer />
         </div>
     );

@@ -62,7 +62,7 @@ router.get('/:id', async (req, res) => {
 
 
 // POST 
-router.post('/', /*AuthAdmin,*/ async (req, res) => {
+router.post('/', AuthAdmin, async (req, res) => {
   const { nome, descricao, preco, imagem, quantidade, tamanho, cor } = req.body;
 
   if (!nome || !preco || !imagem || quantidade === undefined || !tamanho || !cor) {
@@ -102,7 +102,7 @@ router.post('/', /*AuthAdmin,*/ async (req, res) => {
 });
 
 // PUT - Atualizar produto
-router.put('/:id', /*AuthAdmin,*/ async (req, res) => {
+router.put('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
   const { nome, descricao, preco, imagem, quantidade } = req.body;
 
@@ -133,7 +133,7 @@ router.put('/:id', /*AuthAdmin,*/ async (req, res) => {
 });
 
 // DELETE - Excluir produto
-router.delete('/:id', /*AuthAdmin,*/ async (req, res) => {
+router.delete('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
