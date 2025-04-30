@@ -1,0 +1,97 @@
+/* Conta.module.css */
+
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .highlight {
+    color: #b67290; /* tom feminino/vintage */
+    font-weight: bold;
+  }
+  
+  .formContainer {
+    margin-top: 1.5rem;
+  }
+  
+  .inputGroup {
+    margin-bottom: 1rem;
+  }
+  
+  .inputGroup label {
+    display: block;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+  
+  .inputGroup p {
+    background-color: #f9f9f9;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    color: #333;
+  }
+  
+  .tabs {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .tab {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    background: none;
+    color: #555;
+    border-bottom: 3px solid transparent;
+    transition: 0.3s;
+  }
+  
+  .tab:hover {
+    color: #b67290;
+  }
+  
+  .activeTab {
+    color: #b67290;
+    border-color: #b67290;
+  }
+  
+  .pedidosContainer {
+    margin-top: 2rem;
+  }
+  
+  .pedidoCard {
+    background-color: #f3f3f3;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  
+  .pedidoCard h4 {
+    margin-bottom: 0.5rem;
+    color: #444;
+  }
+  
+  .pedidoCard p {
+    margin: 0.25rem 0;
+    color: #555;
+  }
+  

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 const Usuario = require('./src/routes/Usuario'); // Importa as rotas de usuário
@@ -29,7 +30,6 @@ app.use(express.urlencoded({
   parameterLimit: 100000
 }));
 app.use(cookieParser());
-
 
 // ROTAS PÚBLICAS
 app.get('/', (req, res) => { res.send('Servidor rodando...'); });
@@ -76,7 +76,6 @@ app.get("/admin/:id", authAdmin, async (req, res) => {
     res.status(404).json({ message: "Usuário não encontrado" });
   }
 });
-
 
 // Define a porta a partir da variável de ambiente do Heroku ou usa 3030 localmente
 const PORT = process.env.PORT || 3000;
