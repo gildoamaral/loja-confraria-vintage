@@ -166,6 +166,7 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
   </tr>
 </table>
 
+
 ### Teste de Cadastro de Produto
 
 <table>
@@ -187,3 +188,107 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
     <tr>
     <td width="170"><strong>Comentário</strong></td>
     <td colspan="5">O sistema está permitindo a validação dos campos, criação e exclusão corretamente.</td>
+</table>
+
+    
+### Teste de Cadastro de Usuário
+
+<table>
+  <tr>
+    <th colspan="6" width="1000">Cadastro de Usuário</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve permitir que um usuário seja criado</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Lucas Oliveira Soares </td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430"> Carlos Eduardo Dos Santos Lima </td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">30/04/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema está permitindo o cadastro corretamente.</td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><strong>Evidência</strong></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center">
+    <img src="https://github.com/user-attachments/assets/c262f27f-c84f-45d1-b108-06fab1b1c1a8" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/98d66129-8a43-4c3d-8ddc-e496fe58aca8" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/9c45fc58-b376-4142-bbbd-2c43513f3fdf" style="height: 20em;"/>
+    </td>
+  </tr>
+</table>
+
+### Teste de Login
+
+<table>
+  <tr>
+    <th colspan="6" width="1000">Login</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve permitir que o usuário faça o login na conta cadastrada</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Lucas Oliveira Soares </td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430"> Carlos Eduardo Dos Santos Lima </td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">30/04/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema está permitindo o login corretamente.</td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><strong>Evidência</strong></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center">
+    <img src="https://github.com/user-attachments/assets/bb32aea1-f627-4dd6-b4b1-ca170cf6d7f7" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/1351ba65-f795-4ea5-afb2-62f5e72145ae" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/14e247c1-3f94-4635-910a-652db1b0206d" style="height: 20em;"/>
+    </td>
+  </tr>
+</table>
+
+
+### Teste de Logout
+
+<table>
+  <tr>
+    <th colspan="6" width="1000">Logout</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve permitir que o usuário faça o logout de sua conta</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Lucas Oliveira Soares </td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430"> Carlos Eduardo Dos Santos Lima </td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">30/04/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema está permitindo o logout corretamente.</td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><strong>Evidência</strong></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center">
+    <img src="https://github.com/user-attachments/assets/8be4fb93-b43a-4990-8412-a967a193b9d9" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/1e560cbd-f565-426b-b616-43fa30405e0e" style="height: 20em;"/>
+    </td>
+  </tr>
+</table>
