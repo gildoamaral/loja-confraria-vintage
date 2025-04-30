@@ -2,6 +2,7 @@ const cors = require('cors');
 const express = require('express');
 const Usuario = require('./src/routes/Usuario'); // Importa as rotas de usuário
 const Produtos = require('./src/routes/Produtos'); // Importa as rotas de produtos
+const Pagamentos = require('./src/routes/Pagamentos');
 const Login = require('./src/routes/Login')
 const auth = require('./src/middlewares/Auth'); // Importa o middleware de autenticação
 const authAdmin = require('./src/middlewares/AuthAdmin'); // Importa o middleware de autenticação de administrador
@@ -33,7 +34,8 @@ app.use(cookieParser());
 // ROTAS PÚBLICAS
 app.get('/', (req, res) => { res.send('Servidor rodando...'); });
 app.use('/usuarios', Usuario);
-app.use('/produtos', Produtos); 
+app.use('/produtos', Produtos);
+app.use('/pagamentos', Pagamentos);
 app.post('/login', Login)
 
 // ROTAS PRIVADAS
