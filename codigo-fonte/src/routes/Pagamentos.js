@@ -80,7 +80,7 @@ router.post('/criar-pix', (req, res, next) => {
 //         email: email
 //       }
 //     });
- 
+
 //     return res.status(200).json(pagamento);
 //   } catch (error) {
 //     console.error("Erro ao criar pagamento:", error);
@@ -101,37 +101,49 @@ router.post('/criar-cartao', (req, res) => {
     token: req.body.token,
     description: req.body.description,
     installments: req.body.installments,
-    payment_method_id: req.body.paymentMethodId, // <- aqui é o paymentMethodId
-    issuer_id: req.body.issuer, // <- aqui é o issuerId
+    payment_method_id: req.body.payment_method_id,
+    issuer_id: req.body.issuer_id,
     payer: {
-      email: req.body.email,
+      email: req.body.payer.email,
       identification: {
-        type: req.body.identificationType, // <- aqui é o identificationType
-        number: req.body.number
+        type: req.body.payer.identification.type,
+        number: req.body.payer.identification.number
       }
     }
   }
 
+  console.log('BODY');
+  console.log(body);
+
+  // payment.create({
+  //   body: {
+  //     transaction_amount: req.body.transaction_amount,
+  //     token: req.body.token,
+  //     description: req.body.description,
+  //     installments: req.body.installments,
+  //     payment_method_id: req.body.paymentMethodId, 
+  //     issuer_id: req.body.issuer, 
+  //     payer: {
+  //       email: req.body.email,
+  //       identification: {
+  //         type: req.body.identificationType, 
+  //         number: req.body.number
+  //       }
+  //     }
+  //   },
+  //   requestOptions: { idempotencyKey: Date.now().toString() }
+  // })
   payment.create({
-    body: {
-      transaction_amount: req.body.transaction_amount,
-      token: req.body.token,
-      description: req.body.description,
-      installments: req.body.installments,
-      payment_method_id: req.body.paymentMethodId, // <- aqui é o paymentMethodId
-      issuer_id: req.body.issuer, // <- aqui é o issuerId
-      payer: {
-        email: req.body.email,
-        identification: {
-          type: req.body.identificationType, // <- aqui é o identificationType
-          number: req.body.number
-        }
-      }
-    },
-    requestOptions: { idempotencyKey: Date.now().toString() }
+    body,
+    requestOptions: {
+      idempotencyKey: Date.now().toString()
+    }
   })
     .then((result) => console.log(result))
-    .catch((error) => console.log(error));
+    .catch((error) => {
+      console.log('ERRO');
+      console.log(error);
+    });
 });
 
 module.exports = router;
