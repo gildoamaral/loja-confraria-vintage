@@ -180,12 +180,12 @@ const Pagamento = () => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              token,
-              issuer_id,
-              payment_method_id,
               transaction_amount: Number(amount),
-              installments: Number(installments),
+              token,
               description: "Descrição do produto",
+              installments: Number(installments),
+              payment_method_id,
+              issuer_id,
               payer: {
                 email,
                 identification: {
