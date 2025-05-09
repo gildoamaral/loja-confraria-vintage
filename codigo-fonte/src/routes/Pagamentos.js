@@ -48,49 +48,6 @@ router.post('/criar-pix', (req, res, next) => {
 
 });
 
-// router.post("/criar-cartao", async (req, res) => {
-//   const {
-//     token,
-//     transactionAmount,
-//     description,
-//     installments,
-//     paymentMethodId,
-//     issuerId,
-//     email
-//   } = req.body;
-
-//   console.log("Dados recebidos:", {
-//     token,
-//     transactionAmount,
-//     description,
-//     installments,
-//     paymentMethodId,
-//     issuerId,
-//     email
-//   });
-//   try {
-//     const pagamento = await payment.create({
-//       transaction_amount: Number(transactionAmount),
-//       token: token,
-//       description: description,
-//       installments: Number(installments),
-//       payment_method_id: paymentMethodId,
-//       issuer_id: issuerId,
-//       payer: {
-//         email: email
-//       }
-//     });
-
-//     return res.status(200).json(pagamento);
-//   } catch (error) {
-//     console.error("Erro ao criar pagamento:", error);
-//     return res.status(400).json({
-//       error: error.message,
-//       cause: error.cause || null
-//     }); 
-//   }
-// });
-
 router.post('/criar-cartao', (req, res) => {
 
   console.log('REQUEST');
@@ -115,24 +72,6 @@ router.post('/criar-cartao', (req, res) => {
   console.log('BODY');
   console.log(body);
 
-  // payment.create({
-  //   body: {
-  //     transaction_amount: req.body.transaction_amount,
-  //     token: req.body.token,
-  //     description: req.body.description,
-  //     installments: req.body.installments,
-  //     payment_method_id: req.body.paymentMethodId, 
-  //     issuer_id: req.body.issuer, 
-  //     payer: {
-  //       email: req.body.email,
-  //       identification: {
-  //         type: req.body.identificationType, 
-  //         number: req.body.number
-  //       }
-  //     }
-  //   },
-  //   requestOptions: { idempotencyKey: Date.now().toString() }
-  // })
   payment.create({
     body,
     requestOptions: {
