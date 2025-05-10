@@ -35,7 +35,7 @@ app.use(cookieParser());
 app.get('/', (req, res) => { res.send('Servidor rodando...'); });
 app.use('/usuarios', Usuario);
 app.use('/produtos', Produtos);
-app.use('/pagamentos', Pagamentos);
+app.use('/pagamentos', auth, Pagamentos);
 app.post('/login', Login)
 
 // ROTAS PRIVADAS
