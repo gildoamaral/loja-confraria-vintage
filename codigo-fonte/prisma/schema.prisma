@@ -25,10 +25,13 @@ model produtos {
   nome       String
   descricao  String
   preco      Float
+  precoPromocional  Float? 
   imagem     Json 
   quantidade Int
   tamanho    Tamanho  
-  cor        Cor      
+  cor        Cor
+  categoria  Categoria
+  ocasiao    Ocasiao?
 }
 
 enum Tamanho {
@@ -47,4 +50,21 @@ enum Cor {
   BRANCO
   ROSA
 }
+
+  enum Categoria {
+    SAIA
+    SHORT
+    CALÇA
+    BLUSA 
+    CAMISA
+    CONJUNTOS
+    VESTIDO
+  }
+
+  enum Ocasiao {
+    CASAMENTO
+    BATIZADO
+    MADRINHAS
+    FORMATURA
+  }
 

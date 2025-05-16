@@ -13,6 +13,7 @@ const HomeProdutos = () => {
     nome: '',
     descricao: '',
     preco: '',
+    precoPromocional: '',  // novo campo
     quantidade: '',
     imagens: []
   });
@@ -53,6 +54,7 @@ const HomeProdutos = () => {
       nome: produto.nome || '',
       descricao: produto.descricao || '',
       preco: produto.preco != null ? produto.preco.toString() : '',
+      precoPromocional: produto.precoPromocional != null ? produto.precoPromocional.toString() : '',
       quantidade: produto.quantidade != null ? produto.quantidade.toString() : '',
       imagens: imagensParsed
     });
@@ -60,7 +62,7 @@ const HomeProdutos = () => {
 
   const cancelarEdicao = () => {
     setEditando(null);
-    setFormData({ id: null, nome: '', descricao: '', preco: '', quantidade: '', imagens: [] });
+    setFormData({ id: null, nome: '', descricao: '', preco: '', precoPromocional: '', quantidade: '', imagens: [] });
   };
 
   const handleChange = (e) => {
@@ -121,6 +123,9 @@ const HomeProdutos = () => {
         nome: formData.nome,
         descricao: formData.descricao,
         preco: parseFloat(formData.preco),
+        precoPromocional: formData.precoPromocional !== ''
+          ? parseFloat(formData.precoPromocional)
+          : null,
         quantidade: parseInt(formData.quantidade, 10),
         imagem: JSON.stringify(formData.imagens)
       };
@@ -150,8 +155,7 @@ const HomeProdutos = () => {
   return (
     <div>
       <Header />
-      <h1>Produtos cadastrados
-      </h1>
+      <h1>Produtos cadastrados</h1>
       <div className={Styles.listcard}>
         {produtos.map(produto => (
           <div key={produto.id} className={Styles.produtoContainer}>
@@ -189,6 +193,19 @@ const HomeProdutos = () => {
                       onChange={handleChange}
                       step="0.01"
                       className={Styles.inputField}
+                    />
+                  </div>
+                  <div className={Styles.formGroup}>
+                    <label htmlFor="precoPromocional">Preço Promocional:</label>
+                    <input
+                      id="precoPromocional"
+                      type="number"
+                      name="precoPromocional"
+                      value={formData.precoPromocional}
+                      onChange={handleChange}
+                      step="0.01"
+                      className={Styles.inputField}
+                      placeholder="Opcional"
                     />
                   </div>
                   <div className={Styles.formGroup}>
@@ -239,7 +256,16 @@ const HomeProdutos = () => {
               <div>
                 <h2>{produto.nome}</h2>
                 <p><strong>Descrição:</strong> {produto.descricao}</p>
-                <p><strong>Preço:</strong> R$ {produto.preco.toFixed(2)}</p>
+                <p className={Styles.priceDisplay}>
+                  {produto.precoPromocional != null ? (
+                    <>
+                      <span className={Styles.originalPrice}>R$ {produto.preco.toFixed(2)}</span>
+                      <span className={Styles.promoPrice}> R$ {produto.precoPromocional.toFixed(2)}</span>
+                    </>
+                  ) : (
+                    <span>R$ {produto.preco.toFixed(2)}</span>
+                  )}
+                </p>
                 <p><strong>Quantidade:</strong> {produto.quantidade}</p>
                 <div className={Styles.galeria}>
                   {parseImagens(produto.imagem).map((img, i) => (

@@ -15,129 +15,152 @@ router.get('/', async (req, res) => {
         nome: true,
         descricao: true,
         preco: true,
+        precoPromocional: true,
         imagem: true,
         quantidade: true,
         cor: true,
-        tamanho: true
+        tamanho: true,
+        categoria: true,
+        ocasiao: true,
       },
     });
     res.json(produtos);
   } catch (error) {
-    console.error("Erro detalhado:", error); 
+    console.error("Erro detalhado:", error);
     res.status(500).json({ error: 'Erro ao buscar produtos', details: error.message });
   }
 });
 
-// Obter produto especifico
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
-
   try {
     const produto = await prisma.produtos.findUnique({
-      where: {
-        id: String(id),
-      },
+      where: { id },
       select: {
         id: true,
         nome: true,
         descricao: true,
         preco: true,
+        precoPromocional: true,
         imagem: true,
         quantidade: true,
         cor: true,
-        tamanho: true
+        tamanho: true,
+        categoria: true,
+        ocasiao: true,
       },
     });
-
     if (!produto) {
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
-
     res.json(produto);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao buscar o produto' });
+    console.error("Erro detalhado:", error);
+    res.status(500).json({ error: 'Erro ao buscar o produto', details: error.message });
   }
 });
 
 
 // POST 
-router.post('/', AuthAdmin, async (req, res) => {
-  const { nome, descricao, preco, imagem, quantidade, tamanho, cor } = req.body;
+router.post('/', AuthAdmin,async (req, res) => {
+  const {
+    nome,
+    descricao,
+    preco,
+    precoPromocional,
+    imagem,
+    quantidade,
+    tamanho,
+    cor,
+    categoria,
+    ocasiao
+  } = req.body;
 
-  if (!nome || !preco || !imagem || quantidade === undefined || !tamanho || !cor) {
-    return res.status(400).json({ 
-      error: 'Campos obrigatórios faltando: nome, preco, imagem, quantidade, tamanho ou cor' 
-    });
+  if (!nome || preco == null || !imagem || quantidade == null || !tamanho || !cor || !categoria) {
+    return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
   }
 
-  const tamanhosValidos = ['P', 'M', 'G', 'GG'];
-  const coresValidas = ['VERMELHO', 'AZUL', 'AMARELO', 'VERDE', 'PRETO', 'BRANCO', 'ROSA'];
+  const data = {
+    nome,
+    descricao,
+    preco,
+    imagem,
+    quantidade,
+    tamanho,
+    cor,
+    categoria,
+  };
 
-  if (!tamanhosValidos.includes(tamanho.toUpperCase())) {
-    return res.status(400).json({ error: `Tamanho inválido. Valores permitidos: ${tamanhosValidos.join(', ')}` });
+  if (req.body.hasOwnProperty('precoPromocional')) {
+    data.precoPromocional = precoPromocional;
   }
-
-  if (!coresValidas.includes(cor.toUpperCase())) {
-    return res.status(400).json({ error: `Cor inválida. Valores permitidos: ${coresValidas.join(', ')}` });
+  if (req.body.hasOwnProperty('ocasiao')) {
+    data.ocasiao = ocasiao;
   }
 
   try {
-    const novoProduto = await prisma.produtos.create({
-      data: {
-        nome,
-        descricao,
-        preco,
-        imagem,
-        quantidade,
-        tamanho: tamanho.toUpperCase(),
-        cor: cor.toUpperCase(),         
-      },
-    });
-    res.status(201).json(novoProduto);
+    const novoProduto = await prisma.produtos.create({ data });
+    return res.status(201).json(novoProduto);
   } catch (error) {
-    console.error("Erro detalhado:", error); 
-    res.status(500).json({ error: 'Erro ao criar produto', details: error.message });
+    console.error('Erro ao criar produto:', error);
+    return res.status(500).json({ error: 'Erro ao criar produto.' });
   }
 });
+
 
 // PUT - Atualizar produto
 router.put('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
-  const { nome, descricao, preco, imagem, quantidade } = req.body;
+  const {
+    nome,
+    descricao,
+    preco,
+    precoPromocional,
+    imagem,
+    quantidade,
+    tamanho,
+    cor,
+    categoria,
+    ocasiao
+  } = req.body;
 
   try {
-    // Verifica se o produto existe
-    const produtoExistente = await prisma.produtos.findUnique({
-      where: { id },
-    });
-
-    if (!produtoExistente) {
+    const existente = await prisma.produtos.findUnique({ where: { id } });
+    if (!existente) {
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
 
-    const produtoAtualizado = await prisma.produtos.update({
+    const dataToUpdate = {};
+
+    if (nome !== undefined) dataToUpdate.nome = nome;
+    if (descricao !== undefined) dataToUpdate.descricao = descricao;
+    if (preco !== undefined) dataToUpdate.preco = parseFloat(preco);
+    if (precoPromocional !== undefined) dataToUpdate.precoPromocional = parseFloat(precoPromocional);
+    if (imagem !== undefined) dataToUpdate.imagem = imagem;
+    if (quantidade !== undefined) dataToUpdate.quantidade = parseInt(quantidade, 10);
+    if (tamanho !== undefined) dataToUpdate.tamanho = tamanho;
+    if (cor !== undefined) dataToUpdate.cor = cor;
+    if (categoria !== undefined) dataToUpdate.categoria = categoria;
+    if (ocasiao !== undefined) dataToUpdate.ocasiao = ocasiao;
+
+    const atualizado = await prisma.produtos.update({
       where: { id },
-      data: {
-        nome,
-        descricao,
-        preco,
-        imagem,
-        quantidade,
-      },
+      data: dataToUpdate,
     });
-    res.json(produtoAtualizado);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao atualizar produto' });
+
+    return res.json(atualizado);
+  } catch (err) {
+    console.error('Erro ao atualizar produto:', err);
+    return res.status(500).json({ error: 'Erro interno', details: err.message });
   }
 });
+
 
 // DELETE - Excluir produto
 router.delete('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Verifica se o produto existe
     const produtoExistente = await prisma.produtos.findUnique({
       where: { id },
     });
