@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { MercadoPagoConfig, Payment } = require('mercadopago');
+require('dotenv').config();
 
 const client = new MercadoPagoConfig(
   {
-    accessToken: 'TEST-1291689406684525-041420-7856aade3a75ec62a4c2d5d33cc19d2b-162683758',
+    accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
     options: { timeout: 5000, idempotencyKey: 'abc' }
   }
 );

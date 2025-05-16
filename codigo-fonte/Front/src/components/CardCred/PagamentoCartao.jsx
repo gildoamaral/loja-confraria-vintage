@@ -17,7 +17,7 @@ const PagamentoCartao = () => {
     }
 
     const cardForm = mp.cardForm({
-      amount: "100.5",
+      amount: "1.5",
       iframe: true,
       form: {
         id: "form-checkout",
@@ -167,7 +167,7 @@ const PagamentoCartao = () => {
           // maxWidth='460px'
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography variant="subtitle2"> Cartão de Crédito </Typography>
+              <Typography sx={{color: 'black'}} variant="subtitle2"> Cartão de Crédito </Typography>
               <CreditCardRoundedIcon sx={{ color: 'text.secondary' }} />
             </Box>
 
@@ -189,7 +189,7 @@ const PagamentoCartao = () => {
               }}
             >
               <FormControl sx={{ flexGrow: 1 }} >
-                <FormLabel htmlFor="card-number">
+                <FormLabel sx={{color: 'black'}} htmlFor="card-number">
                   Número do cartão
                 </FormLabel>
                 <div id="form-checkout__cardNumber" className={styles.container}></div>
@@ -197,7 +197,7 @@ const PagamentoCartao = () => {
               </FormControl>
 
               <FormControl sx={{ maxWidth: "20%" }} >
-                <FormLabel htmlFor="cvv">
+                <FormLabel sx={{color: 'black'}} htmlFor="cvv">
                   CVV
                 </FormLabel>
                 <div id="form-checkout__securityCode" className={styles.container}></div>
@@ -208,13 +208,13 @@ const PagamentoCartao = () => {
             <Box
               sx={{ display: 'flex', gap: 2 }}>
               <FormControl sx={{ flexGrow: 1 }} >
-                <FormLabel htmlFor="card-name">
+                <FormLabel sx={{color: 'black'}} htmlFor="card-name">
                   Nome
                 </FormLabel>
                 <input type="text" id="form-checkout__cardholderName" className={styles.inputName} required />
               </FormControl>
               <FormControl sx={{ maxWidth: "30%" }} >
-                <FormLabel htmlFor="expiration-date">
+                <FormLabel sx={{color: 'black'}} htmlFor="expiration-date">
                   Validade
                 </FormLabel>
                 <div id="form-checkout__expirationDate" className={styles.container}></div>
