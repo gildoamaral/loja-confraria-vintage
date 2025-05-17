@@ -82,7 +82,7 @@
 
 .produtoPreco {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: bold;
   color: #029923;
 }
@@ -161,6 +161,55 @@
   animation: spin 1s linear infinite;
   margin: 50px auto;
 }
+
+.filtersSidebarRight {
+  width: 240px;
+  margin-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.08);
+}
+
+.dropdown {
+  border: 2px solid #ffffff;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.dropdownTitle {
+  font-weight: 600;
+  cursor: pointer;
+  color: #333;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  padding-left: 0.5rem;
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 2rem;
+}
+
+.originalPrice {
+  text-decoration: line-through;
+  color: #000000;
+  margin-right: 0.5rem;
+}
+.promoPrice {
+  font-size: 30px;
+  font-weight: bold;
+  color: #e60023;
+}
+
 
 @keyframes spin {
   0% { transform: rotate(0deg); }

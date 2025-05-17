@@ -8,17 +8,12 @@ import Footer from '../../components/Footer';
 const HomeCliente = () => {
     const [produtos, setProdutos] = useState([]);
     const [selectedTamanhos, setSelectedTamanhos] = useState([]);
-    const [selectedCores, setSelectedCores] = useState([]);
-    const [sortOption, setSortOption] = useState('');
+    const [selectedCategorias, setSelectedCategorias] = useState([]);
+    const [selectedOcasioes, setSelectedOcasioes] = useState([]);
 
     const TAMANHOS = ['P', 'M', 'G', 'GG'];
-    const CORES = ['VERMELHO', 'AZUL', 'AMARELO', 'VERDE', 'PRETO', 'BRANCO', 'ROSA'];
-    const SORT_OPTIONS = [
-        { value: 'preco-asc', label: 'Preço: Menor para Maior' },
-        { value: 'preco-desc', label: 'Preço: Maior para Menor' },
-        { value: 'nome-asc', label: 'Nome: A-Z' },
-        { value: 'nome-desc', label: 'Nome: Z-A' }
-    ];
+    const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
+    const OCASIOES = ['CASAMENTO', 'BATIZADO', 'MADRINHAS', 'FORMATURA'];
 
     useEffect(() => {
         const fetchProdutos = async () => {
@@ -32,10 +27,8 @@ const HomeCliente = () => {
         fetchProdutos();
     }, []);
 
-    const handleFilterChange = (setter, state) => (value) => {
-        setter((prev) =>
-            prev.includes(value) ? prev.filter(item => item !== value) : [...prev, value]
-        );
+    const handleFilterChange = (setter) => (value) => {
+        setter(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
     };
 
     const parseImagens = (imagemData) => {
@@ -49,18 +42,9 @@ const HomeCliente = () => {
 
     const filteredProdutos = produtos.filter(produto => {
         const matchTamanho = !selectedTamanhos.length || selectedTamanhos.includes(produto.tamanho);
-        const matchCor = !selectedCores.length || selectedCores.includes(produto.cor);
-        return matchTamanho && matchCor;
-    });
-
-    const sortedProdutos = filteredProdutos.sort((a, b) => {
-        switch (sortOption) {
-            case 'preco-asc': return a.preco - b.preco;
-            case 'preco-desc': return b.preco - a.preco;
-            case 'nome-asc': return a.nome.localeCompare(b.nome);
-            case 'nome-desc': return b.nome.localeCompare(a.nome);
-            default: return 0;
-        }
+        const matchCategoria = !selectedCategorias.length || selectedCategorias.includes(produto.categoria);
+        const matchOcasiao = !selectedOcasioes.length || selectedOcasioes.includes(produto.ocasiao);
+        return matchTamanho && matchCategoria && matchOcasiao;
     });
 
     if (!produtos.length) {
@@ -79,58 +63,8 @@ const HomeCliente = () => {
         <div className={Styles.container}>
             <Header />
             <div className={Styles.contentWrapper}>
-                <div className={Styles.filtersSidebar}>
-                    {/* Ordenação */}
-                    <div className={Styles.filterGroup}>
-                        <h3>Ordenar por</h3>
-                        <select
-                            value={sortOption}
-                            onChange={(e) => setSortOption(e.target.value)}
-                            className={Styles.sortSelect}
-                        >
-                            <option value="">Selecione...</option>
-                            {SORT_OPTIONS.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Filtro de Tamanho */}
-                    <div className={Styles.filterGroup}>
-                        <h3>Tamanho</h3>
-                        {TAMANHOS.map(tamanho => (
-                            <label key={tamanho} className={Styles.filterItem}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedTamanhos.includes(tamanho)}
-                                    onChange={() => handleFilterChange(setSelectedTamanhos, selectedTamanhos)(tamanho)}
-                                />
-                                {tamanho}
-                            </label>
-                        ))}
-                    </div>
-
-                    {/* Filtro de Cor */}
-                    <div className={Styles.filterGroup}>
-                        <h3>Cor</h3>
-                        {CORES.map(cor => (
-                            <label key={cor} className={Styles.filterItem}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedCores.includes(cor)}
-                                    onChange={() => handleFilterChange(setSelectedCores, selectedCores)(cor)}
-                                />
-                                <span className={`${Styles.colorIndicator} ${Styles[cor.toLowerCase()]}`} />
-                                {cor.charAt(0) + cor.slice(1).toLowerCase()}
-                            </label>
-                        ))}
-                    </div>
-                </div>
-
                 <div className={Styles.produtosGrid}>
-                    {sortedProdutos.map((produto) => {
+                    {filteredProdutos.map((produto) => {
                         const produtoImagens = parseImagens(produto.imagem);
                         return (
                             <Link
@@ -150,7 +84,20 @@ const HomeCliente = () => {
                                     <div className={Styles.produtoInfo}>
                                         <h3 className={Styles.produtoNome}>{produto.nome}</h3>
                                         <p className={Styles.produtoPreco}>
-                                            R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
+                                            {produto.precoPromocional != null ? (
+                                                <>
+                                                    <span className={Styles.originalPrice}>
+                                                    R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
+                                                    </span>
+                                                    <span className={Styles.promoPrice}>
+                                                       R$ {Number(produto.precoPromocional).toFixed(2).replace('.', ',')}
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <span>
+                                                    R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
+                                                </span>
+                                            )}
                                         </p>
                                     </div>
                                 </div>
@@ -158,6 +105,51 @@ const HomeCliente = () => {
                         );
                     })}
                 </div>
+
+                <div className={Styles.filtersSidebarRight}>
+                    <details className={Styles.dropdown}>
+                        <summary className={Styles.dropdownTitle}>Tamanhos</summary>
+                        {TAMANHOS.map(tamanho => (
+                            <label key={tamanho} className={Styles.filterItem}>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedTamanhos.includes(tamanho)}
+                                    onChange={() => handleFilterChange(setSelectedTamanhos)(tamanho)}
+                                />
+                                {tamanho}
+                            </label>
+                        ))}
+                    </details>
+
+                    <details className={Styles.dropdown}>
+                        <summary className={Styles.dropdownTitle}>Categorias</summary>
+                        {CATEGORIAS.map(categoria => (
+                            <label key={categoria} className={Styles.filterItem}>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedCategorias.includes(categoria)}
+                                    onChange={() => handleFilterChange(setSelectedCategorias)(categoria)}
+                                />
+                                {categoria.charAt(0) + categoria.slice(1).toLowerCase()}
+                            </label>
+                        ))}
+                    </details>
+
+                    <details className={Styles.dropdown}>
+                        <summary className={Styles.dropdownTitle}>Ocasiões</summary>
+                        {OCASIOES.map(ocasiao => (
+                            <label key={ocasiao} className={Styles.filterItem}>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedOcasioes.includes(ocasiao)}
+                                    onChange={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
+                                />
+                                {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
+                            </label>
+                        ))}
+                    </details>
+                </div>
+
             </div>
             <Footer />
         </div>
@@ -165,3 +157,4 @@ const HomeCliente = () => {
 };
 
 export default HomeCliente;
+
