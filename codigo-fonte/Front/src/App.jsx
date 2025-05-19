@@ -17,7 +17,7 @@ function App() {
 
         <WhatsAppButton /> {/* Adicionando o botão flutuante do WhatsApp */}
       </BrowserRouter>
-    </CarrinhoProvider>
+    </CarrinhoProvider> 
   );
 }
 

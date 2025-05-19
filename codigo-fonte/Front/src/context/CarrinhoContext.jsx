@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 
 const CarrinhoContext = createContext();
 
-export function CarrinhoProvider({ children }) {
+function CarrinhoProvider({ children }) {
   const [carrinho, setCarrinho] = useState([]);
 
   const adicionarAoCarrinho = (produto) => {
@@ -51,3 +51,4 @@ export function CarrinhoProvider({ children }) {
   );
 }
 
+export { CarrinhoContext, CarrinhoProvider };

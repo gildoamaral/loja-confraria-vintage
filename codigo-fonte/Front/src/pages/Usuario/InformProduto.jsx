@@ -4,6 +4,8 @@ import Styles from './InformProduto.module.css';
 import api from '../../services/api';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
+import { useCarrinho } from '../../context/useCarrinho';
+import { useNavigate } from 'react-router-dom';
 
 const InformProduto = () => {
   const { id } = useParams();
@@ -12,6 +14,8 @@ const InformProduto = () => {
   const [selectedCor, setSelectedCor] = useState('');
   const [quantidade, setQuantidade] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { adicionarAoCarrinho } = useCarrinho();
+  const navigate = useNavigate('/carrinho');
 
   useEffect(() => {
     const fetchProducto = async () => {
@@ -39,7 +43,21 @@ const InformProduto = () => {
       alert('Por favor selecione o tamanho e a cor');
       return;
     }
-    console.log('Produto adicionado:', { ...producto, quantidade, selectedTamanho, selectedCor });
+
+    try {
+      adicionarAoCarrinho(producto);
+      alert('Produto adicionado ao carrinho com sucesso!');
+
+
+      navigate('/carrinho');
+      console.log('Produto adicionado:', { ...producto, quantidade, selectedTamanho, selectedCor });
+
+    } catch (error) {
+      alert('Erro ao adicionar produto ao carrinho');
+      console.error('Erro ao adicionar produto ao carrinho:', error);
+
+    }
+
   };
 
   if (!producto) return (
@@ -73,7 +91,7 @@ const InformProduto = () => {
       </div>
     </div>
   );
-  
+
   return (
     <div>
       <Header />
