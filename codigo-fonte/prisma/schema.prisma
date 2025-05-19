@@ -8,30 +8,85 @@ datasource db {
 }
 
 model Usuarios {
-  id            Int      @id @default(autoincrement())
-  nome          String
-  sobrenome     String
+  id             Int      @id @default(autoincrement())
+  nome           String
+  sobrenome      String
   dataNascimento DateTime
-  endereco      String
-  email         String   @unique
-  telefone      String
-  senha         String
-  posicao       String   @default("USER") // Definindo um valor padrão caso não seja passado
+  endereco       String
+  email          String   @unique
+  telefone       String
+  senha          String
+  posicao        String   @default("USER")
+
+  pedidos        Pedidos[]   // Um usuário pode ter vários pedidos
 }
 
-
 model produtos {
-  id         String @id @default(uuid())
-  nome       String
-  descricao  String
-  preco      Float
-  precoPromocional  Float? 
-  imagem     Json 
+  id               String    @id @default(uuid())
+  nome             String
+  descricao        String
+  preco            Float
+  imagem           Json
+  quantidade       Int
+  cor              Cor
+  tamanho          Tamanho
+  categoria        Categoria
+  ocasiao          Ocasiao?
+  precoPromocional Float?
+
+  itensPedido ItemPedido[] // Um produto pode estar em vários itens de pedido
+}
+
+model Pedidos {
+  id         Int          @id @default(autoincrement())
+  criadoEm   DateTime     @default(now())
+  status     StatusPedido @default(CARRINHO) // ou PAGO, ENVIADO etc.
+  usuarioId  Int
+  usuario    Usuarios     @relation(fields: [usuarioId], references: [id])
+  itens      ItemPedido[] // Um pedido tem vários itens
+  pagamento  Pagamentos?  // Um pedido pode ter um pagamento
+}
+
+model ItemPedido {
+  id        Int       @id @default(autoincrement())
+  pedidoId  Int
+  produtoId String
   quantidade Int
-  tamanho    Tamanho  
-  cor        Cor
-  categoria  Categoria
-  ocasiao    Ocasiao?
+
+  pedido   Pedidos   @relation(fields: [pedidoId], references: [id])
+  produto  produtos  @relation(fields: [produtoId], references: [id])
+}
+
+model Pagamentos {
+  id         Int       @id @default(autoincrement())
+  pedidoId   Int       @unique
+  status     StatusPagamento
+  metodo     MetodoPagamento
+  valor      Float
+  criadoEm   DateTime  @default(now())
+
+  pedido     Pedidos   @relation(fields: [pedidoId], references: [id])
+}
+
+enum StatusPedido {
+  CARRINHO
+  AGUARDANDO_PAGAMENTO
+  PAGO
+  ENVIADO
+  ENTREGUE
+  CANCELADO
+}
+
+enum StatusPagamento {
+  PENDENTE
+  APROVADO
+  FALHOU
+}
+
+enum MetodoPagamento {
+  CARTAO
+  BOLETO
+  PIX
 }
 
 enum Tamanho {
@@ -51,20 +106,19 @@ enum Cor {
   ROSA
 }
 
-  enum Categoria {
-    SAIA
-    SHORT
-    CALÇA
-    BLUSA 
-    CAMISA
-    CONJUNTOS
-    VESTIDO
-  }
+enum Categoria {
+  SAIA
+  SHORT
+  CALÇA
+  BLUSA
+  CAMISA
+  CONJUNTOS
+  VESTIDO
+}
 
-  enum Ocasiao {
-    CASAMENTO
-    BATIZADO
-    MADRINHAS
-    FORMATURA
-  }
-
+enum Ocasiao {
+  CASAMENTO
+  BATIZADO
+  MADRINHAS
+  FORMATURA
+}
