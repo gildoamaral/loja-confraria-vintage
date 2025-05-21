@@ -12,9 +12,13 @@ import {
   Stack,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import api from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 function Carrinho() {
   const { carrinho, removerDoCarrinho, atualizarQuantidade } = useCarrinho();
+  const navigate = useNavigate();
+
 
   const parseImagens = (imagemData) => {
     if (!imagemData) return [];
@@ -22,6 +26,26 @@ function Carrinho() {
       return Array.isArray(imagemData) ? imagemData : JSON.parse(imagemData);
     } catch {
       return [imagemData];
+    }
+  };
+
+  // Função para salvar o carrinho no banco
+  const handleContinuar = async () => {
+    try {
+      // 1. Busca o usuário logado (backend deve ler do cookie JWT)
+      // 2. Para cada item do carrinho, chama a rota de criar/adicionar item ao pedido
+      for (const product of carrinho) {
+        await api.post('/pedidos/criar', {
+          produtoId: product.id,
+          quantidade: product.quantidade,
+          // usuarioId será obtido no backend pelo JWT
+        });
+      }
+      // 3. Redireciona para pagamento
+      navigate('/pagamento');
+    } catch (error) {
+      alert('Erro ao salvar o carrinho. Tente novamente.');
+      console.error('Erro ao salvar o carrinho:', error);
     }
   };
 
@@ -117,12 +141,12 @@ function Carrinho() {
           </Typography>
         )}
         {carrinho.length > 0 && (
-          <Box sx={{mt: 4 }}>
+          <Box sx={{ mt: 4 }}>
             <Button
               variant="contained"
               color="primary"
               size="large"
-              onClick={""}
+              onClick={handleContinuar}
               sx={{
                 // px: 4,
                 // py: 1.5,
@@ -136,7 +160,6 @@ function Carrinho() {
                   background: 'linear-gradient(90deg, #FFB89C 0%, #FF967E 100%)',
                 },
               }}
-              href="/pagamento"
             >
               Continuar
             </Button>

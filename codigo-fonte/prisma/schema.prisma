@@ -45,6 +45,7 @@ model Pedidos {
   usuario    Usuarios     @relation(fields: [usuarioId], references: [id])
   itens      ItemPedido[] // Um pedido tem vários itens
   pagamento  Pagamentos?  // Um pedido pode ter um pagamento
+  enderecoEntrega String  @default("")
 }
 
 model ItemPedido {

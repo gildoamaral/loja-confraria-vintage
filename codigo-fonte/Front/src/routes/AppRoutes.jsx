@@ -7,8 +7,8 @@ import HomeCliente from "../pages/Usuario/HomeClient.jsx";
 import InformProduto from "../pages/Usuario/InformProduto.jsx";
 import Conta from "../pages/Conta/Conta.jsx";
 import Estoque from "../pages/Estoque/Estoque.jsx";
-import Teste from '../pages/Pagamento/Teste.jsx';
 import Carrinho from '../pages/Carrinho/Carrinho.jsx';
+import Pagamento from '../pages/Pagamento/Pagamento.jsx';
 
 function AppRoutes() {
   return (
@@ -21,7 +21,7 @@ function AppRoutes() {
       <Route path="/produto/:id" element={<InformProduto />} />
       <Route path="/conta" element={<Conta />} />
       <Route path="/estoque" element={<Estoque />} />
-      <Route path="/teste" element={<Teste />} />
+      <Route path="/pagamento" element={<Pagamento />} />
       <Route path='/carrinho' element={<Carrinho />} />
     </Routes>
   );

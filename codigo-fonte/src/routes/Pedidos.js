@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const auth = require('../middlewares/Auth'); // <-- Importa o middleware de autenticação
 
 // Criar novo pedido com item
-router.post('/criar', async (req, res) => {
-  const { usuarioId, produtoId, quantidade } = req.body;
+router.post('/criar', auth, async (req, res) => {
+  const usuarioId = req.user.userId; // Obtém o ID do usuário do token JWT
+  const { produtoId, quantidade } = req.body;
   console.log('Dados recebidos:', req.body);
 
   try {
@@ -132,6 +134,22 @@ router.put('/pagamento/:id', async (req, res) => {
     res.json(pagamento);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao atualizar pagamento' });
+  }
+});
+
+// Atualizar endereço de entrega do pedido
+router.put('/endereco/:pedidoId', async (req, res) => {
+  const { pedidoId } = req.params;
+  const { enderecoEntrega } = req.body;
+
+  try {
+    const pedido = await prisma.pedidos.update({
+      where: { id: parseInt(pedidoId) },
+      data: { enderecoEntrega },
+    });
+    res.json(pedido);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao atualizar endereço de entrega' });
   }
 });
 
