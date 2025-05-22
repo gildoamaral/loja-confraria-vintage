@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 require('dotenv').config();
+const { PrismaClient } = require('@prisma/client');
 
+const prisma = new PrismaClient();
 const client = new MercadoPagoConfig(
   {
     accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
@@ -79,10 +81,33 @@ router.post('/criar-cartao', (req, res) => {
       idempotencyKey: Date.now().toString()
     }
   })
-    .then((result) => console.log(result))
+    .then(async (result) => {
+      console.log(result);
+
+
+      try {
+        // Salva no banco de dados
+      await prisma.pagamentos.create({
+        data: {
+          pedidoId: req.body.pedidoId, // Certifique-se de enviar o pedidoId do front
+          status: result.status === 'approved' ? 'APROVADO' : 'PENDENTE',
+          metodo: 'CARTAO',
+          valor: result.transaction_amount,
+        }
+        
+      });
+      } catch (error) {
+        console.log('ERRO AO SALVAR NO BANCO');
+
+      }
+      
+
+      res.status(201).json("sucesso!"); // <-- agora retorna pro front
+    })
     .catch((error) => {
       console.log('ERRO');
       console.log(error);
+      res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error }); // <-- envia erro ao frontend
     });
 });
 

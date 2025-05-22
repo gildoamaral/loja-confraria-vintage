@@ -4,13 +4,17 @@ import styles from './PagamentoCartao.module.css'
 import imagem from './image.png'
 import { Box, Typography, FormLabel, FormControl } from '@mui/material'
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
+import { useNavigate } from 'react-router-dom';
 
 const mp = new window.MercadoPago(import.meta.env.VITE_MERCADO_PAGO_KEY);
 
-const PagamentoCartao = () => {
+const PagamentoCartao = (props) => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const navigate = useNavigate();
+
   useEffect(() => {
-    
+
     if (mp.cardFormInstance) {
       console.warn("CardForm já instanciado. Usando a instância existente.");
       return;
@@ -94,17 +98,22 @@ const PagamentoCartao = () => {
                 number: identificationNumber,
               },
             },
+            pedidoId: props.pedidoId,
           })
-            .then(response => {
-              // tratar resposta aqui, se quiser
-              console.log(response.data);
+            .then(async response => {
+              console.log("Pagamento realizado com: ", response.data);
+
+              alert("Pagamento realizado com sucesso!");
+              navigate('/conta');
             })
+
             .catch(error => {
-              // tratar erro aqui
               console.error(error);
+
             })
             .finally(() => {
               setIsSubmitting(false);
+
             });
         },
         onFetching: (resource) => {
@@ -131,13 +140,14 @@ const PagamentoCartao = () => {
         mp.cardFormInstance = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
-        
+
       <form id="form-checkout" className={styles.formCheckout}>
-        
+
         <Box
           sx={{
             display: 'flex',
@@ -167,7 +177,7 @@ const PagamentoCartao = () => {
           // maxWidth='460px'
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Typography sx={{color: 'black'}} variant="subtitle2"> Cartão de Crédito </Typography>
+              <Typography sx={{ color: 'black' }} variant="subtitle2"> Cartão de Crédito </Typography>
               <CreditCardRoundedIcon sx={{ color: 'text.secondary' }} />
             </Box>
 
@@ -189,7 +199,7 @@ const PagamentoCartao = () => {
               }}
             >
               <FormControl sx={{ flexGrow: 1 }} >
-                <FormLabel sx={{color: 'black'}} htmlFor="card-number">
+                <FormLabel sx={{ color: 'black' }} htmlFor="card-number">
                   Número do cartão
                 </FormLabel>
                 <div id="form-checkout__cardNumber" className={styles.container}></div>
@@ -197,7 +207,7 @@ const PagamentoCartao = () => {
               </FormControl>
 
               <FormControl sx={{ maxWidth: "20%" }} >
-                <FormLabel sx={{color: 'black'}} htmlFor="cvv">
+                <FormLabel sx={{ color: 'black' }} htmlFor="cvv">
                   CVV
                 </FormLabel>
                 <div id="form-checkout__securityCode" className={styles.container}></div>
@@ -208,13 +218,13 @@ const PagamentoCartao = () => {
             <Box
               sx={{ display: 'flex', gap: 2 }}>
               <FormControl sx={{ flexGrow: 1 }} >
-                <FormLabel sx={{color: 'black'}} htmlFor="card-name">
+                <FormLabel sx={{ color: 'black' }} htmlFor="card-name">
                   Nome
                 </FormLabel>
                 <input type="text" id="form-checkout__cardholderName" className={styles.inputName} required />
               </FormControl>
               <FormControl sx={{ maxWidth: "30%" }} >
-                <FormLabel sx={{color: 'black'}} htmlFor="expiration-date">
+                <FormLabel sx={{ color: 'black' }} htmlFor="expiration-date">
                   Validade
                 </FormLabel>
                 <div id="form-checkout__expirationDate" className={styles.container}></div>
@@ -227,8 +237,8 @@ const PagamentoCartao = () => {
         <select id="form-checkout__issuer" className={styles.select}></select>
         <select id="form-checkout__installments" className={styles.select} ></select>
         <select id="form-checkout__identificationType" className={styles.select} ></select>
-        <input type="text" id="form-checkout__identificationNumber" className={styles.input} required/>
-        <input type="email" id="form-checkout__cardholderEmail" className={styles.input} required/>
+        <input type="text" id="form-checkout__identificationNumber" className={styles.input} required />
+        <input type="email" id="form-checkout__cardholderEmail" className={styles.input} required />
 
         <button
           type="submit"

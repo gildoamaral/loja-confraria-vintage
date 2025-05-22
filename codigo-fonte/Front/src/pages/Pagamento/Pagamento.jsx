@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -29,19 +29,42 @@ const Pagamento = () => {
     estado: '',
   });
   const [etapa, setEtapa] = useState(1);
+  // const [valorTotal, setValorTotal] = useState(0); // Adicione isso ao seu state
+
+  useEffect(() => {
+    const fetchPedidoCarrinho = async () => {
+      try {
+        const response = await api.get('/pedidos/carrinho');
+        if (response.data && response.data.id) {
+          setPedidoId(response.data.id);
+          // setValorTotal(response.data.valorTotal); // Obtenha o valor total da resposta da API
+          console.log('Pedido em andamento encontrado:', pedidoId);
+          console.log('Dados do pedido:', response.data);
+
+        } else {
+          console.error('Nenhum pedido em andamento encontrado.');
+        }
+      } catch (error) {
+        console.error('Erro ao buscar o pedido do carrinho:', error);
+      }
+    };
+    fetchPedidoCarrinho();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
 
   const handleEnderecoChange = (e) => {
     setEndereco({ ...endereco, [e.target.name]: e.target.value });
   };
 
-  const handleContinuar = async () => {
 
+  const handleContinuar = async () => {
     const { cep, rua, numero, complemento, bairro, cidade, estado } = endereco;
     if (!cep || !rua || !numero || !bairro || !cidade || !estado) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
-
     const enderecoCompleto =
       `${rua}, ${numero}${complemento ? ', ' + complemento : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
 
@@ -55,14 +78,10 @@ const Pagamento = () => {
       await api.put(`/pedidos/endereco/${pedidoId}`, {
         enderecoEntrega: enderecoCompleto,
       });
-
-
       setEtapa(2);
-
     } catch (error) {
       console.error('Erro ao continuar para a próxima etapa:', error);
     }
-
   };
 
   return (
@@ -201,7 +220,10 @@ const Pagamento = () => {
                     <Typography variant="h6" fontWeight={600} gutterBottom>
                       Dados do Cartão
                     </Typography>
-                    <PagamentoCartao />
+                    <PagamentoCartao
+                      pedidoId={pedidoId}
+                      // valor={valorTotal}
+                    />
                   </>
                 ) : (
                   <Typography variant="body1" color="text.secondary" sx={{ mt: 8 }}>

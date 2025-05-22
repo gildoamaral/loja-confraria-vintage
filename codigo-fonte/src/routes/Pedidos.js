@@ -153,5 +153,25 @@ router.put('/endereco/:pedidoId', async (req, res) => {
   }
 });
 
+// Buscar pedido do usuário autenticado com status CARRINHO
+router.get('/carrinho', auth, async (req, res) => {
+  const usuarioId = req.user.userId;
+  try {
+    const pedido = await prisma.pedidos.findFirst({
+      where: {
+        usuarioId,
+        status: 'CARRINHO',
+      },
+      include: { itens: true }, // opcional: traz os itens do pedido também
+    });
+    if (!pedido) {
+      return res.status(404).json({ message: 'Nenhum pedido em andamento encontrado.' });
+    }
+    res.json(pedido);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao buscar pedido do carrinho' });
+  }
+});
+
 
 module.exports = router;
