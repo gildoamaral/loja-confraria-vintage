@@ -16,7 +16,6 @@ function Carrinho() {
 
   const navigate = useNavigate();
 
-
   const parseImagens = (imagemData) => {
     if (!imagemData) return [];
     try {
@@ -32,7 +31,7 @@ function Carrinho() {
       // 1. Busca o usuário logado (backend deve ler do cookie JWT)
       // 2. Para cada item do carrinho, chama a rota de criar/adicionar item ao pedido
       for (const product of carrinho) {
-          console.log(product);
+        console.log(product);
 
         await api.post('/pedidos/criar', {
           produtoId: product.id,
@@ -56,6 +55,9 @@ function Carrinho() {
         </Typography>
 
         <Grid container spacing={3}>
+
+      
+          
           {carrinho.map((item) => (
             <CarrinhoItemCard
               key={item.id}
@@ -65,6 +67,8 @@ function Carrinho() {
               removerDoCarrinho={removerDoCarrinho}
             />
           ))}
+
+
         </Grid>
         {carrinho.length === 0 && (
           <Typography variant="h6" color="text.secondary" align="center" mt={4}>

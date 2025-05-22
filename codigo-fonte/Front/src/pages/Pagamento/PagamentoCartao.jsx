@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import api from '../../services/api';
 import styles from './PagamentoCartao.module.css'
 import imagem from './image.png'
 import { Box, Typography, FormLabel, FormControl } from '@mui/material'
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
 import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 
 const mp = new window.MercadoPago(import.meta.env.VITE_MERCADO_PAGO_KEY);
 

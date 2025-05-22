@@ -13,8 +13,8 @@ import {
   Paper,
   Divider,
 } from '@mui/material';
-import PagamentoCartao from '../../components/CardCred/PagamentoCartao';
 import api from '../../services/api';
+import PagamentoCartao from './PagamentoCartao';
 
 const Pagamento = () => {
   const [pedidoId, setPedidoId] = useState(null); // Adicione isso ao seu state
