@@ -97,7 +97,8 @@ router.post('/criar-cartao', (req, res) => {
         
       });
       } catch (error) {
-        console.log('ERRO AO SALVAR NO BANCO');
+        console.log('ERRO AO SALVAR NO BANCO: ', error);
+        return;
 
       }
       

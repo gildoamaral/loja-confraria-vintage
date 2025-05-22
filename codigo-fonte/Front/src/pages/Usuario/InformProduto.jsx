@@ -21,6 +21,7 @@ const InformProduto = () => {
     const fetchProducto = async () => {
       try {
         const response = await api.get(`/produtos/${id}`);
+
         setProducto(response.data);
       } catch (error) {
         console.error('Erro ao buscar produto:', error);
@@ -44,13 +45,23 @@ const InformProduto = () => {
       return;
     }
 
+    const productToAdd = {
+      ...producto,
+      quantidade,
+      tamanho: selectedTamanho,
+      cor: selectedCor,
+    };
+
+
+
     try {
-      adicionarAoCarrinho(producto);
+      adicionarAoCarrinho(productToAdd);
+      console.log('Produto sai da pagina de InformProduto:', productToAdd);
+      
       alert('Produto adicionado ao carrinho com sucesso!');
 
 
       navigate('/carrinho');
-      console.log('Produto adicionado:', { ...producto, quantidade, selectedTamanho, selectedCor });
 
     } catch (error) {
       alert('Erro ao adicionar produto ao carrinho');

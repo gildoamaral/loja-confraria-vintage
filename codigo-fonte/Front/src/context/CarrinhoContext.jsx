@@ -6,6 +6,7 @@ function CarrinhoProvider({ children }) {
   const [carrinho, setCarrinho] = useState([]);
 
   const adicionarAoCarrinho = (produto) => {
+
     setCarrinho((prev) => {
       const itemExistente = prev.find((item) => item.id === produto.id);
       if (itemExistente) {
@@ -14,8 +15,9 @@ function CarrinhoProvider({ children }) {
             ? { ...item, quantidade: item.quantidade + 1 }
             : item
         );
+
       } else {
-        return [...prev, { ...produto, quantidade: 1 }];
+        return [...prev, { ...produto }];
       }
     });
   };
