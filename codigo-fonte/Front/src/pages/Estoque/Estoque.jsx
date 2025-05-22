@@ -53,11 +53,6 @@ const HomeProdutos = () => {
     }
 
     try {
-      // await fetch(`http://localhost:3000/produtos/${id}`, {                 // Usando fetch padrão
-      //   method: 'DELETE'
-      // });
-      // setProdutos(produtos.filter(produto => produto.id !== id));
-
       await api.delete(`/produtos/${id}`);                                     // Usando a instância personalizada do axios
       setProdutos(produtos.filter(produto => produto.id !== id));
       console.log(`Produto "${nome}" excluído com sucesso!`);                  // Adicionando log de sucesso
@@ -129,13 +124,7 @@ const HomeProdutos = () => {
         imagem: JSON.stringify(formData.imagens) // Armazena as imagens como JSON
       };
 
-      const response = await fetch(`http://localhost:3000/produtos/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dadosAtualizados)
-      });
+      const response = await api.put(`/produtos/${id}`, dadosAtualizados);
 
       if (response.ok) {
         const produtoAtualizado = await response.json();
