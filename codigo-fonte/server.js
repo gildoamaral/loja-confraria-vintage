@@ -15,10 +15,9 @@ const prisma = new PrismaClient();
 
 const app = express();
 
-const corsOrigin = process.env.CORS_ORIGIN || 5173;
 
 app.use(cors({
-  origin: `http://localhost:${corsOrigin}`,
+  origin: process.env.CORS_ORIGIN,   // <--- Colocar o link do fron no .env
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
