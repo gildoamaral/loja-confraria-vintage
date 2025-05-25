@@ -4,6 +4,7 @@ import Compressor from 'compressorjs';
 import api from '../../services/api';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import PageContainer from '../../components/PageContainer';
 
 const HomeProdutos = () => {
   const [produtos, setProdutos] = useState([]);
@@ -155,7 +156,7 @@ const HomeProdutos = () => {
   return (
     <div>
       <Header />
-      <div className={Styles.container}>
+      <PageContainer className={Styles.container}>
     <h2>Lista de Produtos</h2>
     {produtos.map(produto => (
       <div key={produto.id} className={Styles.produtoContainer}>
@@ -279,7 +280,7 @@ const HomeProdutos = () => {
           )}
         </div>
       ))}
-      </div>
+      </PageContainer>
       <Footer />
     </div>
   );

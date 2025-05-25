@@ -3,6 +3,7 @@ import api from "../../services/api";
 import styles from "./Conta.module.css";
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import PageContainer from '../../components/PageContainer';
 
 const Conta = () => {
   const [usuario, setUsuario] = useState(null);
@@ -60,7 +61,7 @@ const Conta = () => {
   return (
     <div>
       <Header />
-      <div className={styles.container}>
+      <PageContainer className={styles.container}>
         <div className={styles.header}>
           <h1>Olá, {usuario?.nome || "Usuário"}!</h1>
           <h3>Gerencie suas informações e acompanhe seus pedidos</h3>
@@ -135,7 +136,7 @@ const Conta = () => {
             )}
           </div>
         )}
-      </div>
+      </PageContainer>
       <Footer />
     </div>
   );

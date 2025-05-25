@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Styles from'./Login.module.css';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';  
+import PageContainer from '../../components/PageContainer';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -37,7 +38,7 @@ const Login = () => {
     return (
         <div>
             <Header />
-            <div className={Styles.container}>
+            <PageContainer className={Styles.container}>
                 <div className={Styles.header}>
                     <h1>Bem-vindo de volta a <span className={Styles.highlight}>Confraria Vintage</span></h1>
                     <h3>Moda elegante com personalidade e graciosidade</h3>
@@ -75,7 +76,7 @@ const Login = () => {
                     {erroLogin && <p className={Styles.errorMessage}>{erroLogin}</p>}
                     <p>Ainda não possui uma conta? <a href="/cadastro-usuario" className={Styles.signupLink}>Cadastre-se</a></p>
                 </div>
-            </div>
+            </PageContainer>
             <Footer />
         </div>
     );

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Styles from './HomeCliente.module.css';
 import api from '../../services/api';
+import DownHeader from '../../components/DownHeader';
+import PageContainer from '../../components/PageContainer';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
@@ -51,6 +53,7 @@ const HomeCliente = () => {
         return (
             <div>
                 <Header />
+
                 <div className={Styles.loading}>
                     <div className={Styles.hourglass}></div>
                 </div>
@@ -62,95 +65,102 @@ const HomeCliente = () => {
     return (
         <div className={Styles.container}>
             <Header />
-            <div className={Styles.contentWrapper}>
-                <div className={Styles.produtosGrid}>
-                    {filteredProdutos.map((produto) => {
-                        const produtoImagens = parseImagens(produto.imagem);
-                        return (
-                            <Link
-                                to={`/produto/${produto.id}`}
-                                key={produto.id}
-                                className={Styles.produtoCardLink}
-                            >
-                                <div className={Styles.produtoCard}>
-                                    {produtoImagens[0] && (
-                                        <img
-                                            src={produtoImagens[0]}
-                                            alt={produto.nome}
-                                            className={Styles.produtoImagem}
-                                            onError={(e) => e.target.style.display = 'none'}
-                                        />
-                                    )}
-                                    <div className={Styles.produtoInfo}>
-                                        <h3 className={Styles.produtoNome}>{produto.nome}</h3>
-                                        <p className={Styles.produtoPreco}>
-                                            {produto.precoPromocional != null ? (
-                                                <>
-                                                    <span className={Styles.originalPrice}>
-                                                    R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
+            <DownHeader />
+
+
+
+                <PageContainer className={Styles.contentWrapper}>
+                    <div className={Styles.produtosGrid}>
+                        {filteredProdutos.map((produto) => {
+                            const produtoImagens = parseImagens(produto.imagem);
+                            return (
+                                <Link
+                                    to={`/produto/${produto.id}`}
+                                    key={produto.id}
+                                    className={Styles.produtoCardLink}
+                                >
+                                    <div className={Styles.produtoCard}>
+                                        {produtoImagens[0] && (
+                                            <img
+                                                src={produtoImagens[0]}
+                                                alt={produto.nome}
+                                                className={Styles.produtoImagem}
+                                                onError={(e) => e.target.style.display = 'none'}
+                                            />
+                                        )}
+                                        <div className={Styles.produtoInfo}>
+                                            <h3 className={Styles.produtoNome}>{produto.nome}</h3>
+                                            <p className={Styles.produtoPreco}>
+                                                {produto.precoPromocional != null ? (
+                                                    <>
+                                                        <span className={Styles.originalPrice}>
+                                                            R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
+                                                        </span>
+                                                        <span className={Styles.promoPrice}>
+                                                            R$ {Number(produto.precoPromocional).toFixed(2).replace('.', ',')}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <span>
+                                                        R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
                                                     </span>
-                                                    <span className={Styles.promoPrice}>
-                                                       R$ {Number(produto.precoPromocional).toFixed(2).replace('.', ',')}
-                                                    </span>
-                                                </>
-                                            ) : (
-                                                <span>
-                                                    R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
-                                                </span>
-                                            )}
-                                        </p>
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            </Link>
-                        );
-                    })}
-                </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
 
-                <div className={Styles.filtersSidebarRight}>
-                    <details className={Styles.dropdown}>
-                        <summary className={Styles.dropdownTitle}>Tamanhos</summary>
-                        {TAMANHOS.map(tamanho => (
-                            <label key={tamanho} className={Styles.filterItem}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedTamanhos.includes(tamanho)}
-                                    onChange={() => handleFilterChange(setSelectedTamanhos)(tamanho)}
-                                />
-                                {tamanho}
-                            </label>
-                        ))}
-                    </details>
+                    <div className={Styles.filtersSidebarRight}>
+                        <details className={Styles.dropdown}>
+                            <summary className={Styles.dropdownTitle}>Tamanhos</summary>
+                            {TAMANHOS.map(tamanho => (
+                                <label key={tamanho} className={Styles.filterItem}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTamanhos.includes(tamanho)}
+                                        onChange={() => handleFilterChange(setSelectedTamanhos)(tamanho)}
+                                    />
+                                    {tamanho}
+                                </label>
+                            ))}
+                        </details>
 
-                    <details className={Styles.dropdown}>
-                        <summary className={Styles.dropdownTitle}>Categorias</summary>
-                        {CATEGORIAS.map(categoria => (
-                            <label key={categoria} className={Styles.filterItem}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedCategorias.includes(categoria)}
-                                    onChange={() => handleFilterChange(setSelectedCategorias)(categoria)}
-                                />
-                                {categoria.charAt(0) + categoria.slice(1).toLowerCase()}
-                            </label>
-                        ))}
-                    </details>
+                        <details className={Styles.dropdown}>
+                            <summary className={Styles.dropdownTitle}>Categorias</summary>
+                            {CATEGORIAS.map(categoria => (
+                                <label key={categoria} className={Styles.filterItem}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedCategorias.includes(categoria)}
+                                        onChange={() => handleFilterChange(setSelectedCategorias)(categoria)}
+                                    />
+                                    {categoria.charAt(0) + categoria.slice(1).toLowerCase()}
+                                </label>
+                            ))}
+                        </details>
 
-                    <details className={Styles.dropdown}>
-                        <summary className={Styles.dropdownTitle}>Ocasiões</summary>
-                        {OCASIOES.map(ocasiao => (
-                            <label key={ocasiao} className={Styles.filterItem}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedOcasioes.includes(ocasiao)}
-                                    onChange={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
-                                />
-                                {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
-                            </label>
-                        ))}
-                    </details>
-                </div>
+                        <details className={Styles.dropdown}>
+                            <summary className={Styles.dropdownTitle}>Ocasiões</summary>
+                            {OCASIOES.map(ocasiao => (
+                                <label key={ocasiao} className={Styles.filterItem}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedOcasioes.includes(ocasiao)}
+                                        onChange={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
+                                    />
+                                    {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
+                                </label>
+                            ))}
+                        </details>
+                    </div>
 
-            </div>
+
+                </PageContainer>
+
+
             <Footer />
         </div>
     );

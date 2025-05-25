@@ -4,6 +4,7 @@ import Styles from './CadastroProduto.module.css';
 import Compressor from 'compressorjs';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import PageContainer from '../../components/PageContainer';
 
 // Definição de enums como arrays
 const categorias = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
@@ -127,7 +128,8 @@ const CadastroProduto = () => {
   return (
     <div className={Styles.cadastroContainer}>
       <Header />
-      <main className={Styles.formContainer}>
+      
+      <PageContainer className={Styles.formContainer}>
         <h2 className={Styles.formTitle}>Criar Produto</h2>
         <form onSubmit={handleSubmit} className={Styles.form}>
           {/* Nome */}
@@ -259,7 +261,7 @@ const CadastroProduto = () => {
           </button>
           {message && <p className={Styles.message}>{message}</p>}
         </form>
-      </main>
+      </PageContainer>
       <Footer />
     </div>
   );
