@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Styles from './InformProduto.module.css';
 import api from '../../services/api';
-import Footer from '../../components/Footer';
-import Header from '../../components/header';
 import { useCarrinho } from '../../context/useCarrinho';
 import { useNavigate } from 'react-router-dom';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import PageContainer from '../../components/PageContainer';
 
 const InformProduto = () => {
   const { id } = useParams();
@@ -57,7 +58,7 @@ const InformProduto = () => {
     try {
       adicionarAoCarrinho(productToAdd);
       console.log('Produto sai da pagina de InformProduto:', productToAdd);
-      
+
       alert('Produto adicionado ao carrinho com sucesso!');
 
 
@@ -73,11 +74,9 @@ const InformProduto = () => {
 
   if (!producto) return (
     <div>
-      <Header />
       <div className={Styles.loading}>
         <div className={Styles.hourglass}><span></span></div>
       </div>
-      <Footer />
     </div>
   );
 
@@ -106,58 +105,59 @@ const InformProduto = () => {
   return (
     <div>
       <Header />
-      <div className={Styles.container}>
-        <div className={Styles.breadcrumb}><span>{producto.nome}</span></div>
+        <PageContainer className={Styles.container}>
+          <div className={Styles.breadcrumb}><span>{producto.nome}</span></div>
 
-        <div className={Styles.productWrapper}>
-          <div className={Styles.gallery}>
-            <div className={Styles.mainImage}>
-              <img
-                src={parseImagens(producto.imagem)[activeImageIndex]}
-                alt={producto.nome}
-              />
-            </div>
-            <div className={Styles.thumbnails}>
-              {parseImagens(producto.imagem).map((img, index) => (
+          <div className={Styles.productWrapper}>
+            <div className={Styles.gallery}>
+              <div className={Styles.mainImage}>
                 <img
-                  key={index}
-                  src={img}
-                  alt={`Vista ${index + 1}`}
-                  className={`${Styles.thumbnail} ${index === activeImageIndex ? Styles.activeThumbnail : ''}`}
-                  onClick={() => setActiveImageIndex(index)}
+                  src={parseImagens(producto.imagem)[activeImageIndex]}
+                  alt={producto.nome}
                 />
-              ))}
-            </div>
-          </div>
-
-          <div className={Styles.productInfo}>
-            <h1 className={Styles.productTitle}>{producto.nome}</h1>
-            <p className={Styles.productPrice}>
-              R$ {Number(producto.preco).toFixed(2).replace('.', ',')}
-            </p>
-
-            <div className={Styles.productDescription}>
-              <h3>Descrição</h3>
-              <p>{producto.descricao}</p>
-            </div>
-
-            {renderOptions(producto.cor.split(','), selectedCor, setSelectedCor, 'cor')}
-            {renderOptions(producto.tamanho.split(','), selectedTamanho, setSelectedTamanho, 'tamanho')}
-
-            <div className={Styles.quantitySelector}>
-              <h4>Quantidade:</h4>
-              <div className={Styles.quantityControls}>
-                <button onClick={() => setQuantidade(Math.max(1, quantidade - 1))} disabled={quantidade === 1}>-</button>
-                <span>{quantidade}</span>
-                <button onClick={() => setQuantidade(quantidade + 1)}>+</button>
+              </div>
+              <div className={Styles.thumbnails}>
+                {parseImagens(producto.imagem).map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`Vista ${index + 1}`}
+                    className={`${Styles.thumbnail} ${index === activeImageIndex ? Styles.activeThumbnail : ''}`}
+                    onClick={() => setActiveImageIndex(index)}
+                  />
+                ))}
               </div>
             </div>
 
-            <button className={Styles.addToCartButton} onClick={handleAddToCart}>Adicionar ao Carrinho</button>
+            <div className={Styles.productInfo}>
+              <h1 className={Styles.productTitle}>{producto.nome}</h1>
+              <p className={Styles.productPrice}>
+                R$ {Number(producto.preco).toFixed(2).replace('.', ',')}
+              </p>
+
+              <div className={Styles.productDescription}>
+                <h3>Descrição</h3>
+                <p>{producto.descricao}</p>
+              </div>
+
+              {renderOptions(producto.cor.split(','), selectedCor, setSelectedCor, 'cor')}
+              {renderOptions(producto.tamanho.split(','), selectedTamanho, setSelectedTamanho, 'tamanho')}
+
+              <div className={Styles.quantitySelector}>
+                <h4>Quantidade:</h4>
+                <div className={Styles.quantityControls}>
+                  <button onClick={() => setQuantidade(Math.max(1, quantidade - 1))} disabled={quantidade === 1}>-</button>
+                  <span>{quantidade}</span>
+                  <button onClick={() => setQuantidade(quantidade + 1)}>+</button>
+                </div>
+              </div>
+
+              <button className={Styles.addToCartButton} onClick={handleAddToCart}>Adicionar ao Carrinho</button>
+            </div>
           </div>
-        </div>
-      </div>
+        </PageContainer>
       <Footer />
+
     </div>
   );
 };

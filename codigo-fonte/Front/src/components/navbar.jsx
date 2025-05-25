@@ -112,7 +112,7 @@ function Navbar({ invisivel }) {
             <Link to="/" style={{ ...styles.link, fontSize }}>Home</Link>
             {logado && usuario?.posicao === 'ADMIN' && (
               <>
-                <Link to="/estoque" style={{ ...styles.link, fontSize }}>Estoque</Link>
+                <Link to="/estoque" style={{ ...styles.link, fontSize,  }}>Estoque</Link>
                 <Link to="/cadastro-produto" style={{ ...styles.link, fontSize }}>Cadastro</Link>
               </>
             )}
@@ -144,7 +144,6 @@ const styles = {
     backgroundColor: "var(--cor-secundaria)",
     padding: "0 2rem",
     marginTop: "3em",
-    fontFamily: 'Darker Grotesque'
   },
   quad1: {
     display: "flex",
@@ -160,9 +159,8 @@ const styles = {
     fontSize: "2.3rem",
     padding: "0 1rem",
     background: "none",
-    
-    
-    // color: "#fae0d2",
+    fontFamily: "Playfair Display",
+    color: "var(--cor-fonte-claro)",
   },
 };
 
