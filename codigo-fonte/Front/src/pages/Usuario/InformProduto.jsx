@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import Styles from './InformProduto.module.css';
 import api from '../../services/api';
 import Footer from '../../components/Footer';
-import Header from '../../components/Header';
+import Header from '../../components/header';
 import { useCarrinho } from '../../context/useCarrinho';
 import { useNavigate } from 'react-router-dom';
 

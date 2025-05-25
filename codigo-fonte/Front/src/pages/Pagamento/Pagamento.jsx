@@ -61,23 +61,30 @@ const Pagamento = () => {
 
   const handleContinuar = async () => {
     const { cep, rua, numero, complemento, bairro, cidade, estado } = endereco;
-    if (!cep || !rua || !numero || !bairro || !cidade || !estado) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
+
+    
+    // if (!cep || !rua || !numero || !bairro || !cidade || !estado) {
+    //   alert('Por favor, preencha todos os campos obrigatórios.');
+    //   return;
+    // }
+
     const enderecoCompleto =
       `${rua}, ${numero}${complemento ? ', ' + complemento : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
 
     console.log('Endereço completo:', enderecoCompleto);
 
     try {
-      if (!pedidoId) {
-        alert('Pedido não encontrado!');
-        return;
-      }
-      await api.put(`/pedidos/endereco/${pedidoId}`, {
-        enderecoEntrega: enderecoCompleto,
-      });
+      // TESTANDO
+      // if (!pedidoId) {
+      //   alert('Pedido não encontrado!');
+      //   return;
+      // }
+
+      // TESTANDO
+      // await api.put(`/pedidos/endereco/${pedidoId}`, {
+      //   enderecoEntrega: enderecoCompleto,
+      // });
+
       setEtapa(2);
     } catch (error) {
       console.error('Erro ao continuar para a próxima etapa:', error);
@@ -86,14 +93,18 @@ const Pagamento = () => {
 
   return (
     <Box sx={{ flexGrow: 1, minHeight: '80vh', p: 4, background: '#f8f8f8' }}>
-      <Paper elevation={3} sx={{ maxWidth: 900, mx: 'auto', p: 3, borderRadius: 3 }}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
+      <Paper elevation={3} sx={{ 
+        // maxWidth: 800, 
+        mx: 'auto', p: 3, borderRadius: 3 }} >
+
+        <Grid container spacing={4} >
+          <Grid item xs={12} md={6} sx={{maxWidth: 800, }}>
+
             <Typography variant="h5" fontWeight={700} gutterBottom>
               Endereço de Entrega
             </Typography>
+
             <Grid container spacing={2}>
-              <Grid item xs={12}>
                 <TextField
                   label="CEP"
                   name="cep"
@@ -103,8 +114,6 @@ const Pagamento = () => {
                   required
                   disabled={etapa !== 1}
                 />
-              </Grid>
-              <Grid item xs={12}>
                 <TextField
                   label="Rua"
                   name="rua"
@@ -114,8 +123,6 @@ const Pagamento = () => {
                   required
                   disabled={etapa !== 1}
                 />
-              </Grid>
-              <Grid item xs={4}>
                 <TextField
                   label="Número"
                   name="numero"
@@ -125,8 +132,6 @@ const Pagamento = () => {
                   required
                   disabled={etapa !== 1}
                 />
-              </Grid>
-              <Grid item xs={8}>
                 <TextField
                   label="Complemento"
                   name="complemento"
@@ -135,8 +140,6 @@ const Pagamento = () => {
                   fullWidth
                   disabled={etapa !== 1}
                 />
-              </Grid>
-              <Grid item xs={6}>
                 <TextField
                   label="Bairro"
                   name="bairro"
@@ -146,8 +149,6 @@ const Pagamento = () => {
                   required
                   disabled={etapa !== 1}
                 />
-              </Grid>
-              <Grid item xs={4}>
                 <TextField
                   label="Cidade"
                   name="cidade"
@@ -157,8 +158,6 @@ const Pagamento = () => {
                   required
                   disabled={etapa !== 1}
                 />
-              </Grid>
-              <Grid item xs={2}>
                 <TextField
                   label="UF"
                   name="estado"
@@ -169,8 +168,9 @@ const Pagamento = () => {
                   inputProps={{ maxLength: 2 }}
                   disabled={etapa !== 1}
                 />
-              </Grid>
+
             </Grid>
+
             {etapa === 1 && (
               <Button
                 variant="contained"
@@ -185,6 +185,7 @@ const Pagamento = () => {
           </Grid>
 
           {/* SEGUNDA SEÇÃO: PAGAMENTO */}
+          
           <Grid
             item
             xs={12}
@@ -194,10 +195,11 @@ const Pagamento = () => {
               alignItems: 'flex-start',
               justifyContent: 'center',
               width: '100%',
+              maxWidth: 800
             }}
           >
             {etapa === 2 ? (
-              <Box sx={{ width: '100%', maxWidth: 400 }}>
+              <Box sx={{ width: '100%'}}>
                 <FormControl component="fieldset" fullWidth sx={{ mb: 3 }}>
                   <FormLabel component="legend" sx={{ mb: 1 }}>
                     Método de Pagamento
@@ -222,7 +224,7 @@ const Pagamento = () => {
                     </Typography>
                     <PagamentoCartao
                       pedidoId={pedidoId}
-                      // valor={valorTotal}
+                    // valor={valorTotal}
                     />
                   </>
                 ) : (

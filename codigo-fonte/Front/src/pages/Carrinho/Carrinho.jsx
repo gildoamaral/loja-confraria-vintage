@@ -83,7 +83,7 @@ function Carrinho() {
               size="large"
               onClick={handleContinuar}
               sx={{
-                // px: 4,
+                // px: 8,
                 // py: 1.5,
                 fontWeight: 700,
                 fontSize: '0.9rem',
