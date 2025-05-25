@@ -11,43 +11,54 @@ const Conta = () => {
   const [error, setError] = useState(null);
   const [abaAtiva, setAbaAtiva] = useState("pedidos"); // 'info' ou 'pedidos'
 
+  // Estado para edição
+  const [editando, setEditando] = useState(false);
+  const [formDados, setFormDados] = useState({
+    nome: "",
+    sobrenome: "",
+    telefone: "",
+    email: "",
+    endereco: "",
+    dataNascimento: "",
+  });
+  const [salvando, setSalvando] = useState(false);
+  const [msgSucesso, setMsgSucesso] = useState("");
+  const [msgErro, setMsgErro] = useState("");
+
+  // Controle dos pedidos expandidos (array de ids)
+  const [pedidosExpandido, setPedidosExpandido] = useState([]);
+
+  const parseImagens = (imagemData) => {
+    if (!imagemData) return [];
+    try {
+      return Array.isArray(imagemData) ? imagemData : JSON.parse(imagemData);
+    } catch {
+      return [imagemData];
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
         const responseUsuario = await api.get('/usuarios/conta', { withCredentials: true });
-        setUsuario(responseUsuario.data);
+        console.log("Resposta usuário:", responseUsuario.data); // DEBUG: confira estrutura
 
-        // Dados reais de pedidos da API
+        const dadosUsuario = responseUsuario.data.usuario || responseUsuario.data;
+
+        setUsuario(dadosUsuario);
+        setFormDados({
+          nome: dadosUsuario.nome || "",
+          sobrenome: dadosUsuario.sobrenome || "",
+          telefone: dadosUsuario.telefone || "",
+          email: dadosUsuario.email || "",
+          endereco: dadosUsuario.endereco || "",
+          dataNascimento: dadosUsuario.dataNascimento
+            ? dadosUsuario.dataNascimento.split("T")[0]
+            : "",
+        });
+
         const responsePedidos = await api.get('/pedidos', { withCredentials: true });
         setPedidos(responsePedidos.data);
-
-        /*
-        // Dados simulados de pedidos (mock) - só para comparação
-        const pedidosMock = [
-          {
-            idCompra: 101,
-            produto: "Vestido Vintage",
-            descricaoProduto: "Vestido de festa vermelho - Tamanho M",
-            preco: 199.90,
-            data: "2025-04-01T14:30:00.000Z",
-            formaPagamento: "Cartão de crédito",
-            enderecoEntrega: "Rua Jasmim, 123 - Bairro Jardim Santa Genebra - Campinas",
-            enderecoCobranca: "Rua das Palmeiras, 456 - Centro"
-          },
-          {
-            idCompra: 102,
-            produto: "Body",
-            descricaoProduto: "Body de algodão - Tamanho P",
-            preco: 89.90,
-            data: "2025-03-15T10:15:00.000Z",
-            formaPagamento: "Pix",
-            enderecoEntrega: "Rua Jasmim, 123 - Bairro Jardim Santa Genebra - Campinas",
-            enderecoCobranca: "Rua das Palmeiras, 456 - Centro"
-          }
-        ];
-        setPedidos(pedidosMock);
-        */
-
         setError(null);
       } catch (error) {
         console.error("Erro ao buscar dados", error);
@@ -59,6 +70,42 @@ const Conta = () => {
 
     fetchData();
   }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormDados((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSalvar = async () => {
+    setSalvando(true);
+    setMsgErro("");
+    setMsgSucesso("");
+    try {
+      const response = await api.put("/usuarios/conta", formDados, { withCredentials: true });
+      const usuarioAtualizado = response.data.usuario || response.data;
+
+      setUsuario(usuarioAtualizado);
+      setMsgSucesso("Dados atualizados com sucesso!");
+      setEditando(false);
+    } catch (err) {
+      console.error("Erro ao atualizar dados:", err);
+      setMsgErro("Falha ao atualizar dados. Tente novamente.");
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  // Toggle para expandir/fechar pedido individual
+  const toggleExpandirPedido = (id) => {
+    setPedidosExpandido((prev) =>
+      prev.includes(id)
+        ? prev.filter((pid) => pid !== id)
+        : [...prev, id]
+    );
+  };
 
   if (loading) return <p>Carregando dados da conta...</p>;
   if (error) return <p>{error}</p>;
@@ -93,30 +140,136 @@ const Conta = () => {
           <div className={styles.formContainer}>
             <h2>Minhas informações</h2>
 
-            <div className={styles.inputGroup}>
-              <label>Nome completo:</label>
-              <p>{usuario?.nome} {usuario?.sobrenome || ""}</p>
-            </div>
+            {!editando ? (
+              <>
+                <div className={styles.inputGroup}>
+                  <label>Nome completo:</label>
+                  <p>{usuario?.nome} {usuario?.sobrenome || ""}</p>
+                </div>
 
-            <div className={styles.inputGroup}>
-              <label>Data de nascimento:</label>
-              <p>{usuario?.dataNascimento ? new Date(usuario.dataNascimento).toLocaleDateString() : "Não informada"}</p>
-            </div>
+                <div className={styles.inputGroup}>
+                  <label>Data de nascimento:</label>
+                  <p>
+                    {usuario?.dataNascimento
+                      ? new Date(usuario.dataNascimento.split("T")[0] + "T12:00:00").toLocaleDateString()
+                      : "Não informada"}
+                  </p>
+                </div>
 
-            <div className={styles.inputGroup}>
-              <label>Telefone:</label>
-              <p>{usuario?.telefone || "Não informado"}</p>
-            </div>
+                <div className={styles.inputGroup}>
+                  <label>Telefone:</label>
+                  <p>{usuario?.telefone || "Não informado"}</p>
+                </div>
 
-            <div className={styles.inputGroup}>
-              <label>Email:</label>
-              <p>{usuario?.email || "Email não informado"}</p>
-            </div>
+                <div className={styles.inputGroup}>
+                  <label>Email:</label>
+                  <p>{usuario?.email || "Email não informado"}</p>
+                </div>
 
-            <div className={styles.inputGroup}>
-              <label>Endereço:</label>
-              <p>{usuario?.endereco || "Não informado"}</p>
-            </div>
+                <div className={styles.inputGroup}>
+                  <label>Endereço:</label>
+                  <p>{usuario?.endereco || "Não informado"}</p>
+                </div>
+
+                <button className={styles.botaoEditar} onClick={() => setEditando(true)}>
+                  Editar
+                </button>
+              </>
+            ) : (
+              <>
+                <div className={styles.inputGroup}>
+                  <label>Nome:</label>
+                  <input
+                    type="text"
+                    name="nome"
+                    value={formDados.nome}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label>Sobrenome:</label>
+                  <input
+                    type="text"
+                    name="sobrenome"
+                    value={formDados.sobrenome}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label>Data de nascimento:</label>
+                  <input
+                    type="date"
+                    name="dataNascimento"
+                    value={formDados.dataNascimento}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label>Telefone:</label>
+                  <input
+                    type="text"
+                    name="telefone"
+                    value={formDados.telefone}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label>Email:</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formDados.email}
+                    onChange={handleChange}
+                    disabled
+                  />
+                </div>
+
+                <div className={styles.inputGroup}>
+                  <label>Endereço:</label>
+                  <input
+                    type="text"
+                    name="endereco"
+                    value={formDados.endereco}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {msgErro && <p className={styles.erroMsg}>{msgErro}</p>}
+                {msgSucesso && <p className={styles.sucessoMsg}>{msgSucesso}</p>}
+
+                <button
+                  className={styles.botaoSalvar}
+                  onClick={handleSalvar}
+                  disabled={salvando}
+                >
+                  {salvando ? "Salvando..." : "Salvar"}
+                </button>
+                <button
+                  className={styles.botaoCancelar}
+                  onClick={() => {
+                    setEditando(false);
+                    setFormDados({
+                      nome: usuario.nome || "",
+                      sobrenome: usuario.sobrenome || "",
+                      telefone: usuario.telefone || "",
+                      email: usuario.email || "",
+                      endereco: usuario.endereco || "",
+                      dataNascimento: usuario.dataNascimento
+                        ? usuario.dataNascimento.split("T")[0]
+                        : "",
+                    });
+                    setMsgErro("");
+                    setMsgSucesso("");
+                  }}
+                >
+                  Cancelar
+                </button>
+              </>
+            )}
           </div>
         )}
 
@@ -126,25 +279,82 @@ const Conta = () => {
             {pedidos.length === 0 ? (
               <p>Você ainda não realizou nenhum pedido.</p>
             ) : (
-              pedidos.map((pedido) => (
-                <div key={pedido.id} className={styles.pedidoCard}>
-                  <h3>Pedido #{pedido.id}</h3>
-                  <p><strong>Status:</strong> {pedido.status}</p>
-                  <p><strong>Data:</strong> {new Date(pedido.createdAt).toLocaleDateString()}</p>
-                  <p><strong>Endereço de entrega:</strong> {pedido.enderecoEntrega || 'Não informado'}</p>
+              pedidos.map((pedido) => {
+                const totalPedido = pedido.itens?.reduce((acc, item) => {
+                  const precoUnitario = item.produto.preco || 0;
+                  return acc + precoUnitario * item.quantidade;
+                }, 0) || 0;
 
-                  <div>
-                    <strong>Itens:</strong>
-                    <ul>
-                      {pedido.itens?.map(item => (
-                        <li key={item.id}>
-                          Produto ID: {item.produtoId} - Quantidade: {item.quantidade}
-                        </li>
-                      ))}
-                    </ul>
+                const estaExpandido = pedidosExpandido.includes(pedido.id);
+
+                return (
+                  <div key={pedido.id} className={styles.pedidoCard}>
+                    <h3
+  style={{ cursor: "pointer", userSelect: "none" }}
+  onClick={() => toggleExpandirPedido(pedido.id)}
+>
+  Pedido #{pedido.id}{" "}
+  <span style={{
+    display: "inline-block",
+    transform: estaExpandido ? "rotate(90deg)" : "rotate(0deg)",
+    transition: "transform 0.2s ease",
+    fontWeight: "bold",
+    marginLeft: "5px",
+  }}>
+    &gt;
+  </span>
+</h3>
+
+
+                    {estaExpandido && (
+                      <>
+                        <p><strong>Status do pedido:</strong> {pedido.status}</p>
+                        <p><strong>Status do pagamento:</strong> {pedido.pagamento?.status || 'Não informado'}</p>
+                        <p><strong>Método de pagamento:</strong> {pedido.pagamento?.metodo || 'Não informado'}</p>
+                        <p>
+                          <strong>Data do pedido:</strong>{" "}
+                          {pedido?.criadoEm
+                            ? new Date(pedido.criadoEm.split("T")[0] + "T12:00:00").toLocaleDateString()
+                            : "Data não informada"}
+                        </p>
+                        <p><strong>Endereço de entrega:</strong> {pedido.enderecoEntrega || 'Não informado'}</p>
+
+                        <div>
+                          <strong>Itens:</strong>
+                          <ul>
+                            {pedido.itens?.map(item => {
+                              const produtoImagens = parseImagens(item.produto.imagem);
+                              const imagem = produtoImagens[0] || "/placeholder.png";
+                              const precoUnitario = item.produto.preco || 0;
+                              const subtotal = precoUnitario * item.quantidade;
+
+                              return (
+                                <li key={item.id} className={styles.itemPedido}>
+                                  <img
+                                    src={imagem}
+                                    alt={item.produto.nome}
+                                    className={styles.imagemProduto}
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
+                                  <div>
+                                    <strong>{item.produto.nome}</strong><br />
+                                    Tamanho: {item.produto.tamanho || "Não informado"}<br />
+                                    Cor: {item.produto.cor || "Não informada"}<br />
+                                    Quantidade: {item.quantidade}<br />
+                                    Preço unitário: R$ {precoUnitario.toFixed(2)}<br />
+                                    Subtotal: R$ {subtotal.toFixed(2)}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                          <p><strong>Total do pedido:</strong> R$ {totalPedido.toFixed(2)}</p>
+                        </div>
+                      </>
+                    )}
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         )}

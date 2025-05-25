@@ -178,10 +178,16 @@ router.get('/', auth, async (req, res) => {
   const usuarioId = req.user.userId;
   try {
     const pedidos = await prisma.pedidos.findMany({
-      where: { usuarioId },
-      include: { itens: true },  // traz os itens de cada pedido
-      orderBy: { criadoEm: 'desc' }  // pedidos mais recentes primeiro
-    });
+  where: { usuarioId },
+  include: {
+    itens: {
+      include: {
+        produto: true, // inclui todos os campos do produto, incluindo preco e imagem
+      }
+    }
+  },
+  orderBy: { criadoEm: 'desc' }
+});
     res.json(pedidos);
   } catch (err) {
     console.error(err);

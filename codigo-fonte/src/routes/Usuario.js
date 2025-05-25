@@ -1,8 +1,8 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken"); // Certifique-se de importar jwt para criar o token
-const auth = require('../middlewares/Auth'); // <-- Importa o middleware de autenticação
+const jwt = require("jsonwebtoken");
+const auth = require('../middlewares/Auth');
 
 require("dotenv").config();
 
@@ -18,18 +18,15 @@ router.post('/login', async (req, res) => {
 
     if (!usuario) return res.status(400).json({ message: "Usuário não encontrado" });
 
-    // Verifica se a senha está correta
     const isMatch = await bcrypt.compare(senha, usuario.senha);
     if (!isMatch) return res.status(400).json({ message: "Senha inválida" });
 
-    // Gera o token JWT
     const token = jwt.sign(
-      { id: usuario.id, nome: usuario.nome }, // Aqui estamos incluindo o id do usuário
+      { id: usuario.id, nome: usuario.nome },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' } // Define o tempo de expiração do token
+      { expiresIn: '1h' }
     );
 
-    // Envia o token via cookie
     res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
     res.json({ message: 'Login bem-sucedido', usuario });
@@ -69,15 +66,12 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ message: 'Data de nascimento inválida' });
   }
 
-  // Converte a dataNascimento para o formato ISO-8601
   const dataNascimentoISO = new Date(dataNascimento).toISOString();
 
-  // Verifica se o e-mail enviado já foi cadastrado anteriormente
   const existingUser = await prisma.usuarios.findUnique({ where: { email } });
   if (existingUser) return res.status(400).json({ message: "E-mail já cadastrado" });
 
   try {
-    // Encripta a senha
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(senha, salt);
 
@@ -85,7 +79,7 @@ router.post('/', async (req, res) => {
       data: {
         nome,
         sobrenome,
-        dataNascimento: dataNascimentoISO, // Usando a data no formato correto
+        dataNascimento: dataNascimentoISO,
         endereco,
         email,
         telefone,
@@ -102,37 +96,29 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Rota PUT para atualizar um usuário existente
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
+// Rota PUT para atualizar dados do usuário logado
+router.put('/conta', auth, async (req, res) => {
+  const userId = req.user.userId;
   const { nome, sobrenome, dataNascimento, endereco, email, telefone, senha, posicao } = req.body;
-
-  // Converte o id para inteiro
-  const parsedId = parseInt(id, 10);
-  if (isNaN(parsedId)) {
-    return res.status(400).json({ message: "ID inválido" });
-  }
 
   if (dataNascimento && isNaN(Date.parse(dataNascimento))) {
     return res.status(400).json({ message: 'Data de nascimento inválida' });
   }
 
-  // Converte a dataNascimento para o formato ISO-8601, caso fornecida
   const dataNascimentoISO = dataNascimento ? new Date(dataNascimento).toISOString() : undefined;
 
   try {
-    const usuarioExistente = await prisma.usuarios.findUnique({ where: { id: parsedId } });
+    const usuarioExistente = await prisma.usuarios.findUnique({ where: { id: userId } });
     if (!usuarioExistente) return res.status(404).json({ message: "Usuário não encontrado" });
 
-    // Encripta a senha se ela foi fornecida
     const hashedPassword = senha ? await bcrypt.hash(senha, 12) : usuarioExistente.senha;
 
     const usuarioAtualizado = await prisma.usuarios.update({
-      where: { id: parsedId },
+      where: { id: userId },
       data: {
         nome,
         sobrenome,
-        dataNascimento: dataNascimentoISO, // Usando a data no formato correto
+        dataNascimento: dataNascimentoISO,
         endereco,
         email,
         telefone,
@@ -141,7 +127,6 @@ router.put('/:id', async (req, res) => {
       },
     });
 
-    console.log(`Usuário atualizado: ${nome}, ${email}`);
     res.json({ message: 'Usuário atualizado com sucesso!', usuario: usuarioAtualizado });
   } catch (err) {
     console.error('Erro ao atualizar usuário:', err);
@@ -153,7 +138,6 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
-  // Converte o id para inteiro
   const parsedId = parseInt(id, 10);
   if (isNaN(parsedId)) {
     return res.status(400).json({ message: "ID inválido" });
