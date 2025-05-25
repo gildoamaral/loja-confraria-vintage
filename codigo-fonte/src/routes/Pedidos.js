@@ -173,5 +173,21 @@ router.get('/carrinho', auth, async (req, res) => {
   }
 });
 
+// Buscar todos os pedidos do usuário autenticado
+router.get('/', auth, async (req, res) => {
+  const usuarioId = req.user.userId;
+  try {
+    const pedidos = await prisma.pedidos.findMany({
+      where: { usuarioId },
+      include: { itens: true },  // traz os itens de cada pedido
+      orderBy: { criadoEm: 'desc' }  // pedidos mais recentes primeiro
+    });
+    res.json(pedidos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar pedidos do usuário' });
+  }
+});
+
 
 module.exports = router;

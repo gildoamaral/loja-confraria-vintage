@@ -17,7 +17,12 @@ const Conta = () => {
         const responseUsuario = await api.get('/usuarios/conta', { withCredentials: true });
         setUsuario(responseUsuario.data);
 
-        // Dados simulados de pedidos
+        // Dados reais de pedidos da API
+        const responsePedidos = await api.get('/pedidos', { withCredentials: true });
+        setPedidos(responsePedidos.data);
+
+        /*
+        // Dados simulados de pedidos (mock) - só para comparação
         const pedidosMock = [
           {
             idCompra: 101,
@@ -40,9 +45,10 @@ const Conta = () => {
             enderecoCobranca: "Rua das Palmeiras, 456 - Centro"
           }
         ];
-
         setPedidos(pedidosMock);
+        */
 
+        setError(null);
       } catch (error) {
         console.error("Erro ao buscar dados", error);
         setError("Erro ao carregar dados da conta.");
@@ -62,20 +68,20 @@ const Conta = () => {
       <Header />
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1>Olá, {usuario?.nome || "Usuário"}!</h1>
+          <h1>Olá, <span className={styles.highlight}>{usuario?.nome || "Usuário"}</span>!</h1>
           <h3>Gerencie suas informações e acompanhe seus pedidos</h3>
         </div>
 
         {/* Abas de navegação */}
         <div className={styles.tabs}>
           <button
-            className={abaAtiva === "info" ? styles.activeTab : ""}
+            className={`${styles.tab} ${abaAtiva === "info" ? styles.activeTab : ""}`}
             onClick={() => setAbaAtiva("info")}
           >
             Minhas Informações
           </button>
           <button
-            className={abaAtiva === "pedidos" ? styles.activeTab : ""}
+            className={`${styles.tab} ${abaAtiva === "pedidos" ? styles.activeTab : ""}`}
             onClick={() => setAbaAtiva("pedidos")}
           >
             Meus Pedidos
@@ -121,15 +127,22 @@ const Conta = () => {
               <p>Você ainda não realizou nenhum pedido.</p>
             ) : (
               pedidos.map((pedido) => (
-                <div key={pedido.idCompra} className={styles.pedidoCard}>
-                  <h3>Pedido #{pedido.idCompra}</h3>
-                  <p><strong>Produto:</strong> {pedido.produto}</p>
-                  <p><strong>Descrição:</strong> {pedido.descricaoProduto}</p>
-                  <p><strong>Preço:</strong> R$ {pedido.preco.toFixed(2)}</p>
-                  <p><strong>Data:</strong> {new Date(pedido.data).toLocaleDateString()}</p>
-                  <p><strong>Forma de pagamento:</strong> {pedido.formaPagamento}</p>
-                  <p><strong>Endereço de entrega:</strong> {pedido.enderecoEntrega}</p>
-                  <p><strong>Endereço de cobrança:</strong> {pedido.enderecoCobranca}</p>
+                <div key={pedido.id} className={styles.pedidoCard}>
+                  <h3>Pedido #{pedido.id}</h3>
+                  <p><strong>Status:</strong> {pedido.status}</p>
+                  <p><strong>Data:</strong> {new Date(pedido.createdAt).toLocaleDateString()}</p>
+                  <p><strong>Endereço de entrega:</strong> {pedido.enderecoEntrega || 'Não informado'}</p>
+
+                  <div>
+                    <strong>Itens:</strong>
+                    <ul>
+                      {pedido.itens?.map(item => (
+                        <li key={item.id}>
+                          Produto ID: {item.produtoId} - Quantidade: {item.quantidade}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               ))
             )}
