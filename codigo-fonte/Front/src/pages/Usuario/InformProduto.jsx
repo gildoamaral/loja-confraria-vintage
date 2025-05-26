@@ -108,7 +108,6 @@ const InformProduto = () => {
             </p>
 
             <div className={Styles.productDescription}>
-              <h3>Descrição</h3>
               <p>{producto.descricao}</p>
             </div>
 
