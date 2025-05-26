@@ -55,9 +55,9 @@ function Navbar({ invisivel }) {
 
   const handleLogout = async () => {
     try {
-      navigate("/login");
       await api.post("/usuarios/logout", {}, { withCredentials: true });
       setLogado(false);
+      navigate("/login");
     } catch (error) {
       console.error("Erro ao deslogar:", error);
     }
