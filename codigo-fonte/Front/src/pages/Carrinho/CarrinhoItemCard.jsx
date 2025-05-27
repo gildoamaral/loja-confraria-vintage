@@ -17,7 +17,7 @@ const CarrinhoItemCard = ({
   removerDoCarrinho
 }) => (
   <Grid>
-    <Card sx={{ display: 'flex', alignItems: 'center', p: 2, backgroundColor: '#f3f3f3' }}>
+    <Card sx={{ display: 'flex', alignItems: 'center', p: 2, backgroundColor: '#f3f3f3'}}>
       <CardMedia
         component="img"
         sx={{ width: 120, height: 120, objectFit: 'contain', borderRadius: 2, mr: 2 }}
@@ -31,16 +31,16 @@ const CarrinhoItemCard = ({
         </Typography>
         <Stack direction="row" spacing={2} mb={1}>
           <Typography variant="body2">
-            <b>Categoria:</b> {item.categoria}
+            <b>Categoria:</b> {item.produto?.categoria}
           </Typography>
           <Typography variant="body2">
-            <b>Cor:</b> {item.selectedCor || item.cor}
+            <b>Cor:</b> {item.produto?.selectedCor || item.produto?.cor}
           </Typography>
           <Typography variant="body2">
-            <b>Tamanho:</b> {item.selectedTamanho || item.tamanho}
+            <b>Tamanho:</b> {item.produto?.selectedTamanho || item.produto?.tamanho}
           </Typography>
           <Typography variant="body2">
-            <b>Ocasião:</b> {item.ocasiao}
+            <b>Ocasião:</b> {item.produto?.ocasiao}
           </Typography>
         </Stack>
         <Stack direction="row" spacing={2} alignItems="center">
