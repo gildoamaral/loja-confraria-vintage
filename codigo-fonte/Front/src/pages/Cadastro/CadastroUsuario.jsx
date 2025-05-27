@@ -93,7 +93,7 @@ const CadastroUsuario = () => {
                             {isSubmitting ? 'Enviando...' : 'Cadastrar'}
                         </button>
 
-                        <p>Já tem uma conta? <a href="/login" className={Styles.signupLink}>Faça login</a></p>
+                        <p className={Styles.signupMessage}>Já tem uma conta? <a href="/login" className={Styles.signupLink}>Faça login</a></p>
                     </form>
                     {message && <p style={{ color: message.includes('sucesso') ? 'green' : 'red' }}>{message}</p>}
                 </div>
