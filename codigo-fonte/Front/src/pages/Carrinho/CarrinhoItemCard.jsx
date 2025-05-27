@@ -21,13 +21,13 @@ const CarrinhoItemCard = ({
       <CardMedia
         component="img"
         sx={{ width: 120, height: 120, objectFit: 'contain', borderRadius: 2, mr: 2 }}
-        image={parseImagens(item.imagem)}
-        alt={item.nome}
+        image={parseImagens(item.produto?.imagem)[0]}
+        alt={item.produto?.nome}
       />
       <CardContent sx={{ flex: 1 }}>
-        <Typography variant="h6" fontWeight={600}>{item.nome}</Typography>
+        <Typography variant="h6" fontWeight={600}>{item.produto?.nome}</Typography>
         <Typography variant="body2" color="text.secondary" mb={1}>
-          {item.descricao}
+          {item.produto?.descricao}
         </Typography>
         <Stack direction="row" spacing={2} mb={1}>
           <Typography variant="body2">
@@ -45,17 +45,17 @@ const CarrinhoItemCard = ({
         </Stack>
         <Stack direction="row" spacing={2} alignItems="center">
           <Typography variant="body1" fontWeight={500}>
-            {item.precoPromocional ? (
+            {item.produto?.precoPromocional ? (
               <>
                 <span style={{ textDecoration: 'line-through', color: '#888', marginRight: 8 }}>
-                  R$ {item.preco.toFixed(2)}
+                  R$ {(item.produto?.preco ?? 0).toFixed(2)}
                 </span>
                 <span style={{ color: '#d32f2f' }}>
-                  R$ {item.precoPromocional.toFixed(2)}
+                  R$ {(item.produto?.precoPromocional ?? 0).toFixed(2)}
                 </span>
               </>
             ) : (
-              <>R$ {item.preco.toFixed(2)}</>
+              <>R$ {(item.produto?.preco ?? 0).toFixed(2)}</>
             )}
           </Typography>
           <TextField
@@ -64,9 +64,10 @@ const CarrinhoItemCard = ({
             size="small"
             value={item.quantidade}
             inputProps={{ min: 1, style: { width: 60 } }}
-            onChange={(e) =>
-              atualizarQuantidade(item.id, parseInt(e.target.value))
-            }
+            onChange={(e) => {
+              const value = Math.max(1, parseInt(e.target.value) || 1);
+              atualizarQuantidade(item.id, value);
+            }}
             sx={{ ml: 2 }}
           />
           <IconButton

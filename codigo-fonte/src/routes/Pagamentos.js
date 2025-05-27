@@ -53,8 +53,8 @@ router.post('/criar-pix', (req, res, next) => {
 
 router.post('/criar-cartao', (req, res) => {
 
-  console.log('REQUEST');
-  console.log(req.body);
+  // console.log('REQUEST');
+  // console.log(req.body);
 
   const body = {
     transaction_amount: req.body.transaction_amount,
@@ -72,8 +72,8 @@ router.post('/criar-cartao', (req, res) => {
     }
   }
 
-  console.log('BODY');
-  console.log(body);
+  // console.log('BODY');
+  // console.log(body);
 
   payment.create({
     body,
@@ -84,24 +84,40 @@ router.post('/criar-cartao', (req, res) => {
     .then(async (result) => {
       console.log(result);
 
-
       try {
         // Salva no banco de dados
-      await prisma.pagamentos.create({
-        data: {
-          pedidoId: req.body.pedidoId, // Certifique-se de enviar o pedidoId do front
-          status: result.status === 'approved' ? 'APROVADO' : 'PENDENTE',
-          metodo: 'CARTAO',
-          valor: result.transaction_amount,
+        const pagamento = await prisma.pagamentos.create({
+          data: {
+            pedidoId: req.body.pedidoId,
+            status: result.status === 'approved' ? 'APROVADO' : 'PENDENTE',
+            metodo: 'CARTAO',
+            valor: result.transaction_amount,
+          }
+        });
+
+        // Se o pagamento foi aprovado, atualiza o status do pedido para PAGO
+        if (result.status === 'approved') {
+          await prisma.pedidos.update({
+            where: { id: req.body.pedidoId },
+            data: { status: 'PAGO' }
+          });
+        } else {
+          // Se não aprovado, pode deixar como AGUARDANDO_PAGAMENTO ou PENDENTE
+          await prisma.pedidos.update({
+            where: { id: req.body.pedidoId },
+            data: { status: 'AGUARDANDO_PAGAMENTO' }
+          });
         }
+
+
+        console.log('Pagamento salvo no banco:', pagamento);
+
         
-      });
+
       } catch (error) {
         console.log('ERRO AO SALVAR NO BANCO: ', error);
         return;
-
       }
-      
 
       res.status(201).json("sucesso!"); // <-- agora retorna pro front
     })

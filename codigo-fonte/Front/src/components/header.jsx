@@ -3,11 +3,11 @@ import Logo from './Logo'
 import Navbar from './navbar'
 
 
-const Header = () => {
+const Header = ({ invisivel }) => {
   return (
     <header style={styles.header}>
       <Logo />
-      <Navbar />
+      <Navbar invisivel={invisivel}/>
     </header>
   )
 }

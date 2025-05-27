@@ -162,14 +162,36 @@ router.get('/carrinho', auth, async (req, res) => {
         usuarioId,
         status: 'CARRINHO',
       },
-      include: { itens: true }, // opcional: traz os itens do pedido também
+      include: {
+        itens: {
+          include: { produto: true }
+        }
+      }
     });
     if (!pedido) {
       return res.status(404).json({ message: 'Nenhum pedido em andamento encontrado.' });
     }
+    // console.log('Pedido encontrado:', pedido);
+
+
     res.json(pedido);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao buscar pedido do carrinho' });
+  }
+});
+
+// Atualizar quantidade de um item do pedido
+router.put('/item/:id', async (req, res) => {
+  const { id } = req.params;
+  const { quantidade } = req.body;
+  try {
+    const item = await prisma.itemPedido.update({
+      where: { id: parseInt(id) },
+      data: { quantidade },
+    });
+    res.json(item);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao atualizar quantidade do item' });
   }
 });
 

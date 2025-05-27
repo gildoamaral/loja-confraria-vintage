@@ -5,6 +5,7 @@ const Usuario = require('./src/routes/Usuario'); // Importa as rotas de usuário
 const Produtos = require('./src/routes/Produtos'); // Importa as rotas de produtos
 const Pagamentos = require('./src/routes/Pagamentos');
 const Pedidos = require('./src/routes/Pedidos');
+const Check = require('./src/routes/Check'); // Importa as rotas de verificação
 const Login = require('./src/routes/Login')
 const auth = require('./src/middlewares/Auth'); // Importa o middleware de autenticação
 const authAdmin = require('./src/middlewares/AuthAdmin'); // Importa o middleware de autenticação de administrador
@@ -40,6 +41,7 @@ app.use('/produtos', Produtos);
 app.use('/pagamentos', auth, Pagamentos);
 app.post('/login', Login)
 app.use('/pedidos', Pedidos);
+app.use('/auth', Check);
 
 // ROTAS PRIVADAS
 //  //  Área de usuário
