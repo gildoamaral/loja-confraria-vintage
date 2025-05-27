@@ -180,6 +180,7 @@ router.get('/carrinho', auth, async (req, res) => {
   }
 });
 
+
 // Atualizar quantidade de um item do pedido
 router.put('/item/:id', async (req, res) => {
   const { id } = req.params;
@@ -194,6 +195,29 @@ router.put('/item/:id', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao atualizar quantidade do item' });
   }
 });
+
+// Buscar todos os pedidos do usuário autenticado
+router.get('/', auth, async (req, res) => {
+  const usuarioId = req.user.userId;
+  try {
+    const pedidos = await prisma.pedidos.findMany({
+  where: { usuarioId },
+  include: {
+    itens: {
+      include: {
+        produto: true, // inclui todos os campos do produto, incluindo preco e imagem
+      }
+    }
+  },
+  orderBy: { criadoEm: 'desc' }
+});
+    res.json(pedidos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar pedidos do usuário' });
+  }
+});
+
 
 
 module.exports = router;
