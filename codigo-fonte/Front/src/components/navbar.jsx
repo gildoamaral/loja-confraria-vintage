@@ -143,7 +143,16 @@ function Navbar({ invisivel }) {
           {logado ? (
             <>
               <Link to="/conta" style={{ ...styles.link, fontSize }}>Conta</Link>
-              <Link to="/login" onClick={handleLogout} style={{ ...styles.link, fontSize }}>Logout</Link>
+              <Link
+                  to="/login"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLogout(); 
+                  }}
+                  style={{ ...styles.link, fontSize }}
+                >
+                  Logout
+                </Link>
             </>
           ) : (
             <Link to="/login" style={{ ...styles.link, fontSize }}>Login</Link>
