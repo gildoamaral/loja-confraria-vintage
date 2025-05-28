@@ -8,7 +8,10 @@ const auth = require('../middlewares/Auth'); // <-- Importa o middleware de aute
 router.post('/criar', auth, async (req, res) => {
   const usuarioId = req.user.userId; // Obtém o ID do usuário do token JWT
   const { produtoId, quantidade } = req.body;
-  console.log('Dados recebidos:', req.body);
+
+  const usuario = await prisma.usuarios.findUnique({
+  where: { id: usuarioId }
+});
 
   try {
     // Verifica se o usuário já tem pedido com status CARRINHO
@@ -25,6 +28,7 @@ router.post('/criar', auth, async (req, res) => {
         data: {
           usuarioId,
           status: 'CARRINHO',
+          enderecoEntrega: usuario.endereco,
         },
       });
     }

@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const InformProduto = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const InformProduto = () => {
   const [selectedCor, setSelectedCor] = useState('');
   const [quantidade, setQuantidade] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate('/carrinho');
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const InformProduto = () => {
     fetchProducto();
   }, [id]);
 
-  
+
 
   const parseImagens = (imagemData) => {
     if (!imagemData) return [];
@@ -49,19 +51,8 @@ const InformProduto = () => {
       return;
     }
 
-    // Verifica autenticação antes de adicionar ao carrinho
-    try {
-      await api.get('/auth/check');
-      // Se não der erro, está autenticado
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        alert('Faça login para adicionar ao carrinho.');
-        navigate('/login');
-        return;
-      }
-      alert('Erro ao verificar autenticação.');
-      return;
-    }
+    setLoading(true); // Inicia o carregamento
+
 
     const productToAdd = {
       produtoId: producto.id,
@@ -72,13 +63,56 @@ const InformProduto = () => {
 
     try {
       await api.post('/pedidos/criar', productToAdd);
-      console.log('Produto sai da pagina de InformProduto:', productToAdd);
-
       alert('Produto adicionado ao carrinho com sucesso!');
-      navigate('/carrinho');
+
     } catch (error) {
+       if (error.response && error.response.status === 401) {
+        console.error('Erro ao adicionar produto ao carrinho:', error);
+        alert('Faça login para adicionar ao carrinho.');
+        setLoading(false);
+        navigate('/login');
+        return;
+      }
+
       alert('Erro ao adicionar produto ao carrinho');
       console.error('Erro ao adicionar produto ao carrinho:', error);
+    } finally {
+      setLoading(false); // Finaliza o carregamento
+    }
+
+  }
+
+  const handleBuy = async () => {
+    if (!selectedTamanho || !selectedCor) {
+      alert('Por favor selecione o tamanho e a cor');
+      return;
+    }
+
+    setLoading(true); // Inicia o carregamento
+
+    const productToAdd = {
+      produtoId: producto.id,
+      quantidade,
+      tamanho: selectedTamanho,
+      cor: selectedCor,
+    };
+
+    try {
+      await api.post('/pedidos/criar', productToAdd);
+      navigate('/carrinho');
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error('Erro ao adicionar produto ao carrinho:', error);
+        alert('Faça login para adicionar ao carrinho.');
+        setLoading(false);
+        navigate('/login');
+        return;
+      }
+
+      alert('Erro ao adicionar produto ao carrinho');
+      console.error('Erro ao adicionar produto ao carrinho:', error);
+    } finally {
+      setLoading(false); // Finaliza o carregamento
     }
   };
 
@@ -161,8 +195,20 @@ const InformProduto = () => {
                 <button onClick={() => setQuantidade(quantidade + 1)}>+</button>
               </div>
             </div>
+            <div className={Styles.addPayButtons}>
+              <button className={Styles.addToCartButton} onClick={handleBuy} disabled={loading}>
+                Comprar
+              </button>
 
-            <button className={Styles.addToCartButton} onClick={handleAddToCart}>Adicionar ao Carrinho</button>
+              <button className={Styles.payButton} onClick={handleAddToCart} disabled={loading}>
+                Adicionar ao Carrinho
+              </button>
+            </div>
+            {loading && (
+              <div style={{ marginTop: 8 }}>
+                <LinearProgress color="success" />
+              </div>
+            )}
           </div>
         </div>
       </PageContainer>

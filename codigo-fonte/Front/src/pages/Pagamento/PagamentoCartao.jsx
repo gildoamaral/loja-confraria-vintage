@@ -20,8 +20,13 @@ const PagamentoCartao = (props) => {
       return;
     }
 
+    const valorSeguro = Number(props.valor);
+    const amount = (!isNaN(valorSeguro) && valorSeguro > 0)
+      ? valorSeguro.toFixed(2)
+      : "0.01";
+
     const cardForm = mp.cardForm({
-      amount: "1.5",
+      amount: amount,
       iframe: true,
       form: {
         id: "form-checkout",
@@ -156,19 +161,16 @@ const PagamentoCartao = (props) => {
             marginBottom: 4,
             alignSelf: 'center',
           }}
-          maxWidth='460px'
+          maxWidth='400px'
         >
           <Box
             className={styles.translucentEffect}
             sx={{
-              // marginBottom: 4,
-              // gap: 2,
-              bgcolor: 'white',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
               p: 3,
-              width: '100%',
+              width: 'auto',
               borderRadius: "20px",
               border: '1px solid',
               borderColor: 'divider',
