@@ -155,6 +155,8 @@ const HomeProdutos = () => {
   return (
     <div>
       <Header />
+
+
       <h1>Produtos cadastrados</h1>
       <div className={Styles.listcard}>
         {produtos.map(produto => (
@@ -288,6 +290,9 @@ const HomeProdutos = () => {
           </div>
         ))}
       </div>
+
+
+
       <Footer />
     </div>
   );

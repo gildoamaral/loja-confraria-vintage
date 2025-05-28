@@ -51,65 +51,121 @@ router.post('/criar-pix', (req, res, next) => {
 
 });
 
-router.post('/criar-cartao', (req, res) => {
+router.post('/criar-cartao', async (req, res) => {
+  const { transaction_amount, pedidoId, token, description, installments, payment_method_id, issuer_id, payer } = req.body;
 
   console.log('REQUEST');
   console.log(req.body);
 
-  const body = {
-    transaction_amount: req.body.transaction_amount,
-    token: req.body.token,
-    description: req.body.description,
-    installments: req.body.installments,
-    payment_method_id: req.body.payment_method_id,
-    issuer_id: req.body.issuer_id,
-    payer: {
-      email: req.body.payer.email,
-      identification: {
-        type: req.body.payer.identification.type,
-        number: req.body.payer.identification.number
-      }
-    }
-  }
-
-  console.log('BODY');
-  console.log(body);
-
-  payment.create({
-    body,
-    requestOptions: {
-      idempotencyKey: Date.now().toString()
-    }
-  })
-    .then(async (result) => {
-      console.log(result);
-
-
-      try {
-        // Salva no banco de dados
-      await prisma.pagamentos.create({
-        data: {
-          pedidoId: req.body.pedidoId, // Certifique-se de enviar o pedidoId do front
-          status: result.status === 'approved' ? 'APROVADO' : 'PENDENTE',
-          metodo: 'CARTAO',
-          valor: result.transaction_amount,
+  try {
+    // Busca o pedido e seus itens
+    const pedido = await prisma.pedidos.findUnique({
+      where: { id: pedidoId },
+      include: {
+        itens: {
+          include: { produto: true }
         }
-        
-      });
-      } catch (error) {
-        console.log('ERRO AO SALVAR NO BANCO: ', error);
-        return;
-
       }
-      
-
-      res.status(201).json("sucesso!"); // <-- agora retorna pro front
-    })
-    .catch((error) => {
-      console.log('ERRO');
-      console.log(error);
-      res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error }); // <-- envia erro ao frontend
     });
+
+    console.log('Pedido encontrado:', pedido);
+
+    if (!pedido || !pedido.itens.length) {
+      return res.status(400).json({ error: 'Pedido não encontrado ou sem itens.' });
+    }
+
+    // Soma o valor total do pedido (considerando preço promocional se houver)
+    const valorTotal = pedido.itens.reduce((total, item) => {
+      const preco = item.produto.precoPromocional ?? item.produto.preco;
+      return total + preco * item.quantidade;
+    }, 0);
+
+    console.log('Valor total do pedido:', valorTotal);
+
+    //     const body = {
+    //   transaction_amount: req.body.transaction_amount,
+    //   token: req.body.token,
+    //   description: req.body.description,
+    //   installments: req.body.installments,
+    //   payment_method_id: req.body.payment_method_id,
+    //   issuer_id: req.body.issuer_id,
+    //   payer: {
+    //     email: req.body.payer.email,
+    //     identification: {
+    //       type: req.body.payer.identification.type,
+    //       number: req.body.payer.identification.number
+    //     }
+    //   }
+    // }
+
+    const body = {
+      transaction_amount: Number(valorTotal.toFixed(2)),
+      token,
+      description,
+      installments,
+      payment_method_id,
+      issuer_id,
+      payer,
+    };
+
+    console.log('Body do pagamento:', body);
+    
+
+    payment.create({
+      body,
+      requestOptions: {
+        idempotencyKey: Date.now().toString()
+      }
+    })
+      .then(async (result) => {
+        console.log(result);
+
+        try {
+          // Salva no banco de dados
+          const pagamento = await prisma.pagamentos.create({
+            data: {
+              pedidoId: req.body.pedidoId,
+              status: result.status === 'approved' ? 'APROVADO' : 'PENDENTE',
+              metodo: 'CARTAO',
+              valor: result.transaction_amount,
+            }
+          });
+
+          // Se o pagamento foi aprovado, atualiza o status do pedido para PAGO
+          if (result.status === 'approved') {
+            await prisma.pedidos.update({
+              where: { id: req.body.pedidoId },
+              data: { status: 'PAGO' }
+            });
+          } else {
+            // Se não aprovado, pode deixar como AGUARDANDO_PAGAMENTO ou PENDENTE
+            await prisma.pedidos.update({
+              where: { id: req.body.pedidoId },
+              data: { status: 'AGUARDANDO_PAGAMENTO' }
+            });
+          }
+
+
+          console.log('Pagamento salvo no banco:', pagamento);
+
+
+        } catch (error) {
+          console.log('ERRO AO SALVAR NO BANCO: ', error);
+          return;
+        }
+
+        res.status(201).json("sucesso!"); // <-- agora retorna pro front
+      })
+      .catch((error) => {
+        console.log('ERRO');
+        console.log(error);
+        res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error }); // <-- envia erro ao frontend
+      });
+  } catch (error) {
+    console.log('ERRO');
+    console.log(error);
+    res.status(500).json({ error: 'Erro interno', detalhes: error });
+  }
 });
 
 module.exports = router;

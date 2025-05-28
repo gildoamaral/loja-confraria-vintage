@@ -8,7 +8,10 @@ const auth = require('../middlewares/Auth'); // <-- Importa o middleware de aute
 router.post('/criar', auth, async (req, res) => {
   const usuarioId = req.user.userId; // Obtém o ID do usuário do token JWT
   const { produtoId, quantidade } = req.body;
-  console.log('Dados recebidos:', req.body);
+
+  const usuario = await prisma.usuarios.findUnique({
+  where: { id: usuarioId }
+});
 
   try {
     // Verifica se o usuário já tem pedido com status CARRINHO
@@ -25,6 +28,7 @@ router.post('/criar', auth, async (req, res) => {
         data: {
           usuarioId,
           status: 'CARRINHO',
+          enderecoEntrega: usuario.endereco,
         },
       });
     }
@@ -162,16 +166,62 @@ router.get('/carrinho', auth, async (req, res) => {
         usuarioId,
         status: 'CARRINHO',
       },
-      include: { itens: true }, // opcional: traz os itens do pedido também
+      include: {
+        itens: {
+          include: { produto: true }
+        }
+      }
     });
     if (!pedido) {
       return res.status(404).json({ message: 'Nenhum pedido em andamento encontrado.' });
     }
+    // console.log('Pedido encontrado:', pedido);
+
+
     res.json(pedido);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao buscar pedido do carrinho' });
   }
 });
+
+
+// Atualizar quantidade de um item do pedido
+router.put('/item/:id', async (req, res) => {
+  const { id } = req.params;
+  const { quantidade } = req.body;
+  try {
+    const item = await prisma.itemPedido.update({
+      where: { id: parseInt(id) },
+      data: { quantidade },
+    });
+    res.json(item);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao atualizar quantidade do item' });
+  }
+});
+
+// Buscar todos os pedidos do usuário autenticado
+router.get('/', auth, async (req, res) => {
+  const usuarioId = req.user.userId;
+  try {
+    const pedidos = await prisma.pedidos.findMany({
+  where: { usuarioId },
+  include: {
+    itens: {
+      include: {
+        produto: true, // inclui todos os campos do produto, incluindo preco e imagem
+      }
+    }
+  },
+  orderBy: { criadoEm: 'desc' }
+});
+    res.json(pedidos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar pedidos do usuário' });
+  }
+});
+
 
 
 module.exports = router;

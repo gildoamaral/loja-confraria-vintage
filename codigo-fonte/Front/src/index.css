@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Caudex:wght@400;700&family=Darker+Grotesque:wght@400;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Allison&display=swap');
 /*
 "Caudex" fonte para o fundo
 "Darker Grotesque" fonte para o texto
@@ -12,9 +14,14 @@
 }
 
 :root {
-  --cor-principal: #FFB89C;
-  --cor-secundaria: #FF967E;
+  --cor-principal: #fce4bf;
+  --cor-principal2: #f8ae61;
+
+  --cor-secundaria: #440e0b;
   --cor-fonte: #4B2626;
+
+  --cor-fonte-claro: #fae0d2;
+
 
   font-family: 'Caudex', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -22,7 +29,18 @@
 
   color-scheme: light dark;
   color: #202215;
-  background-color: var(--cor-principal);
+  /* background: linear-gradient(
+    135deg,
+    var(--cor-principal) 10%,
+    var(--cor-principal2) 90%
+  ); */
+
+    background: radial-gradient(
+    circle at 50% 50%,
+    var(--cor-principal) 0%,
+    var(--cor-principal) 70%,
+    var(--cor-principal2) 120%
+  );
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

@@ -183,8 +183,8 @@
     height: 100px;
     padding: 6px 12px;
     border-radius: 3px;
-    background: linear-gradient(90deg, #FF967E 0%, #FFB89C 100%);
-    color: #4B2626;
+    background: linear-gradient(90deg, #440e0b 0%, #f8ae61 100%);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -193,7 +193,7 @@
     transition: background 0.3s ease;
   }
   .ocasioCard:hover .ocasioNome {
-    background: linear-gradient(90deg, #FFB89C 0%, #FF967E 100%);
+    background: linear-gradient(90deg, #f8ae61 0%, #440e0b 100%);
   }
   
   .loading {
@@ -206,12 +206,12 @@
     animation: spin 1s linear infinite;
   }
   .active {
-    outline: 1px solid #fff;
+    outline: 1px solid #000000;
     outline-offset: 3px;
   }
   .filterToggle {
     padding: 0.5rem 1rem;
-    background: #FF967E;
+    background: #440e0b;
     margin-left: 90%;
     height: 50px;
     width: 80px;
@@ -219,7 +219,7 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 15px;
-    color: #333333;
+    color: #ffffff;
     font-weight: bold;
   }
   

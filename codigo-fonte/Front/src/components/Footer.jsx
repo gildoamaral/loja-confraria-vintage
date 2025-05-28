@@ -10,10 +10,10 @@ const Footer = () => {
   // Ajuste dinâmico dos estilos
   const footerStyle = {
     ...styles.footer,
-    height: isMobile ? 'auto' : isTablet ? '14rem' : '10rem',
+    height: isMobile ? 'auto' : isTablet ? '14rem' : '11rem',
     fontSize: isMobile ? '1rem' : isTablet ? '1.2rem' : '1.5rem',
-    padding: isMobile ? '1rem 0 0 0' : '1.5rem 0 0 0',
-    marginTop: isMobile ? '2rem' : isTablet ? '4rem' : '7rem',
+    padding: isMobile ? '1rem 0 0 0' : '1.5rem 0 1.5rem 0',
+    // marginTop: isMobile ? '2rem' : isTablet ? '4rem' : '7rem',
   };
 
   const footerDivStyle = {
@@ -42,13 +42,13 @@ const Footer = () => {
       <div style={footerDivStyleIcons}>
         <a href="https://www.facebook.com/profile.php?id=61551843227261" target="_blank" rel="noopener noreferrer" style={{
           margin: isMobile ? '0 0.5rem' : '0 1rem',
-          // color: '#f8ccb4'
+          color: 'var(--cor-fonte-claro)'
         }}>
           <FontAwesomeIcon icon={faFacebook} size={isMobile ? "lg" : "2x"} />
         </a>
         <a href="https://www.instagram.com/confrariavintage/" target="_blank" rel="noopener noreferrer" style={{
           margin: isMobile ? '0 0.5rem' : '0 1rem',
-          // color: '#f8ccb4'
+          color: 'var(--cor-fonte-claro)'
         }}>
           <FontAwesomeIcon icon={faInstagram} size={isMobile ? "lg" : "2x"} />
         </a>
@@ -81,19 +81,19 @@ const styles = {
     padding: '2rem 0 0 0',
     width: '100%',
     height: '17rem',
-    marginTop: '7rem',
+    // marginTop: '7rem',
     // position: 'absolute',
     bottom: '0',
     backgroundColor: 'var(--cor-secundaria)',
     // fontSize: '1rem',
-    // color: '#fae0d2',
+    color: 'var(--cor-fonte-claro)',
 
   },
   linhaDivisoria: {
     width: '86%',
     height: '1px',
-    opacity: '0.2',
-    backgroundColor: 'black',
+    opacity: '0.5',
+    backgroundColor: 'var(--cor-fonte-claro)',
     margin: '0.5rem 0',
   },
   footerDiv: {
