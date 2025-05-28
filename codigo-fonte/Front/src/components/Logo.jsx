@@ -1,28 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from '../assets/logo-sem-fundo.png';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useNavigate } from 'react-router-dom';
 
 const Logo = () => {
+  const isMobile = useMediaQuery('(max-width:600px)');
+  const [hover, setHover] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '6rem',
-        width: '25rem',
-        // backgroundColor: 'green',
-        overflow: 'hidden'
+        height: isMobile ? '10rem' : '8rem',
+        width: isMobile ? '23rem' : '32rem',
+        overflow: 'hidden',
       }}
     >
       <img
         src={logo}
         alt="logo"
         style={{
-          width: '20rem',
+          width: isMobile ? '30rem' : '28rem',
           height: '100%',
           objectFit: 'cover',
-          filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.9)) contrast(1.2)'
+          filter: hover
+            ? 'drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.9)) contrast(1.2)'
+            : 'none',
+          transition: 'filter 0.3s ease-in-out',
+          cursor: 'pointer'
         }}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={() => navigate('/')}
       />
     </div>
   );

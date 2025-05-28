@@ -63,7 +63,7 @@
     color:#333;
 }
 
-button {
+.button {
     background-color: #f38b66;
     color: white;
     padding: 10px;
@@ -74,7 +74,7 @@ button {
     width: 100%;
 }
 
-button:hover {
+.button:hover {
     background-color: #f3a386;
 }
 

@@ -1,6 +1,6 @@
 import React from 'react'
-import Logo from './logo'
-import Navbar from './Navbar'
+import Logo from './Logo'
+import Navbar from './navbar'
 
 
 const Header = () => {
@@ -16,14 +16,14 @@ const styles = {
   header: {
     display: 'flex', 
     flexDirection: 'column',
-    justifyContent: 'space-around', 
+    // justifyContent: 'space-around', 
     alignItems: 'center',
-    marginBottom: '1rem',
+    marginBottom: '3rem',
     width: '100%',
     // position: 'absolute',
     // top: '0',
     // backgroundColor: 'red',
-    height: '9rem',
+    height: 'auto',
   },
   }
 

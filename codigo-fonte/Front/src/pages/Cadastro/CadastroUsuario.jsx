@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import Styles from '../Login/Login.module.css';
 import Header from '../../components/Header';
-import Footer from '../../components/Footer';  
+import Footer from '../../components/Footer'; 
+import api from '../../services/api';
 
 const CadastroUsuario = () => {
   const [nome, setNome] = useState('');
@@ -20,7 +20,7 @@ const CadastroUsuario = () => {
     setIsSubmitting(true);
 
     try {
-      await axios.post('http://localhost:3000/usuarios', {
+      await api.post('/usuarios', {
         nome,
         sobrenome,
         dataNascimento,

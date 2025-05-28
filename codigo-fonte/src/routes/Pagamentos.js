@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { MercadoPagoConfig, Payment } = require('mercadopago');
+require('dotenv').config();
+const { PrismaClient } = require('@prisma/client');
 
+const prisma = new PrismaClient();
 const client = new MercadoPagoConfig(
   {
-    accessToken: 'TEST-1291689406684525-041420-7856aade3a75ec62a4c2d5d33cc19d2b-162683758',
+    accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
     options: { timeout: 5000, idempotencyKey: 'abc' }
   }
 );
@@ -48,49 +51,6 @@ router.post('/criar-pix', (req, res, next) => {
 
 });
 
-// router.post("/criar-cartao", async (req, res) => {
-//   const {
-//     token,
-//     transactionAmount,
-//     description,
-//     installments,
-//     paymentMethodId,
-//     issuerId,
-//     email
-//   } = req.body;
-
-//   console.log("Dados recebidos:", {
-//     token,
-//     transactionAmount,
-//     description,
-//     installments,
-//     paymentMethodId,
-//     issuerId,
-//     email
-//   });
-//   try {
-//     const pagamento = await payment.create({
-//       transaction_amount: Number(transactionAmount),
-//       token: token,
-//       description: description,
-//       installments: Number(installments),
-//       payment_method_id: paymentMethodId,
-//       issuer_id: issuerId,
-//       payer: {
-//         email: email
-//       }
-//     });
- 
-//     return res.status(200).json(pagamento);
-//   } catch (error) {
-//     console.error("Erro ao criar pagamento:", error);
-//     return res.status(400).json({
-//       error: error.message,
-//       cause: error.cause || null
-//     }); 
-//   }
-// });
-
 router.post('/criar-cartao', (req, res) => {
 
   console.log('REQUEST');
@@ -101,37 +61,55 @@ router.post('/criar-cartao', (req, res) => {
     token: req.body.token,
     description: req.body.description,
     installments: req.body.installments,
-    payment_method_id: req.body.paymentMethodId, // <- aqui é o paymentMethodId
-    issuer_id: req.body.issuer, // <- aqui é o issuerId
+    payment_method_id: req.body.payment_method_id,
+    issuer_id: req.body.issuer_id,
     payer: {
-      email: req.body.email,
+      email: req.body.payer.email,
       identification: {
-        type: req.body.identificationType, // <- aqui é o identificationType
-        number: req.body.number
+        type: req.body.payer.identification.type,
+        number: req.body.payer.identification.number
       }
     }
   }
 
+  console.log('BODY');
+  console.log(body);
+
   payment.create({
-    body: {
-      transaction_amount: req.body.transaction_amount,
-      token: req.body.token,
-      description: req.body.description,
-      installments: req.body.installments,
-      payment_method_id: req.body.paymentMethodId, // <- aqui é o paymentMethodId
-      issuer_id: req.body.issuer, // <- aqui é o issuerId
-      payer: {
-        email: req.body.email,
-        identification: {
-          type: req.body.identificationType, // <- aqui é o identificationType
-          number: req.body.number
-        }
-      }
-    },
-    requestOptions: { idempotencyKey: Date.now().toString() }
+    body,
+    requestOptions: {
+      idempotencyKey: Date.now().toString()
+    }
   })
-    .then((result) => console.log(result))
-    .catch((error) => console.log(error));
+    .then(async (result) => {
+      console.log(result);
+
+
+      try {
+        // Salva no banco de dados
+      await prisma.pagamentos.create({
+        data: {
+          pedidoId: req.body.pedidoId, // Certifique-se de enviar o pedidoId do front
+          status: result.status === 'approved' ? 'APROVADO' : 'PENDENTE',
+          metodo: 'CARTAO',
+          valor: result.transaction_amount,
+        }
+        
+      });
+      } catch (error) {
+        console.log('ERRO AO SALVAR NO BANCO: ', error);
+        return;
+
+      }
+      
+
+      res.status(201).json("sucesso!"); // <-- agora retorna pro front
+    })
+    .catch((error) => {
+      console.log('ERRO');
+      console.log(error);
+      res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error }); // <-- envia erro ao frontend
+    });
 });
 
 module.exports = router;

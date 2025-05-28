@@ -1,107 +1,17 @@
 import React, { useEffect } from "react";
-// import api from '../../services/api';
-// import { loadMercadoPago } from "@mercadopago/sdk-js";
+import styles from './PagamentoCartao.module.css'
+import imagem from './image.png'
+import { Box, Typography, FormLabel, FormControl } from '@mui/material'
+import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
+import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 
-// await loadMercadoPago();
-const mp = new window.MercadoPago("TEST-f6f15bb4-f876-4445-8247-a638700a2324");
+const mp = new window.MercadoPago(import.meta.env.VITE_MERCADO_PAGO_KEY);
 
+const PagamentoCartao = (props) => {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-const Pagamento = () => {
-
-  // useEffect(() => {
-  //   const mp = new window.MercadoPago("TEST-f6f15bb4-f876-4445-8247-a638700a2324", {
-  //     locale: "pt-BR",
-  //   });
-
-  //   const cardForm = mp.cardForm({
-  //     amount: "100",
-  //     autoMount: true,
-  //     form: {
-  //       id: "form-pagamento",
-  //       cardholderName: {
-  //         id: "form-cardholderName",
-  //         placeholder: "Nome no cartão",
-  //       },
-  //       cardholderEmail: {
-  //         id: "form-cardholderEmail",
-  //         placeholder: "Email",
-  //       },
-  //       cardNumber: {
-  //         id: "form-cardNumber",
-  //         placeholder: "Número do cartão",
-  //       },
-  //       expirationDate: {
-  //         id: "form-expirationDate",
-  //         placeholder: "MM/AA",
-  //       },
-  //       securityCode: {
-  //         id: "form-securityCode",
-  //         placeholder: "CVV",
-  //       },
-  //       installments: {
-  //         id: "form-installments",
-  //         placeholder: "Parcelas",
-  //       },
-  //       identificationType: {
-  //         id: "form-identificationType",
-  //       },
-  //       identificationNumber: {
-  //         id: "form-identificationNumber",
-  //         placeholder: "CPF",
-  //       },
-  //       issuer: {
-  //         id: "form-issuer",
-  //         placeholder: "Banco emissor",
-  //       },
-  //     },
-  //     callbacks: {
-  //       onFormMounted: (error) => {
-  //         if (error) return console.warn("Erro ao montar formulário:", error);
-  //       },
-  //       onSubmit: async (event) => {
-  //         event.preventDefault();
-
-  //         const {
-  //           token,
-  //           paymentMethodId,
-  //           issuerId,
-  //           installments,
-  //           email,
-  //         } = cardForm.getCardFormData();
-
-  //         const amount = 100.00;
-
-  //         try {
-  //           console.log("Dados enviados:", {
-  //             token,
-  //             amount,
-  //             description: "Compra no meu app",
-  //             installments,
-  //             paymentMethodId,
-  //             issuerId,
-  //             email,
-  //           });
-
-  //           const response = await api.post("/pagamentos/criar-cartao", {
-  //             token,
-  //             transactionAmount: amount,
-  //             description: "Compra no meu app",
-  //             installments,
-  //             paymentMethodId,
-  //             issuerId,
-  //             email,
-  //           });
-
-  //           console.log("Pagamento efetuado com sucesso:", response.data);
-  //         } catch (error) {
-  //           console.error("Erro no pagamento:", error.response?.data || error.message);
-  //         }
-  //       },
-  //     },
-  //   });
-  // }, []);
-
-
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -111,21 +21,21 @@ const Pagamento = () => {
     }
 
     const cardForm = mp.cardForm({
-      amount: "100.5",
+      amount: "1.5",
       iframe: true,
       form: {
         id: "form-checkout",
         cardNumber: {
           id: "form-checkout__cardNumber",
-          placeholder: "Número do cartão",
+          placeholder: "0000 0000 0000 0000",
         },
         expirationDate: {
           id: "form-checkout__expirationDate",
-          placeholder: "MM/YY",
+          placeholder: "MM/AA",
         },
         securityCode: {
           id: "form-checkout__securityCode",
-          placeholder: "Código de segurança",
+          placeholder: "123",
         },
         cardholderName: {
           id: "form-checkout__cardholderName",
@@ -159,6 +69,7 @@ const Pagamento = () => {
         },
         onSubmit: event => {
           event.preventDefault();
+          setIsSubmitting(true);
 
           const {
             paymentMethodId: payment_method_id,
@@ -173,28 +84,37 @@ const Pagamento = () => {
 
           console.log(cardForm.getCardFormData());
 
-            //           const response = await api.post("/pagamentos/criar-cartao", {
-          fetch("http://localhost:3000/pagamentos/criar-cartao", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              token,
-              issuer_id,
-              payment_method_id,
-              transaction_amount: Number(amount),
-              installments: Number(installments),
-              description: "Descrição do produto",
-              payer: {
-                email,
-                identification: {
-                  type: identificationType,
-                  number: identificationNumber,
-                },
+          api.post('/pagamentos/criar-cartao', {
+            transaction_amount: Number(amount),
+            token,
+            description: "Descrição do produto",
+            installments: Number(installments),
+            payment_method_id,
+            issuer_id,
+            payer: {
+              email,
+              identification: {
+                type: identificationType,
+                number: identificationNumber,
               },
-            }),
-          });
+            },
+            pedidoId: props.pedidoId,
+          })
+            .then(async response => {
+              console.log("Pagamento realizado com: ", response.data);
+
+              alert("Pagamento realizado com sucesso!");
+              navigate('/conta');
+            })
+
+            .catch(error => {
+              console.error(error);
+
+            })
+            .finally(() => {
+              setIsSubmitting(false);
+
+            });
         },
         onFetching: (resource) => {
           console.log("Fetching resource: ", resource);
@@ -220,48 +140,129 @@ const Pagamento = () => {
         mp.cardFormInstance = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
-      <style>
-        {`
-        #form-checkout {
-          display: flex;
-        flex-direction: column;
-        max-width: 600px;
-    }
 
-        .container {
-          height: 18px;
-        display: inline-block;
-        border: 1px solid rgb(118, 118, 118);
-        border-radius: 2px;
-        padding: 1px 2px;
-        }
-        `
-        }
-      </style>
+      <form id="form-checkout" className={styles.formCheckout}>
 
-      <div>
-      5031 4332 1540 6351 123 11/30 12345678909 teste@teste.com
-      </div>
-      <form id="form-checkout">
-        <div id="form-checkout__cardNumber" className="container"></div>
-        <div id="form-checkout__expirationDate" className="container"></div>
-        <div id="form-checkout__securityCode" className="container"></div>
-        <input type="text" id="form-checkout__cardholderName" />
-        <select id="form-checkout__issuer"></select>
-        <select id="form-checkout__installments"></select>
-        <select id="form-checkout__identificationType"></select>
-        <input type="text" id="form-checkout__identificationNumber" />
-        <input type="email" id="form-checkout__cardholderEmail" />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            marginBottom: 4,
+            alignSelf: 'center',
+          }}
+          maxWidth='460px'
+        >
+          <Box
+            className={styles.translucentEffect}
+            sx={{
+              // marginBottom: 4,
+              // gap: 2,
+              bgcolor: 'white',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              p: 3,
+              width: '100%',
+              borderRadius: "20px",
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: 4,
+            }}
+          // maxWidth='460px'
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Typography sx={{ color: 'black' }} variant="subtitle2"> Cartão de Crédito </Typography>
+              <CreditCardRoundedIcon sx={{ color: 'text.secondary' }} />
+            </Box>
 
-        <button type="submit" id="form-checkout__submit">Pagar</button>
-        <progress value="0" className="progress-bar">Carregando...</progress>
+            <img src={imagem} alt="Imagem do cartão"
+              style={{
+                opacity: 0.6,
+                width: '13%',
+                height: 'auto',
+                marginTop: "2em"
+              }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                width: '100%',
+                gap: 2,
+
+              }}
+            >
+              <FormControl sx={{ flexGrow: 1 }} >
+                <FormLabel sx={{ color: 'black' }} htmlFor="card-number">
+                  Número do cartão
+                </FormLabel>
+                <div id="form-checkout__cardNumber" className={styles.container}></div>
+
+              </FormControl>
+
+              <FormControl sx={{ maxWidth: "20%" }} >
+                <FormLabel sx={{ color: 'black' }} htmlFor="cvv">
+                  CVV
+                </FormLabel>
+                <div id="form-checkout__securityCode" className={styles.container}></div>
+
+              </FormControl>
+            </Box>
+
+            <Box
+              sx={{ display: 'flex', gap: 2 }}>
+              <FormControl sx={{ flexGrow: 1 }} >
+                <FormLabel sx={{ color: 'black' }} htmlFor="card-name">
+                  Nome
+                </FormLabel>
+                <input type="text" id="form-checkout__cardholderName" className={styles.inputName} required />
+              </FormControl>
+              <FormControl sx={{ maxWidth: "30%" }} >
+                <FormLabel sx={{ color: 'black' }} htmlFor="expiration-date">
+                  Validade
+                </FormLabel>
+                <div id="form-checkout__expirationDate" className={styles.container}></div>
+
+              </FormControl>
+            </Box>
+          </Box >
+        </Box >
+
+        <select id="form-checkout__issuer" className={styles.select}></select>
+        <select id="form-checkout__installments" className={styles.select} ></select>
+        <select id="form-checkout__identificationType" className={styles.select} ></select>
+        <input type="text" id="form-checkout__identificationNumber" className={styles.input} required />
+        <input type="email" id="form-checkout__cardholderEmail" className={styles.input} required />
+
+        <button
+          type="submit"
+          id="form-checkout__submit"
+          className={styles.button}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Processando..." : "Pagar"}
+        </button>
+        <progress value="0" className="progress-bar"
+          style={{
+            width: '100%',
+            height: "8px",
+            borderRadius: "5px",
+            backgroundColor: "#e0e0e0",
+            overflow: "hidden"
+          }}
+        >
+          Carregando...
+        </progress>
+
       </form>
     </>
   );
 };
 
-export default Pagamento;
+export default PagamentoCartao;

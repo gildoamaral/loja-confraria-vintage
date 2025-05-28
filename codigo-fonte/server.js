@@ -4,10 +4,14 @@ const express = require('express');
 const Usuario = require('./src/routes/Usuario'); // Importa as rotas de usuário
 const Produtos = require('./src/routes/Produtos'); // Importa as rotas de produtos
 const Pagamentos = require('./src/routes/Pagamentos');
+const Pedidos = require('./src/routes/Pedidos');
 const Login = require('./src/routes/Login')
 const auth = require('./src/middlewares/Auth'); // Importa o middleware de autenticação
 const authAdmin = require('./src/middlewares/AuthAdmin'); // Importa o middleware de autenticação de administrador
 const cookieParser = require("cookie-parser");
+const { parseStringPromise } = require('xml2js');
+const axios = require('axios');
+const bodyParser = require('body-parser');
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -15,7 +19,7 @@ const prisma = new PrismaClient();
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.CORS_ORIGIN,   // <--- Colocar o link do fron no .env
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -35,8 +39,9 @@ app.use(cookieParser());
 app.get('/', (req, res) => { res.send('Servidor rodando...'); });
 app.use('/usuarios', Usuario);
 app.use('/produtos', Produtos);
-app.use('/pagamentos', Pagamentos);
+app.use('/pagamentos', auth, Pagamentos);
 app.post('/login', Login)
+app.use('/pedidos', Pedidos);
 
 // ROTAS PRIVADAS
 //  //  Área de usuário
@@ -81,4 +86,40 @@ app.get("/admin/:id", authAdmin, async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
+});
+
+//Consulta do frete
+app.post('/frete', async (req, res) => {
+  const { cepDestino, altura, largura, comprimento, peso } = req.body;
+
+  if (!cepDestino) {
+    return res.status(400).json({ error: 'Informe o CEP de destino.' });
+  }
+
+  try {
+    const response = await axios.post(
+      'https://www.melhorenvio.com.br/api/v2/me/shipment/calculate',
+      {
+        from: { postal_code: '45820440' }, // CEP de origem
+        to: { postal_code: cepDestino },
+        package: {
+          height: altura || 4,
+          width: largura || 12,
+          length: comprimento || 17,
+          weight: peso || 0.3,
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.MELHOR_ENVIO_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Erro na cotação de frete:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Não foi possível calcular o frete.' });
+  }
 });

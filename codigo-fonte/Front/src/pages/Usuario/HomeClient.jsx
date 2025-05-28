@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Styles from './HomeCliente.module.css';
 import api from '../../services/api';
-import Header from '../../components/Header';
+import Header from '../../components/header';
 import Footer from '../../components/Footer';
 
 const HomeCliente = () => {
@@ -14,6 +14,14 @@ const HomeCliente = () => {
     const TAMANHOS = ['P', 'M', 'G', 'GG'];
     const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
     const OCASIOES = ['CASAMENTO', 'BATIZADO', 'MADRINHAS', 'FORMATURA'];
+
+    const imagensOcasioes = {
+        CASAMENTO: 'url_da_imagem_casamento.jpg',
+        BATIZADO: 'url_da_imagem_batizado.jpg',
+        MADRINHAS: 'url_da_imagem_madrinhas.jpg',
+        FORMATURA: 'url_da_imagem_formatura.jpg',
+    };
+    const [showFiltersDrawer, setShowFiltersDrawer] = useState(false);
 
     useEffect(() => {
         const fetchProdutos = async () => {
@@ -59,10 +67,33 @@ const HomeCliente = () => {
         );
     }
 
+
     return (
         <div className={Styles.container}>
             <Header />
+            <h2>Ocasiões especias</h2>
+            <h4>Confira as melhores opções para cada tipo de evento</h4>
+            <div className={Styles.ocasioesContainer}>
+                {OCASIOES.map(ocasiao => (
+                    <div
+                        key={ocasiao}
+                        className={`${Styles.ocasioCard} ${selectedOcasioes.includes(ocasiao) ? Styles.active : ''}`}
+                        onClick={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
+                    >
+                        <span className={Styles.ocasioNome}>
+                            {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
+                        </span>
+                    </div>
+                ))}
+            </div>
+            <button
+                className={Styles.filterToggle}
+                onClick={() => setShowFiltersDrawer(v => !v)}
+            >
+                Filtrar
+            </button>
             <div className={Styles.contentWrapper}>
+                
                 <div className={Styles.produtosGrid}>
                     {filteredProdutos.map((produto) => {
                         const produtoImagens = parseImagens(produto.imagem);
@@ -87,10 +118,10 @@ const HomeCliente = () => {
                                             {produto.precoPromocional != null ? (
                                                 <>
                                                     <span className={Styles.originalPrice}>
-                                                    R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
+                                                        R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
                                                     </span>
                                                     <span className={Styles.promoPrice}>
-                                                       R$ {Number(produto.precoPromocional).toFixed(2).replace('.', ',')}
+                                                        R$ {Number(produto.precoPromocional).toFixed(2).replace('.', ',')}
                                                     </span>
                                                 </>
                                             ) : (
@@ -106,49 +137,41 @@ const HomeCliente = () => {
                     })}
                 </div>
 
-                <div className={Styles.filtersSidebarRight}>
-                    <details className={Styles.dropdown}>
-                        <summary className={Styles.dropdownTitle}>Tamanhos</summary>
-                        {TAMANHOS.map(tamanho => (
-                            <label key={tamanho} className={Styles.filterItem}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedTamanhos.includes(tamanho)}
-                                    onChange={() => handleFilterChange(setSelectedTamanhos)(tamanho)}
-                                />
-                                {tamanho}
-                            </label>
-                        ))}
-                    </details>
+                {showFiltersDrawer && (
+                    <aside className={Styles.filtersDrawer}>
+                        <button
+                            className={Styles.closeButton}
+                            onClick={() => setShowFiltersDrawer(false)}
+                        >&times;</button>
+                        <div className={Styles.filterGroup}>
+                            <h3>Tamanhos</h3>
+                            {TAMANHOS.map(tam => (
+                                <label key={tam} className={Styles.filterItem}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTamanhos.includes(tam)}
+                                        onChange={() => handleFilterChange(setSelectedTamanhos)(tam)}
+                                    />
+                                    {tam}
+                                </label>
+                            ))}
+                        </div>
+                        <div className={Styles.filterGroup}>
+                            <h3>Categorias</h3>
+                            {CATEGORIAS.map(cat => (
+                                <label key={cat} className={Styles.filterItem}>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedCategorias.includes(cat)}
+                                        onChange={() => handleFilterChange(setSelectedCategorias)(cat)}
+                                    />
+                                    {cat.charAt(0) + cat.slice(1).toLowerCase()}
+                                </label>
+                            ))}
+                        </div>
+                    </aside>
+                )}
 
-                    <details className={Styles.dropdown}>
-                        <summary className={Styles.dropdownTitle}>Categorias</summary>
-                        {CATEGORIAS.map(categoria => (
-                            <label key={categoria} className={Styles.filterItem}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedCategorias.includes(categoria)}
-                                    onChange={() => handleFilterChange(setSelectedCategorias)(categoria)}
-                                />
-                                {categoria.charAt(0) + categoria.slice(1).toLowerCase()}
-                            </label>
-                        ))}
-                    </details>
-
-                    <details className={Styles.dropdown}>
-                        <summary className={Styles.dropdownTitle}>Ocasiões</summary>
-                        {OCASIOES.map(ocasiao => (
-                            <label key={ocasiao} className={Styles.filterItem}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedOcasioes.includes(ocasiao)}
-                                    onChange={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
-                                />
-                                {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
-                            </label>
-                        ))}
-                    </details>
-                </div>
 
             </div>
             <Footer />
@@ -157,4 +180,3 @@ const HomeCliente = () => {
 };
 
 export default HomeCliente;
-
