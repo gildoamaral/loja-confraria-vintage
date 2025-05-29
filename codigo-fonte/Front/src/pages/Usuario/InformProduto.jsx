@@ -78,40 +78,46 @@ const InformProduto = () => {
       alert('Por favor selecione o tamanho e a cor');
       return;
     }
-    // if (!selectedFrete) {
-    //   alert('Por favor selecione uma opção de frete');
-    //   return;
-    // }
-
-    // const precoProduto = parseFloat(produto.preco);
-    // const precoFrete = parseFloat(selectedFrete.price || selectedFrete.valor);
-    // const subtotal = precoProduto * quantidade;
-    // const totalComFrete = subtotal + precoFrete;
-
+    /*
+        TESTE ENQUANTO NÃO POSSUO TOKEN DO FRETE
+    
+        if (!selectedFrete) {
+          alert('Por favor selecione uma opção de frete');
+          return;
+        }
+    
+        const precoProduto = parseFloat(produto.preco);
+        const precoFrete = parseFloat(selectedFrete.price || selectedFrete.valor);
+        const subtotal = precoProduto * quantidade;
+        const totalComFrete = subtotal + precoFrete;
+    */
     const item = {
       produtoId: produto.id,
-      // nome: produto.nome,
       quantidade,
       tamanho: selectedTamanho,
       cor: selectedCor,
-      // imagem: parseImagens(produto.imagem)[0],
-      // precoUnitario: precoProduto,
-      // frete: { ...selectedFrete, price: precoFrete },
-      // subtotal,
-      // totalComFrete,
+      /*
+            nome: produto.nome,
+            imagem: parseImagens(produto.imagem)[0],
+            precoUnitario: precoProduto,
+            frete: { ...selectedFrete, price: precoFrete },
+            subtotal,
+            totalComFrete,
+       */
     };
 
     setLoading(true);
     try {
-      // adicionarAoCarrinho(item);
-      // opcional: salvar pedido no backend
       await api.post('/pedidos/criar', item);
       alert('Produto adicionado ao carrinho com sucesso!');
+
       // alert(`Adicionado: R$ ${subtotal.toFixed(2).replace('.', ',')} + frete R$ ${precoFrete.toFixed(2).replace('.', ',')} = R$ ${totalComFrete.toFixed(2).replace('.', ',')}`);
-      navigate('/carrinho');
+      
+      //   Botão só adiciona ao carrinho. Usuário pode continuar comprando
+      // navigate('/carrinho');
     } catch (error) {
-       if (error.response && error.response.status === 401) {
-        console.error('Erro ao adicionar produto ao carrinho:', error);
+      if (error.response && error.response.status === 401) {
+
         alert('Faça login para adicionar ao carrinho.');
         navigate('/login');
         return;
@@ -202,17 +208,17 @@ const InformProduto = () => {
               </div>
               {freteOptions.length > 0 && (
                 <ul className={Styles.freteList}> {freteOptions.map(opt => (
-                    <li
-                      key={opt.id || opt.codigo}
-                      className={`${Styles.freteItem} ${selectedFrete === opt ? Styles.selectedFreteItem : ''}`}
-                      onClick={() => setSelectedFrete(opt)}
-                    >
-                      <img src={opt.company.picture} alt={opt.company.name} className={Styles.freteLogo} />
-                      <strong>{opt.name || opt.codigo}</strong>
-                      <span className={Styles.price}>R$ {parseFloat(opt.price || opt.valor).toFixed(2).replace('.', ',')}</span>
-                      <span className={Styles.deliveryTime}>{opt.delivery_time || opt.prazoEntrega} dias</span>
-                    </li>
-                  ))}
+                  <li
+                    key={opt.id || opt.codigo}
+                    className={`${Styles.freteItem} ${selectedFrete === opt ? Styles.selectedFreteItem : ''}`}
+                    onClick={() => setSelectedFrete(opt)}
+                  >
+                    <img src={opt.company.picture} alt={opt.company.name} className={Styles.freteLogo} />
+                    <strong>{opt.name || opt.codigo}</strong>
+                    <span className={Styles.price}>R$ {parseFloat(opt.price || opt.valor).toFixed(2).replace('.', ',')}</span>
+                    <span className={Styles.deliveryTime}>{opt.delivery_time || opt.prazoEntrega} dias</span>
+                  </li>
+                ))}
                 </ul>
               )}
             </div>
@@ -222,7 +228,6 @@ const InformProduto = () => {
                 Adicionar ao Carrinho
               </button>
             </div>
-
             {loading && <LinearProgress style={{ marginTop: 16 }} />}
           </div>
         </div>
