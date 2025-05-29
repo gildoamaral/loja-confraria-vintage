@@ -17,8 +17,6 @@ const Logo = () => {
         height: isMobile ? '10rem' : '8rem',
         width: isMobile ? '23rem' : '32rem',
         overflow: 'hidden',
-        marginBottom: isMobile ? '2rem' : '1em',
-        marginTop: isMobile ? '2rem' : '2em',
       }}
     >
       <img

@@ -18,7 +18,7 @@ const styles = {
     flexDirection: 'column',
     // justifyContent: 'space-around', 
     alignItems: 'center',
-    marginBottom: '0rem',
+    marginBottom: '3rem',
     width: '100%',
     // position: 'absolute',
     // top: '0',
