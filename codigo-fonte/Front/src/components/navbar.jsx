@@ -74,6 +74,7 @@ function Navbar({ invisivel }) {
       ? [
         { to: "/estoque", label: "Estoque" },
         { to: "/cadastro-produto", label: "Cadastro" },
+        { to: "/pedidos", label: "Pedidos" },
       ]
       : []),
     ...(logado
@@ -136,6 +137,7 @@ function Navbar({ invisivel }) {
             <>
               <Link to="/estoque" style={{ ...styles.link, fontSize, }}>Estoque</Link>
               <Link to="/cadastro-produto" style={{ ...styles.link, fontSize }}>Cadastro</Link>
+              <Link to="/pedidos" style={{ ...styles.link, fontSize }}>Pedidos</Link>
             </>
           )}
 

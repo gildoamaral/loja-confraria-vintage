@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
 });
 
 // Rota PUT para atualizar dados do usuário logado
-router.put('/conta', auth, async (req, res) => {
+router.put('/conta', async (req, res) => {
   const userId = req.user.userId;
   const { nome, sobrenome, dataNascimento, endereco, email, telefone, senha, posicao } = req.body;
 
