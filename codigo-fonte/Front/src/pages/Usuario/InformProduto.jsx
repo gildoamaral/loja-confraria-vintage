@@ -1,40 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Styles from './InformProduto.module.css';
 import api from '../../services/api';
-// import { useCarrinho } from '../../context/useCarrinho';
-import { useNavigate } from 'react-router-dom';
-import Header from '../../components/Header';
+import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 import LinearProgress from '@mui/material/LinearProgress';
+// import { useCarrinho } from '../../context/useCarrinho';
 
 const InformProduto = () => {
   const { id } = useParams();
-  const [producto, setProducto] = useState(null);
+  const navigate = useNavigate();
+  // const { adicionarAoCarrinho } = useCarrinho();
+
+  const [produto, setProduto] = useState(null);
   const [selectedTamanho, setSelectedTamanho] = useState('');
   const [selectedCor, setSelectedCor] = useState('');
   const [quantidade, setQuantidade] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [cepDestino, setCepDestino] = useState('');
+  const [freteOptions, setFreteOptions] = useState([]);
+  const [loadingFrete, setLoadingFrete] = useState(false);
+  const [selectedFrete, setSelectedFrete] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate('/carrinho');
 
   useEffect(() => {
-    const fetchProducto = async () => {
-      try {
-        const response = await api.get(`/produtos/${id}`);
-
-        setProducto(response.data);
-
-
-      } catch (error) {
-        console.error('Erro ao buscar produto:', error);
-      }
-    };
-    fetchProducto();
+    api.get(`/produtos/${id}`)
+      .then(({ data }) => setProduto(data))
+      .catch(err => console.error('Erro ao buscar produto:', err));
   }, [id]);
 
-
+  if (!produto) {
+    return (
+      <PageContainer>
+        <Header />
+        <div className={Styles.loading}>
+          <LinearProgress />
+        </div>
+        <Footer />
+      </PageContainer>
+    );
+  }
 
   const parseImagens = (imagemData) => {
     if (!imagemData) return [];
@@ -45,66 +51,68 @@ const InformProduto = () => {
     }
   };
 
+  const calcularFrete = async () => {
+    if (!cepDestino.match(/^\d{5}-?\d{3}$/)) {
+      alert('Informe um CEP válido (8 dígitos).');
+      return;
+    }
+    setLoadingFrete(true);
+    try {
+      const body = { cepDestino, altura: 4, largura: 12, comprimento: 17, peso: 0.3 };
+      const response = await api.post('/frete', body);
+      const sorted = response.data
+        .sort((a, b) => parseFloat(a.price || a.valor) - parseFloat(b.price || b.valor))
+        .slice(0, 5);
+      setFreteOptions(sorted);
+      setSelectedFrete(null);
+    } catch (err) {
+      console.error('Erro ao calcular frete:', err);
+      alert('Não foi possível calcular o frete.');
+    } finally {
+      setLoadingFrete(false);
+    }
+  };
+
   const handleAddToCart = async () => {
     if (!selectedTamanho || !selectedCor) {
       alert('Por favor selecione o tamanho e a cor');
       return;
     }
+    // if (!selectedFrete) {
+    //   alert('Por favor selecione uma opção de frete');
+    //   return;
+    // }
 
-    setLoading(true); // Inicia o carregamento
+    // const precoProduto = parseFloat(produto.preco);
+    // const precoFrete = parseFloat(selectedFrete.price || selectedFrete.valor);
+    // const subtotal = precoProduto * quantidade;
+    // const totalComFrete = subtotal + precoFrete;
 
-
-    const productToAdd = {
-      produtoId: producto.id,
+    const item = {
+      produtoId: produto.id,
+      // nome: produto.nome,
       quantidade,
       tamanho: selectedTamanho,
       cor: selectedCor,
+      // imagem: parseImagens(produto.imagem)[0],
+      // precoUnitario: precoProduto,
+      // frete: { ...selectedFrete, price: precoFrete },
+      // subtotal,
+      // totalComFrete,
     };
 
+    setLoading(true);
     try {
-      await api.post('/pedidos/criar', productToAdd);
+      // adicionarAoCarrinho(item);
+      // opcional: salvar pedido no backend
+      await api.post('/pedidos/criar', item);
       alert('Produto adicionado ao carrinho com sucesso!');
-
+      // alert(`Adicionado: R$ ${subtotal.toFixed(2).replace('.', ',')} + frete R$ ${precoFrete.toFixed(2).replace('.', ',')} = R$ ${totalComFrete.toFixed(2).replace('.', ',')}`);
+      navigate('/carrinho');
     } catch (error) {
        if (error.response && error.response.status === 401) {
         console.error('Erro ao adicionar produto ao carrinho:', error);
         alert('Faça login para adicionar ao carrinho.');
-        setLoading(false);
-        navigate('/login');
-        return;
-      }
-
-      alert('Erro ao adicionar produto ao carrinho');
-      console.error('Erro ao adicionar produto ao carrinho:', error);
-    } finally {
-      setLoading(false); // Finaliza o carregamento
-    }
-
-  }
-
-  const handleBuy = async () => {
-    if (!selectedTamanho || !selectedCor) {
-      alert('Por favor selecione o tamanho e a cor');
-      return;
-    }
-
-    setLoading(true); // Inicia o carregamento
-
-    const productToAdd = {
-      produtoId: producto.id,
-      quantidade,
-      tamanho: selectedTamanho,
-      cor: selectedCor,
-    };
-
-    try {
-      await api.post('/pedidos/criar', productToAdd);
-      navigate('/carrinho');
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('Erro ao adicionar produto ao carrinho:', error);
-        alert('Faça login para adicionar ao carrinho.');
-        setLoading(false);
         navigate('/login');
         return;
       }
@@ -116,29 +124,20 @@ const InformProduto = () => {
     }
   };
 
-  if (!producto) return (
-    <div>
-      <div className={Styles.loading}>
-        <div className={Styles.hourglass}><span></span></div>
-      </div>
-    </div>
-  );
 
   const renderOptions = (options, selectedValue, onChange, type) => (
     <div className={Styles.optionGroup}>
       <h4>{type === 'cor' ? 'Cor:' : 'Tamanho:'}</h4>
       <div className={type === 'cor' ? Styles.colorOptions : Styles.sizeOptions}>
-        {options.map(option => {
-          const cleanedOption = option.trim().toUpperCase();
+        {options.map(opt => {
+          const key = opt.trim().toUpperCase();
           return (
             <button
-              key={cleanedOption}
-              className={`${type === 'cor' ? Styles.colorOption : Styles.sizeOption} 
-                ${selectedValue === cleanedOption ? Styles.selected : ''} 
-                ${type === 'cor' ? Styles[cleanedOption.toLowerCase()] : ''}`}
-              onClick={() => onChange(cleanedOption)}
+              key={key}
+              className={`${type === 'cor' ? Styles.colorOption : Styles.sizeOption} ${selectedValue === key ? Styles.selected : ''} ${type === 'cor' ? Styles[key.toLowerCase()] : ''}`}
+              onClick={() => onChange(key)}
             >
-              {type === 'cor' ? '' : cleanedOption}
+              {type === 'tamanho' ? key : ''}
             </button>
           );
         })}
@@ -146,74 +145,89 @@ const InformProduto = () => {
     </div>
   );
 
+  const imagens = parseImagens(produto.imagem);
+
   return (
     <div>
       <Header />
       <PageContainer className={Styles.container}>
-        <div className={Styles.breadcrumb}><span>{producto.nome}</span></div>
-
+        <div className={Styles.breadcrumb}><span>{produto.nome}</span></div>
         <div className={Styles.productWrapper}>
           <div className={Styles.gallery}>
             <div className={Styles.mainImage}>
-              <img
-                src={parseImagens(producto.imagem)[activeImageIndex]}
-                alt={producto.nome}
-              />
+              <img src={imagens[activeImageIndex]} alt={produto.nome} />
             </div>
             <div className={Styles.thumbnails}>
-              {parseImagens(producto.imagem).map((img, index) => (
+              {imagens.map((src, idx) => (
                 <img
-                  key={index}
-                  src={img}
-                  alt={`Vista ${index + 1}`}
-                  className={`${Styles.thumbnail} ${index === activeImageIndex ? Styles.activeThumbnail : ''}`}
-                  onClick={() => setActiveImageIndex(index)}
+                  key={idx}
+                  src={src}
+                  alt={`Vista ${idx + 1}`}
+                  className={`${Styles.thumbnail} ${idx === activeImageIndex ? Styles.activeThumbnail : ''}`}
+                  onClick={() => setActiveImageIndex(idx)}
                 />
               ))}
             </div>
           </div>
-
           <div className={Styles.productInfo}>
-            <h1 className={Styles.productTitle}>{producto.nome}</h1>
-            <p className={Styles.productPrice}>
-              R$ {Number(producto.preco).toFixed(2).replace('.', ',')}
-            </p>
+            <h1 className={Styles.productTitle}>{produto.nome}</h1>
+            <p className={Styles.productPrice}>R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}</p>
+            <div className={Styles.productDescription}><p>{produto.descricao}</p></div>
 
-            <div className={Styles.productDescription}>
-              <h3>Descrição</h3>
-              <p>{producto.descricao}</p>
-            </div>
-
-            {renderOptions(producto.cor.split(','), selectedCor, setSelectedCor, 'cor')}
-            {renderOptions(producto.tamanho.split(','), selectedTamanho, setSelectedTamanho, 'tamanho')}
+            {renderOptions(produto.cor.split(','), selectedCor, setSelectedCor, 'cor')}
+            {renderOptions(produto.tamanho.split(','), selectedTamanho, setSelectedTamanho, 'tamanho')}
 
             <div className={Styles.quantitySelector}>
               <h4>Quantidade:</h4>
               <div className={Styles.quantityControls}>
-                <button onClick={() => setQuantidade(Math.max(1, quantidade - 1))} disabled={quantidade === 1}>-</button>
+                <button onClick={() => setQuantidade(q => Math.max(1, q - 1))} disabled={quantidade === 1}>-</button>
                 <span>{quantidade}</span>
-                <button onClick={() => setQuantidade(quantidade + 1)}>+</button>
+                <button onClick={() => setQuantidade(q => q + 1)}>+</button>
               </div>
             </div>
-            <div className={Styles.addPayButtons}>
-              <button className={Styles.addToCartButton} onClick={handleBuy} disabled={loading}>
-                Comprar
-              </button>
 
-              <button className={Styles.payButton} onClick={handleAddToCart} disabled={loading}>
+            <div className={Styles.freteSection}>
+              <h4>Calcular Frete</h4>
+              <div className={Styles.freteCalcRow}>
+                <input
+                  type="text"
+                  placeholder="Digite seu CEP"
+                  value={cepDestino}
+                  onChange={e => setCepDestino(e.target.value)}
+                  className={Styles.cepInput}
+                />
+                <button onClick={calcularFrete} disabled={loadingFrete} className={Styles.calcFreteButton}>
+                  {loadingFrete ? 'Calculando...' : 'Calcular'}
+                </button>
+              </div>
+              {freteOptions.length > 0 && (
+                <ul className={Styles.freteList}> {freteOptions.map(opt => (
+                    <li
+                      key={opt.id || opt.codigo}
+                      className={`${Styles.freteItem} ${selectedFrete === opt ? Styles.selectedFreteItem : ''}`}
+                      onClick={() => setSelectedFrete(opt)}
+                    >
+                      <img src={opt.company.picture} alt={opt.company.name} className={Styles.freteLogo} />
+                      <strong>{opt.name || opt.codigo}</strong>
+                      <span className={Styles.price}>R$ {parseFloat(opt.price || opt.valor).toFixed(2).replace('.', ',')}</span>
+                      <span className={Styles.deliveryTime}>{opt.delivery_time || opt.prazoEntrega} dias</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className={Styles.addPayButtons}>
+              <button className={Styles.addToCartButton} onClick={handleAddToCart} disabled={loading}>
                 Adicionar ao Carrinho
               </button>
             </div>
-            {loading && (
-              <div style={{ marginTop: 8 }}>
-                <LinearProgress color="success" />
-              </div>
-            )}
+
+            {loading && <LinearProgress style={{ marginTop: 16 }} />}
           </div>
         </div>
       </PageContainer>
       <Footer />
-
     </div>
   );
 };

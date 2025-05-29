@@ -1,7 +1,7 @@
- h1{
-/* margin-left: 34%; */
+ /* h1{
+margin-left: 34%;   <-- Coloquei direto no Home.jsx para não ter efeito global em todos os H1 do app
 margin-bottom: 4%;
- }
+ } */
  .listcard {
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -98,8 +98,8 @@ margin-bottom: 4%;
 
  .imageContainer {
    position: relative;
-   width: 80px;
-   height: 80px;
+   width: 120px;
+   height: 120px;
    border: 1px solid #ccc;
    border-radius: 6px;
    overflow: hidden;
@@ -200,3 +200,8 @@ margin-bottom: 4%;
    background: #e00;
    color: #fff;
  }
+
+.priceDisplay{
+  display: flex;
+  flex-direction: column;
+}

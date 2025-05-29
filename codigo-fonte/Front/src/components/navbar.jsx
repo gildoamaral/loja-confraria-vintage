@@ -28,8 +28,8 @@ function Navbar({ invisivel }) {
           setUsuario(res.data);
           setLogado(true);
         }
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        console.error("Erro ao verificar:", error);
         setLogado(false);
       }
     }

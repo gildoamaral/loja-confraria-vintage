@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Styles from './Home.module.css';
 import Compressor from 'compressorjs';
 import api from '../../services/api';
-import Header from '../../components/Header';
+import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 
 const HomeProdutos = () => {
@@ -157,7 +157,10 @@ const HomeProdutos = () => {
       <Header />
 
 
-      <h1>Produtos cadastrados</h1>
+      <h1 style={{ 
+        marginLeft: "34%", 
+        marginBottom: '4%'
+        }}>Produtos cadastrados</h1>
       <div className={Styles.listcard}>
         {produtos.map(produto => (
           <div key={produto.id} className={Styles.produtoContainer}>
@@ -256,19 +259,6 @@ const HomeProdutos = () => {
               </div>
             ) : (
               <div>
-                <h2>{produto.nome}</h2>
-                <p><strong>Descrição:</strong> {produto.descricao}</p>
-                <p className={Styles.priceDisplay}>
-                  {produto.precoPromocional != null ? (
-                    <>
-                      <span className={Styles.originalPrice}>R$ {produto.preco.toFixed(2)}</span>
-                      <span className={Styles.promoPrice}> R$ {produto.precoPromocional.toFixed(2)}</span>
-                    </>
-                  ) : (
-                    <span>R$ {produto.preco.toFixed(2)}</span>
-                  )}
-                </p>
-                <p><strong>Quantidade:</strong> {produto.quantidade}</p>
                 <div className={Styles.galeria}>
                   {parseImagens(produto.imagem).map((img, i) => (
                     <div key={i} className={Styles.imageContainer}>
@@ -281,6 +271,19 @@ const HomeProdutos = () => {
                     </div>
                   ))}
                 </div>
+                <h2>{produto.nome}</h2>
+                <p className={Styles.priceDisplay}>
+                  {produto.precoPromocional != null ? (
+                    <>
+                      <span className={Styles.originalPrice}> Valor: R${produto.preco.toFixed(2)}</span>
+                      <span className={Styles.promoPrice}> Preço promocional: R$ {produto.precoPromocional.toFixed(2)}</span>
+                    </>
+                  ) : (
+                    <span>R$ {produto.preco.toFixed(2)}</span>
+                  )}
+                </p>
+                <p><strong>Quantidade:</strong> {produto.quantidade}</p>
+
                 <div className={Styles.buttonGroup}>
                   <button className={Styles.primaryButton} onClick={() => abrirEdicao(produto)}>Editar</button>
                   <button className={Styles.secondaryButton} onClick={() => handleExcluir(produto.id, produto.nome)}>Excluir</button>

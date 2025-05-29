@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Styles from './Estoque.module.css';
 import Compressor from 'compressorjs';
 import api from '../../services/api';
-import Header from '../../components/Header';
+import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 
