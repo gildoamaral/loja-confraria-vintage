@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Styles from'./Login.module.css';
 import Footer from '../../components/Footer';  
 import PageContainer from '../../components/PageContainer';
-import Header from '../../components/Header';
+// import Header from '../../components/Header';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -37,7 +37,7 @@ const Login = () => {
 
     return (
         <div>
-            <Header />
+            {/* <Header /> */}
             <PageContainer className={Styles.container}>
                 <div className={Styles.header}>
                     <h1>Bem-vindo de volta a <span className={Styles.highlight}>Confraria Vintage</span></h1>
