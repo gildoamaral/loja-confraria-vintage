@@ -9,6 +9,7 @@ import Conta from "../pages/Conta/Conta.jsx";
 import Estoque from "../pages/Estoque/Estoque.jsx";
 import Carrinho from '../pages/Carrinho/Carrinho.jsx';
 import Pagamento from '../pages/Pagamento/Pagamento.jsx';
+import Pedidos from "../pages/Pedidos/Pedidos.jsx";
 
 function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ function AppRoutes() {
       <Route path="/estoque" element={<Estoque />} />
       <Route path="/pagamento" element={<Pagamento />} />
       <Route path='/carrinho' element={<Carrinho />} />
+      <Route path='/pedidos' element={<Pedidos />} />
     </Routes>
   );
 }

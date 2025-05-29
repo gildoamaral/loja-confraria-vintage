@@ -55,9 +55,9 @@ function Navbar({ invisivel }) {
 
   const handleLogout = async () => {
     try {
-      navigate("/login");
       await api.post("/usuarios/logout", {}, { withCredentials: true });
       setLogado(false);
+      navigate("/login");
     } catch (error) {
       console.error("Erro ao deslogar:", error);
     }
@@ -74,6 +74,7 @@ function Navbar({ invisivel }) {
       ? [
         { to: "/estoque", label: "Estoque" },
         { to: "/cadastro-produto", label: "Cadastro" },
+        { to: "/pedidos", label: "Pedidos" },
       ]
       : []),
     ...(logado
@@ -136,6 +137,7 @@ function Navbar({ invisivel }) {
             <>
               <Link to="/estoque" style={{ ...styles.link, fontSize, }}>Estoque</Link>
               <Link to="/cadastro-produto" style={{ ...styles.link, fontSize }}>Cadastro</Link>
+              <Link to="/pedidos" style={{ ...styles.link, fontSize }}>Pedidos</Link>
             </>
           )}
 
@@ -143,7 +145,16 @@ function Navbar({ invisivel }) {
           {logado ? (
             <>
               <Link to="/conta" style={{ ...styles.link, fontSize }}>Conta</Link>
-              <Link to="/login" onClick={handleLogout} style={{ ...styles.link, fontSize }}>Logout</Link>
+              <Link
+                  to="/login"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLogout(); 
+                  }}
+                  style={{ ...styles.link, fontSize }}
+                >
+                  Logout
+                </Link>
             </>
           ) : (
             <Link to="/login" style={{ ...styles.link, fontSize }}>Login</Link>

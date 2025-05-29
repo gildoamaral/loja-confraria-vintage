@@ -22,12 +22,12 @@
 }
 
 .header span {
-    color: #f38b66;
+    color: #440e0b;
     font-weight: bold;
 }
 
 .formContainer {
-    background-color: #ff967e;
+    background-color: #440e0b;
     padding: 2rem;
     border-radius: 1rem;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -38,7 +38,7 @@
 
 .formContainer h2 {
     margin-bottom: 20px;
-    color: #333;
+    color: #fae0d2;
 }
 
 .inputGroup {
@@ -51,7 +51,7 @@
 .inputGroup label {
     margin-bottom: 2px;
     font-size: 14px;
-    color: #555;
+    color: #fae0d2;
 }
 
 .inputGroup input, select {
@@ -60,10 +60,10 @@
     border-radius: 4px;
     font-size: 14px;
     background-color: #e4e4e4da;
-    color:#333;
+    color:#fae0d2;
 }
 
-.button {
+.button {   /*Transformei em uma classe, se não teria efeito global */
     background-color: #f38b66;
     color: white;
     padding: 10px;
@@ -90,11 +90,16 @@
     margin-top: 10px;
 }
 
+.signupMessage {
+    color: #fae0d2;
+    text-decoration: none;
+}
+
 .signupLink {
     color: #ffffff;
     text-decoration: none;
 }
 
 .signupLink:hover {
-    color: #000000;
+    color: #fae0d2;
 }

@@ -222,6 +222,45 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// Buscar todos os pedidos pagos da loja
+router.get('/pagos', auth, async (req, res) => {
+  try {
+    const pedidos = await prisma.pedidos.findMany({
+  where: {
+    status: {
+    in: ['PAGO', 'ENVIADO', 'CANCELADO']
+    }},
+  include: {
+    itens: {
+      include: {
+        produto: true,
+      }
+    }
+  },
+  orderBy: { criadoEm: 'desc' }
+});
+    res.json(pedidos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar pedidos do usuário' });
+  }
+});
 
+// Atualizar status do pedido
+router.put('/:id/status', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  try {
+    const pedidoAtualizado = await prisma.pedidos.update({
+      where: { id: parseInt(id) },
+      data: { status },
+    });
+    res.json(pedidoAtualizado);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao atualizar o status do pedido' });
+  }
+});
 
 module.exports = router;

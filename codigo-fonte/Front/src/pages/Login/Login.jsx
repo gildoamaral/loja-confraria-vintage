@@ -74,7 +74,7 @@ const Login = () => {
 
                     {loginSucesso && <p className={Styles.successMessage}>Login realizado com sucesso!</p>}
                     {erroLogin && <p className={Styles.errorMessage}>{erroLogin}</p>}
-                    <p>Ainda não possui uma conta? <a href="/cadastro-usuario" className={Styles.signupLink}>Cadastre-se</a></p>
+                    <p className={Styles.signupMessage}>Ainda não possui uma conta? <a href="/cadastro-usuario" className={Styles.signupLink}>Cadastre-se</a></p>
                 </div>
             </PageContainer>
             <Footer />
