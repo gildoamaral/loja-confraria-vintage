@@ -21,12 +21,12 @@ const Login = () => {
             const response = await api.post('/login', { email, senha });
 
             console.log('Login bem-sucedido', response.data);
-            // localStorage.setItem('token', response.data.token);             // <--- TOKEN é retornado no cookie, não precisa guardar no localStorage
-            // localStorage.setItem('userId', response.data.id);               // <--- USERID está junto com o token
+
             setLoginSucesso(true);
             setErroLogin('');
 
-            navigate('/');
+            alert('Login realizado com sucesso!');
+            navigate(-1);
 
         } catch (error) {
             console.error('Erro no login', error);

@@ -182,6 +182,16 @@
   animation: spin 1s linear infinite;
   margin: 50px auto;
 }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .freteSection {
   border-radius: 8px;
   margin-bottom: 20px;

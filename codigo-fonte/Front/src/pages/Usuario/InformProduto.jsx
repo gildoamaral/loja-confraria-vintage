@@ -5,13 +5,11 @@ import api from '../../services/api';
 import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
-import LinearProgress from '@mui/material/LinearProgress';
-// import { useCarrinho } from '../../context/useCarrinho';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const InformProduto = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  // const { adicionarAoCarrinho } = useCarrinho();
 
   const [produto, setProduto] = useState(null);
   const [selectedTamanho, setSelectedTamanho] = useState('');
@@ -32,13 +30,13 @@ const InformProduto = () => {
 
   if (!produto) {
     return (
-      <PageContainer>
+      <>
         <Header />
-        <div className={Styles.loading}>
-          <LinearProgress />
-        </div>
+        <PageContainer>
+          <div className={Styles.loading} />
+        </PageContainer>
         <Footer />
-      </PageContainer>
+      </>
     );
   }
 
@@ -112,7 +110,7 @@ const InformProduto = () => {
       alert('Produto adicionado ao carrinho com sucesso!');
 
       // alert(`Adicionado: R$ ${subtotal.toFixed(2).replace('.', ',')} + frete R$ ${precoFrete.toFixed(2).replace('.', ',')} = R$ ${totalComFrete.toFixed(2).replace('.', ',')}`);
-      
+
       //   Botão só adiciona ao carrinho. Usuário pode continuar comprando
       // navigate('/carrinho');
     } catch (error) {
@@ -228,7 +226,8 @@ const InformProduto = () => {
                 Adicionar ao Carrinho
               </button>
             </div>
-            {loading && <LinearProgress style={{ marginTop: 16 }} />}
+            {loading && <CircularProgress style={{ marginTop: 16 }} />}
+
           </div>
         </div>
       </PageContainer>
