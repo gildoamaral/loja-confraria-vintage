@@ -10,7 +10,7 @@ import {
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import CarrinhoItemCard from './CarrinhoItemCard';
-import Header from '../../components/Header';
+import Header from '../../components/Header1';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 function Carrinho() {

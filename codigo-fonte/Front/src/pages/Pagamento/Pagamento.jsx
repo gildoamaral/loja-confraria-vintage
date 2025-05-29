@@ -18,7 +18,7 @@ import {
 import { useLocation } from 'react-router-dom';
 import api from '../../services/api';
 import PagamentoCartao from './PagamentoCartao';
-import Header from '../../components/Header';
+import Header from '../../components/Header1';
 
 const Pagamento = () => {
   const location = useLocation();

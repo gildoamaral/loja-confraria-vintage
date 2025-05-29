@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Styles from './InformProduto.module.css';
 import api from '../../services/api';
-import Header from '../../components/Header';
+import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 import LinearProgress from '@mui/material/LinearProgress';

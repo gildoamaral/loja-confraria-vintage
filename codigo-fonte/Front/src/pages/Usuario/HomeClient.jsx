@@ -4,7 +4,7 @@ import Styles from './HomeCliente.module.css';
 import api from '../../services/api';
 import DownHeader from '../../components/DownHeader';
 import PageContainer from '../../components/PageContainer';
-import Header from '../../components/Header';
+import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG'];
