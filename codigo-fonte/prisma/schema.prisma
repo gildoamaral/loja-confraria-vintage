@@ -42,10 +42,11 @@ model Pedidos {
   criadoEm   DateTime     @default(now())
   status     StatusPedido @default(CARRINHO) // ou PAGO, ENVIADO etc.
   usuarioId  Int
-  usuario    Usuarios     @relation(fields: [usuarioId], references: [id])
-  itens      ItemPedido[] // Um pedido tem vários itens
   pagamento  Pagamentos?  // Um pedido pode ter um pagamento
   enderecoEntrega String  @default("")
+
+  usuario    Usuarios     @relation(fields: [usuarioId], references: [id])
+  itens      ItemPedido[] // Um pedido tem vários itens
 }
 
 model ItemPedido {
@@ -64,6 +65,7 @@ model Pagamentos {
   status     StatusPagamento
   metodo     MetodoPagamento
   valor      Float
+  parcelas   Int?
   criadoEm   DateTime  @default(now())
 
   pedido     Pedidos   @relation(fields: [pedidoId], references: [id])

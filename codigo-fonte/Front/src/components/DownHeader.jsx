@@ -8,7 +8,7 @@ const DownHeader = () => {
       <div style={
         {
           overflow: 'hidden',
-          width: '100vw',
+          width: '100%',
           height: '450px',
           backgroundImage: `url(${holder})`,
           backgroundSize: 'cover',

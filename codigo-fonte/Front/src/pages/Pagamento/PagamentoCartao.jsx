@@ -106,16 +106,25 @@ const PagamentoCartao = (props) => {
             pedidoId: props.pedidoId,
           })
             .then(async response => {
-              console.log("Pagamento realizado com: ", response.data);
-
-              alert("Pagamento realizado com sucesso!");
-              navigate('/conta');
+              if (response.data.status === 'pending') {
+                alert("Pagamento em processamento. Aguardando confirmação.");
+                navigate('/conta');
+              } else {
+                alert("Pagamento realizado com sucesso!");
+                navigate('/conta');
+              }
             })
-
             .catch(error => {
-              console.error(error);
+              setIsSubmitting(false);
+              if (error.response && error.response.status === 402) {
+                alert("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.");
 
+              } else {
+                alert("Erro ao processar pagamento.");
+                navigate('/carrinho')
+              }
             })
+
             .finally(() => {
               setIsSubmitting(false);
 
