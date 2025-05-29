@@ -2,9 +2,9 @@ import { useState } from 'react';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import Styles from'./Login.module.css';
-import Header from '../../components/Header';
 import Footer from '../../components/Footer';  
 import PageContainer from '../../components/PageContainer';
+import Header from '../../components/Header';
 
 const Login = () => {
     const [email, setEmail] = useState('');
