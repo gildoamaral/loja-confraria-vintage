@@ -10,9 +10,8 @@ const Conta = () => {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [abaAtiva, setAbaAtiva] = useState("pedidos"); // 'info' ou 'pedidos'
+  const [abaAtiva, setAbaAtiva] = useState("pedidos");
 
-  // Estado para edição
   const [editando, setEditando] = useState(false);
   const [formDados, setFormDados] = useState({
     nome: "",
@@ -26,7 +25,6 @@ const Conta = () => {
   const [msgSucesso, setMsgSucesso] = useState("");
   const [msgErro, setMsgErro] = useState("");
 
-  // Controle dos pedidos expandidos (array de ids)
   const [pedidosExpandido, setPedidosExpandido] = useState([]);
 
   const parseImagens = (imagemData) => {
@@ -42,8 +40,6 @@ const Conta = () => {
     async function fetchData() {
       try {
         const responseUsuario = await api.get('/usuarios/conta', { withCredentials: true });
-        console.log("Resposta usuário:", responseUsuario.data); // DEBUG: confira estrutura
-
         const dadosUsuario = responseUsuario.data.usuario || responseUsuario.data;
 
         setUsuario(dadosUsuario);
@@ -99,7 +95,6 @@ const Conta = () => {
     }
   };
 
-  // Toggle para expandir/fechar pedido individual
   const toggleExpandirPedido = (id) => {
     setPedidosExpandido((prev) =>
       prev.includes(id)
@@ -120,7 +115,6 @@ const Conta = () => {
           <h3>Gerencie suas informações e acompanhe seus pedidos</h3>
         </div>
 
-        {/* Abas de navegação */}
         <div className={styles.tabs}>
           <button
             className={`${styles.tab} ${abaAtiva === "info" ? styles.activeTab : ""}`}
@@ -136,18 +130,15 @@ const Conta = () => {
           </button>
         </div>
 
-        {/* Conteúdo das abas */}
         {abaAtiva === "info" && (
           <div className={styles.formContainer}>
             <h2>Minhas informações</h2>
-
             {!editando ? (
               <>
                 <div className={styles.inputGroup}>
                   <label>Nome completo:</label>
                   <p>{usuario?.nome} {usuario?.sobrenome || ""}</p>
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Data de nascimento:</label>
                   <p>
@@ -156,17 +147,14 @@ const Conta = () => {
                       : "Não informada"}
                   </p>
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Telefone:</label>
                   <p>{usuario?.telefone || "Não informado"}</p>
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Email:</label>
                   <p>{usuario?.email || "Email não informado"}</p>
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Endereço:</label>
                   <p>{usuario?.endereco || "Não informado"}</p>
@@ -187,7 +175,6 @@ const Conta = () => {
                     onChange={handleChange}
                   />
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Sobrenome:</label>
                   <input
@@ -197,7 +184,6 @@ const Conta = () => {
                     onChange={handleChange}
                   />
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Data de nascimento:</label>
                   <input
@@ -207,7 +193,6 @@ const Conta = () => {
                     onChange={handleChange}
                   />
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Telefone:</label>
                   <input
@@ -217,7 +202,6 @@ const Conta = () => {
                     onChange={handleChange}
                   />
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Email:</label>
                   <input
@@ -228,7 +212,6 @@ const Conta = () => {
                     disabled
                   />
                 </div>
-
                 <div className={styles.inputGroup}>
                   <label>Endereço:</label>
                   <input
@@ -238,7 +221,6 @@ const Conta = () => {
                     onChange={handleChange}
                   />
                 </div>
-
                 {msgErro && <p className={styles.erroMsg}>{msgErro}</p>}
                 {msgSucesso && <p className={styles.sucessoMsg}>{msgSucesso}</p>}
 
@@ -277,85 +259,86 @@ const Conta = () => {
         {abaAtiva === "pedidos" && (
           <div className={styles.formContainer}>
             <h2>Meus pedidos</h2>
-            {pedidos.length === 0 ? (
+            {pedidos.filter(p => p.status !== "CARRINHO").length === 0 ? (
               <p>Você ainda não realizou nenhum pedido.</p>
             ) : (
-              pedidos.map((pedido) => {
-                const totalPedido = pedido.itens?.reduce((acc, item) => {
-                  const precoUnitario = item.produto.preco || 0;
-                  return acc + precoUnitario * item.quantidade;
-                }, 0) || 0;
+              pedidos
+                .filter(pedido => pedido.status !== "CARRINHO")
+                .map((pedido) => {
+                  const totalPedido = pedido.itens?.reduce((acc, item) => {
+                    const precoUnitario = item.produto.preco || 0;
+                    return acc + precoUnitario * item.quantidade;
+                  }, 0) || 0;
 
-                const estaExpandido = pedidosExpandido.includes(pedido.id);
+                  const estaExpandido = pedidosExpandido.includes(pedido.id);
 
-                return (
-                  <div key={pedido.id} className={styles.pedidoCard}>
-                    <h3
-  style={{ cursor: "pointer", userSelect: "none" }}
-  onClick={() => toggleExpandirPedido(pedido.id)}
->
-  Pedido #{pedido.id}{" "}
-  <span style={{
-    display: "inline-block",
-    transform: estaExpandido ? "rotate(90deg)" : "rotate(0deg)",
-    transition: "transform 0.2s ease",
-    fontWeight: "bold",
-    marginLeft: "5px",
-  }}>
-    &gt;
-  </span>
-</h3>
+                  return (
+                    <div key={pedido.id} className={styles.pedidoCard}>
+                      <h3
+                        style={{ cursor: "pointer", userSelect: "none" }}
+                        onClick={() => toggleExpandirPedido(pedido.id)}
+                      >
+                        Pedido #{pedido.id}{" "}
+                        <span style={{
+                          display: "inline-block",
+                          transform: estaExpandido ? "rotate(90deg)" : "rotate(0deg)",
+                          transition: "transform 0.2s ease",
+                          fontWeight: "bold",
+                          marginLeft: "5px",
+                        }}>
+                          &gt;
+                        </span>
+                      </h3>
 
+                      {estaExpandido && (
+                        <>
+                          <p><strong>Status do pedido:</strong> {pedido.status}</p>
+                          <p><strong>Status do pagamento:</strong> {pedido.pagamento?.status || 'Não informado'}</p>
+                          <p><strong>Método de pagamento:</strong> {pedido.pagamento?.metodo || 'Não informado'}</p>
+                          <p>
+                            <strong>Data do pedido:</strong>{" "}
+                            {pedido?.criadoEm
+                              ? new Date(pedido.criadoEm.split("T")[0] + "T12:00:00").toLocaleDateString()
+                              : "Data não informada"}
+                          </p>
+                          <p><strong>Endereço de entrega:</strong> {pedido.enderecoEntrega || 'Não informado'}</p>
 
-                    {estaExpandido && (
-                      <>
-                        <p><strong>Status do pedido:</strong> {pedido.status}</p>
-                        <p><strong>Status do pagamento:</strong> {pedido.pagamento?.status || 'Não informado'}</p>
-                        <p><strong>Método de pagamento:</strong> {pedido.pagamento?.metodo || 'Não informado'}</p>
-                        <p>
-                          <strong>Data do pedido:</strong>{" "}
-                          {pedido?.criadoEm
-                            ? new Date(pedido.criadoEm.split("T")[0] + "T12:00:00").toLocaleDateString()
-                            : "Data não informada"}
-                        </p>
-                        <p><strong>Endereço de entrega:</strong> {pedido.enderecoEntrega || 'Não informado'}</p>
+                          <div>
+                            <strong>Itens:</strong>
+                            <ul>
+                              {pedido.itens?.map(item => {
+                                const produtoImagens = parseImagens(item.produto.imagem);
+                                const imagem = produtoImagens[0] || "/placeholder.png";
+                                const precoUnitario = item.produto.preco || 0;
+                                const subtotal = precoUnitario * item.quantidade;
 
-                        <div>
-                          <strong>Itens:</strong>
-                          <ul>
-                            {pedido.itens?.map(item => {
-                              const produtoImagens = parseImagens(item.produto.imagem);
-                              const imagem = produtoImagens[0] || "/placeholder.png";
-                              const precoUnitario = item.produto.preco || 0;
-                              const subtotal = precoUnitario * item.quantidade;
-
-                              return (
-                                <li key={item.id} className={styles.itemPedido}>
-                                  <img
-                                    src={imagem}
-                                    alt={item.produto.nome}
-                                    className={styles.imagemProduto}
-                                    onError={(e) => { e.target.style.display = 'none'; }}
-                                  />
-                                  <div>
-                                    <strong>{item.produto.nome}</strong><br />
-                                    Tamanho: {item.produto.tamanho || "Não informado"}<br />
-                                    Cor: {item.produto.cor || "Não informada"}<br />
-                                    Quantidade: {item.quantidade}<br />
-                                    Preço unitário: R$ {precoUnitario.toFixed(2)}<br />
-                                    Subtotal: R$ {subtotal.toFixed(2)}
-                                  </div>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                          <p><strong>Total do pedido:</strong> R$ {totalPedido.toFixed(2)}</p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })
+                                return (
+                                  <li key={item.id} className={styles.itemPedido}>
+                                    <img
+                                      src={imagem}
+                                      alt={item.produto.nome}
+                                      className={styles.imagemProduto}
+                                      onError={(e) => { e.target.style.display = 'none'; }}
+                                    />
+                                    <div>
+                                      <strong>{item.produto.nome}</strong><br />
+                                      Tamanho: {item.produto.tamanho || "Não informado"}<br />
+                                      Cor: {item.produto.cor || "Não informada"}<br />
+                                      Quantidade: {item.quantidade}<br />
+                                      Preço unitário: R$ {precoUnitario.toFixed(2)}<br />
+                                      Subtotal: R$ {subtotal.toFixed(2)}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                            <p><strong>Total do pedido:</strong> R$ {totalPedido.toFixed(2)}</p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })
             )}
           </div>
         )}
