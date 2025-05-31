@@ -263,13 +263,13 @@ const PagamentoCartao = (props) => {
           {isSubmitting ? "Processando..." : "Pagar"}
         </button>
         <progress value="0" className="progress-bar"
-          style={{
-            width: '100%',
-            height: "8px",
-            borderRadius: "5px",
-            backgroundColor: "#e0e0e0",
-            overflow: "hidden"
-          }}
+          // style={{
+          //   width: '100%',
+          //   height: "8px",
+          //   borderRadius: "5px",
+          //   backgroundColor: "#e0e0e0",
+          //   overflow: "hidden"
+          // }}
         >
           Carregando...
         </progress>

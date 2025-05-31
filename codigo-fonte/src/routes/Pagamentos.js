@@ -103,11 +103,11 @@ router.post('/criar-cartao', async (req, res) => {
 
 
         // TESTANDO se o usuario consegue realizar o pagamento logo que dá erro
+        let statusPayment = '';
+
         if (result.status === 'rejected') {
           return res.status(402).json({ error: 'Pagamento negado pelo cartão. Tente novamente ou use outro cartão.' });
         }
-
-        let statusPayment = '';
 
         if (result.status === 'approved') {
           statusPayment = "APROVADO";
