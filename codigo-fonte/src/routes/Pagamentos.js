@@ -99,7 +99,7 @@ router.post('/criar-cartao', async (req, res) => {
 
 
 
-
+        // TESTANDO se o usuario consegue realizar o pagamento logo que dá erro
         if (result.status === 'rejected') {
           return res.status(402).json({ error: 'Pagamento negado pelo cartão. Tente novamente ou use outro cartão.' });
         }
@@ -112,9 +112,7 @@ router.post('/criar-cartao', async (req, res) => {
 
         if (result.status === 'in_process') {
           statusPayment = "PENDENTE";
-        } else {
-          return res.status(400).json({ error: 'ERRO NO PAGAMENTO' })
-          };
+        }
 
 
         /*

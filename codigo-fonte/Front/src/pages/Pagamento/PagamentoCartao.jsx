@@ -110,11 +110,13 @@ const PagamentoCartao = (props) => {
                 alert("Pagamento em processamento. Aguardando confirmação.");
                 navigate('/conta');
               } else {
+                console.log("response: ", response.data);
                 alert("Pagamento realizado com sucesso!");
                 navigate('/conta');
               }
             })
             .catch(error => {
+              // TESTANDO se o usuario consegue realizar o pagamento logo que dá erro
               setIsSubmitting(false);
               if (error.response && error.response.status === 402) {
                 alert("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.");
