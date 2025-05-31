@@ -109,7 +109,8 @@ const PagamentoCartao = (props) => {
               if (response.data.status === 'pending') {
                 alert("Pagamento em processamento. Aguardando confirmação.");
                 navigate('/conta');
-              } else {
+              } 
+              if (response.data.status === 'success') {
                 console.log("response: ", response.data);
                 alert("Pagamento realizado com sucesso!");
                 navigate('/conta');
