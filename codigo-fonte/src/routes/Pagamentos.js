@@ -13,10 +13,37 @@ const client = new MercadoPagoConfig(
 );
 const payment = new Payment(client);
 
+// Teste simples
 router.get('/', (req, res) => {
   res.send('Rota de pagamentos funcionando!');
 });
 
+// Nova rota para buscar pagamento por pedidoId
+router.get('/por-pedido/:pedidoId', async (req, res) => {
+  const pedidoId = Number(req.params.pedidoId);
+  
+  if (!pedidoId) {
+    return res.status(400).json({ error: "Pedido ID inválido" });
+  }
+
+  try {
+    const pagamento = await prisma.pagamentos.findFirst({
+      where: { pedidoId },
+      orderBy: { id: 'desc' } // pega o pagamento mais recente, se houver mais de um
+    });
+
+    if (!pagamento) {
+      return res.status(404).json({ error: "Pagamento não encontrado para esse pedido" });
+    }
+
+    res.json(pagamento);
+  } catch (error) {
+    console.error("Erro ao buscar pagamento por pedido:", error);
+    res.status(500).json({ error: "Erro interno ao buscar pagamento" });
+  }
+});
+
+// Criar pagamento via PIX
 router.post('/criar-pix', (req, res, next) => {
   console.log('REQUEST');
   console.log(req.body);
@@ -48,9 +75,9 @@ router.post('/criar-pix', (req, res, next) => {
       console.log(error);
       res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error });
     });
-
 });
 
+// Criar pagamento via cartão
 router.post('/criar-cartao', async (req, res) => {
   const { transaction_amount, pedidoId, token, description, installments, payment_method_id, issuer_id, payer } = req.body;
 
@@ -100,9 +127,6 @@ router.post('/criar-cartao', async (req, res) => {
         console.log('RESULT INSTALLMENTS --------- ', result.installments);
         console.log('RESULT TOTAL PAID ----------- ', result.transaction_details.total_paid_amount);
 
-
-
-        // TESTANDO se o usuario consegue realizar o pagamento logo que dá erro
         if (result.status === 'rejected') {
           return res.status(402).json({ error: 'Pagamento negado pelo cartão. Tente novamente ou use outro cartão.' });
         }
@@ -117,13 +141,6 @@ router.post('/criar-cartao', async (req, res) => {
           statusPayment = "PENDENTE";
         }
 
-
-        /*
-         * APROVADO  | approved    |  accredited
-         * PENDENTE  | in_process  |  pending_contingency
-         * FALHOU    | rejected    |  cc_rejected_bad_filled_card_number  &&  cc_rejected_bad_filled_security_code
-         */
-
         try {
           const pagamento = await prisma.pagamentos.create({
             data: {
@@ -136,7 +153,6 @@ router.post('/criar-cartao', async (req, res) => {
           });
 
           if (statusPayment === "APROVADO") {
-
             const novoPedido = await prisma.pedidos.update({
               where: { id: req.body.pedidoId },
               data: { status: 'PAGO' }
@@ -147,7 +163,6 @@ router.post('/criar-cartao', async (req, res) => {
           }
 
           if (statusPayment === "PENDENTE") {
-
             await prisma.pedidos.update({
               where: { id: req.body.pedidoId },
               data: { status: 'AGUARDANDO_PAGAMENTO' }
@@ -157,11 +172,8 @@ router.post('/criar-cartao', async (req, res) => {
             return;
           }
 
-
           console.log('PAGAMENTOS STATUS -- ', pagamento.status);
           console.log('PAGAMENTOS VALOR --- ', pagamento.valor);
-
-
 
         } catch (error) {
           console.log('ERRO AO SALVAR NO BANCO: ', error);
