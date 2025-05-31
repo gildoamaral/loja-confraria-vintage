@@ -225,6 +225,37 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
   </tr>
 </table>
 
+<table>
+  <tr>
+    <th colspan="6" width="1000">Cadastro de Usuário</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve permitir que um usuário seja criado</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Lucas Oliveira Soares </td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430"> Carlos Eduardo Dos Santos Lima </td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">29/05/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema está permitindo o cadastro corretamente.</td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><strong>Evidência</strong></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center">
+    <img src="https://github.com/user-attachments/assets/8040b373-d5ce-4cf2-93e9-ae4fa3010238" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/b5086299-9b2c-4842-85da-9660a32da709" style="height: 20em;"/>
+    </td>
+  </tr>
+</table>
+
 ### Teste de Login
 
 <table>
@@ -259,16 +290,13 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
   </tr>
 </table>
 
-
-### Teste de Logout
-
 <table>
   <tr>
-    <th colspan="6" width="1000">Logout</th>
+    <th colspan="6" width="1000">Login</th>
   </tr>
   <tr>
     <td width="170"><strong>Critérios de êxito</strong></td>
-    <td colspan="5">O sistema deve permitir que o usuário faça o logout de sua conta</td>
+    <td colspan="5">O sistema deve permitir que o usuário faça o login na conta cadastrada</td>
   </tr>
     <tr>
     <td><strong>Responsável pela funcionalidade</strong></td>
@@ -276,19 +304,55 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
       <td><strong>Responsável pelo teste</strong></td>
     <td width="430"> Carlos Eduardo Dos Santos Lima </td>
      <td width="100"><strong>Data do teste</strong></td>
-    <td width="150">30/04/2025</td>
+    <td width="150">29/05/2025</td>
   </tr>
     <tr>
     <td width="170"><strong>Comentário</strong></td>
-    <td colspan="5">O sistema está permitindo o logout corretamente.</td>
+    <td colspan="5">O sistema está validando e permitindo o login corretamente.</td>
   </tr>
   <tr>
     <td colspan="6" align="center"><strong>Evidência</strong></td>
   </tr>
   <tr>
     <td colspan="6" align="center">
-    <img src="https://github.com/user-attachments/assets/8be4fb93-b43a-4990-8412-a967a193b9d9" style="height: 20em;"/>
-    <img src="https://github.com/user-attachments/assets/1e560cbd-f565-426b-b616-43fa30405e0e" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/733fa153-c189-4496-b642-2f1b59e0e4e2" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/62232e48-c65c-4881-83de-bd1067b80ca8" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/77c4b691-f272-4511-9da9-dfb34a6f0d7a" style="height: 20em;"/>
     </td>
   </tr>
 </table>
+
+### Teste de Gerenciamento de Pedidos pelo Administrador
+
+<table>
+  <tr>
+    <th colspan="6" width="1000">Gerenciamento de pedidos</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve permitir que o administrador faça o gerenciamento dos pedidos</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Lucas Oliveira Soares </td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430"> Carlos Eduardo Dos Santos Lima </td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">29/05/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema permite a classificação como enviado e cancelado conforme o previsto.</td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><strong>Evidência</strong></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center">
+    <img src="https://github.com/user-attachments/assets/0bbbc469-49dc-46af-b920-e2b3a62d2094" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/b775a1fc-a775-4635-8051-7f09071a073d" style="height: 20em;"/>
+    <img src="https://github.com/user-attachments/assets/8d9580ff-f840-41a6-9df1-31ae7fd72b03" style="height: 20em;"/>
+    </td>
+  </tr>
+</table>
+
