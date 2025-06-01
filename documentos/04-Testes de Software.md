@@ -390,3 +390,35 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
   </tr>
 </table>
 
+### Teste Informações dos Pedidos
+
+<table>
+  <tr>
+    <th colspan="6" width="1000">Informações dos Pedidos</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve permitir que o usuário autenticado visualize seus pedidos</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Carlos Eduardo Dos Santos Lima</td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430">Lucas Oliveira Soares</td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">01/06/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema permite a visualização dos pedidos do usuário.</td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><strong>Evidência</strong></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center">
+      <img src="img/04-info-pedidos.jpg" style="height: 20em;"/>
+    </td>
+  </tr>
+</table>
+
