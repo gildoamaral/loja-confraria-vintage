@@ -422,3 +422,35 @@ A fim de aumentar a qualidade da aplicação desenvolvida, cada funcionalidade d
   </tr>
 </table>
 
+### Teste de Verificação de Frete
+
+<table>
+  <tr>
+    <th colspan="6" width="1000">Fretes</th>
+  </tr>
+  <tr>
+    <td width="170"><strong>Critérios de êxito</strong></td>
+    <td colspan="5">O sistema deve exibir os diferentes tipos de opções de frete, de forma que o usuário possa saber a melhor opção</td>
+  </tr>
+    <tr>
+    <td><strong>Responsável pela funcionalidade</strong></td>
+    <td width="430">Matheus Soares da Silva</td>
+      <td><strong>Responsável pelo teste</strong></td>
+    <td width="430">Marco Antonio Gil do Amaral Oliveira</td>
+     <td width="100"><strong>Data do teste</strong></td>
+    <td width="150">01/06/2025</td>
+  </tr>
+    <tr>
+    <td width="170"><strong>Comentário</strong></td>
+    <td colspan="5">O sistema exibe os diferentes tipos de frete, permitindo ainda a seleção de um deles</td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center"><strong>Evidência</strong></td>
+  </tr>
+  <tr>
+    <td colspan="6" align="center">
+      <img src="https://github.com/user-attachments/assets/a615df08-9d06-4c0b-9abb-62125a33cd90" style="height: 20em;"/>
+    </td>
+  </tr>
+</table>
+
