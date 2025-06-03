@@ -171,12 +171,12 @@ router.post('/criar-cartao', async (req, res) => {
         res.status(201).json("sucesso!"); // <-- agora retorna pro front
       })
       .catch((error) => {
-        console.log('ERRO');
+        console.log('ERRO na criação do pagamento: ');
         console.log(error);
         res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error }); // <-- envia erro ao frontend
       });
   } catch (error) {
-    console.log('ERRO');
+    console.log('ERRO ao tentar criar tudo: ');
     console.log(error);
     res.status(500).json({ error: 'Erro interno', detalhes: error });
   }
