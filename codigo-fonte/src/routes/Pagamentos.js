@@ -54,6 +54,9 @@ router.post('/criar-pix', (req, res, next) => {
 router.post('/criar-cartao', async (req, res) => {
   const { transaction_amount, pedidoId, token, description, installments, payment_method_id, issuer_id, payer } = req.body;
 
+  console.log('REQUEST');
+  console.log(req.body);
+
   try {
     const pedido = await prisma.pedidos.findUnique({
       where: { id: pedidoId },
@@ -99,12 +102,12 @@ router.post('/criar-cartao', async (req, res) => {
 
 
 
+        // TESTANDO se o usuario consegue realizar o pagamento logo que dá erro
+        let statusPayment = '';
 
         if (result.status === 'rejected') {
           return res.status(402).json({ error: 'Pagamento negado pelo cartão. Tente novamente ou use outro cartão.' });
         }
-
-        let statusPayment = '';
 
         if (result.status === 'approved') {
           statusPayment = "APROVADO";
@@ -112,9 +115,7 @@ router.post('/criar-cartao', async (req, res) => {
 
         if (result.status === 'in_process') {
           statusPayment = "PENDENTE";
-        } else {
-          return res.status(400).json({ error: 'ERRO NO PAGAMENTO' })
-          };
+        }
 
 
         /*
@@ -134,18 +135,18 @@ router.post('/criar-cartao', async (req, res) => {
             }
           });
 
-          if (statusPayment === 'approved') {
+          if (statusPayment === "APROVADO") {
 
-            await prisma.pedidos.update({
+            const novoPedido = await prisma.pedidos.update({
               where: { id: req.body.pedidoId },
               data: { status: 'PAGO' }
             });
-
+            console.log('PAGAMENTO APROVADO! ', novoPedido);
             res.status(201).json({ status: 'success', message: 'Pagamento aprovado!', pagamento });
             return;
           }
 
-          if (statusPayment === 'in_process') {
+          if (statusPayment === "PENDENTE") {
 
             await prisma.pedidos.update({
               where: { id: req.body.pedidoId },

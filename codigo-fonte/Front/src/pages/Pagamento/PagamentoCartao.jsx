@@ -109,12 +109,15 @@ const PagamentoCartao = (props) => {
               if (response.data.status === 'pending') {
                 alert("Pagamento em processamento. Aguardando confirmação.");
                 navigate('/conta');
-              } else {
+              } 
+              if (response.data.status === 'success') {
+                console.log("response: ", response.data);
                 alert("Pagamento realizado com sucesso!");
                 navigate('/conta');
               }
             })
             .catch(error => {
+              // TESTANDO se o usuario consegue realizar o pagamento logo que dá erro
               setIsSubmitting(false);
               if (error.response && error.response.status === 402) {
                 alert("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.");
@@ -260,13 +263,13 @@ const PagamentoCartao = (props) => {
           {isSubmitting ? "Processando..." : "Pagar"}
         </button>
         <progress value="0" className="progress-bar"
-          style={{
-            width: '100%',
-            height: "8px",
-            borderRadius: "5px",
-            backgroundColor: "#e0e0e0",
-            overflow: "hidden"
-          }}
+          // style={{
+          //   width: '100%',
+          //   height: "8px",
+          //   borderRadius: "5px",
+          //   backgroundColor: "#e0e0e0",
+          //   overflow: "hidden"
+          // }}
         >
           Carregando...
         </progress>
