@@ -231,6 +231,7 @@ router.get('/pagos', auth, async (req, res) => {
     in: ['PAGO', 'ENVIADO', 'CANCELADO']
     }},
   include: {
+    usuario: true,
     itens: {
       include: {
         produto: true,
