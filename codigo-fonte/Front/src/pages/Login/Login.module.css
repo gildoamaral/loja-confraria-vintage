@@ -27,7 +27,7 @@
 }
 
 .formContainer {
-    background-color: #440e0b;
+    background-color: #ec7148;
     padding: 2rem;
     border-radius: 1rem;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -51,7 +51,7 @@
 .inputGroup label {
     margin-bottom: 2px;
     font-size: 14px;
-    color: #fae0d2;
+    color: #202215;
 }
 
 .inputGroup input, select {
@@ -65,7 +65,7 @@
 
 .button {   /*Transformei em uma classe, se não teria efeito global */
     background-color: #f38b66;
-    color: white;
+    color: #202215;
     padding: 10px;
     border: none;
     border-radius: 4px;
@@ -91,12 +91,12 @@
 }
 
 .signupMessage {
-    color: #fae0d2;
+    color: #202215;
     text-decoration: none;
 }
 
 .signupLink {
-    color: #ffffff;
+    color: #202215;
     text-decoration: none;
 }
 
