@@ -187,7 +187,11 @@ router.get('/conta', auth, async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Strict"
+  });
   res.status(200).json({ message: "Deslogado com sucesso" });
 });
 
