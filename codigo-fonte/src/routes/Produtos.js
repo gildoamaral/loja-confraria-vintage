@@ -62,7 +62,7 @@ router.get('/:id', async (req, res) => {
 
 
 // POST 
-router.post('/', AuthAdmin,async (req, res) => {
+router.post('/', AuthAdmin, async (req, res) => {
   const {
     nome,
     descricao,
@@ -75,27 +75,40 @@ router.post('/', AuthAdmin,async (req, res) => {
     categoria,
     ocasiao
   } = req.body;
-
   if (!nome || preco == null || !imagem || quantidade == null || !tamanho || !cor || !categoria) {
     return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
   }
 
   const data = {
     nome,
-    descricao,
-    preco,
+    descricao: descricao || null,          
+    preco: parseFloat(preco),
     imagem,
-    quantidade,
+    quantidade: parseInt(quantidade, 10),
     tamanho,
     cor,
     categoria,
+    precoPromocional: null,                  
+    ocasiao: null                            
   };
 
   if (req.body.hasOwnProperty('precoPromocional')) {
-    data.precoPromocional = precoPromocional;
+    data.precoPromocional = precoPromocional != null
+      ? parseFloat(precoPromocional)
+      : null;
   }
+
   if (req.body.hasOwnProperty('ocasiao')) {
-    data.ocasiao = ocasiao;
+    if (ocasiao == null || ocasiao === '') {
+      data.ocasiao = null;
+    } else {
+      const ocasiaoFormatado = String(ocasiao).toUpperCase();
+
+      if (!Object.values(Ocasiao).includes(ocasiaoFormatado)) {
+        return res.status(400).json({ error: 'Ocasiao inválido.' });
+      }
+      data.ocasiao = ocasiaoFormatado;
+    }
   }
 
   try {

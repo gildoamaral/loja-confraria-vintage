@@ -218,7 +218,7 @@ const CadastroProduto = () => {
 
           {/* Ocasião */}
           <div className={Styles.formGroup}>
-            <label className={Styles.label}>Ocasião<span className={Styles.required}>*</span>:</label>
+            <label className={Styles.label}>Ocasião 'opicional'<span className={Styles.required}>*</span>:</label>
             <select
               className={Styles.select}
               value={ocasiao}

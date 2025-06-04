@@ -49,6 +49,7 @@
   }
   .produtoCard {
     width: 80%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -253,100 +254,167 @@
     font-size: 1.1rem;
     color: #333;
   }
-  
-@media (max-width: 1200px) {
-  .container {
-    padding: 15px;
+  img{
+    max-width: 300px;
+    max-height: 430px;
   }
-  .productWrapper {
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-  }
-}
-
-
-@media (max-width: 1024px) {
-  .productWrapper {
-    grid-template-columns: 1fr;
-  }
-  .mainImage img {
-    height: auto;
-  }
-  .gallery {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .thumbnails {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-  .breadcrumb {
-    font-size: 0.8rem;
-  }
-  .productTitle {
-    font-size: 1.5rem;
-  }
-  .productPrice {
-    font-size: 1.5rem;
-  }
-  .thumbnail {
-    width: 60px;
-    height: 60px;
-  }
-  .addToCartButton {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-  }
-  .quantityControls button {
-    padding: 5px 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .breadcrumb {
-    font-size: 0.75rem;
-  }
-  .productTitle {
-    font-size: 1.2rem;
-  }
-  .productPrice {
-    font-size: 1.2rem;
-  }
-  .thumbnails {
-    gap: 5px;
-  }
-  .thumbnail {
-    width: 50px;
-    height: 50px;
-  }
-  .calcFreteButton, .sizeOption, .colorOption {
-    padding: 8px;
-  }
-  .cepInput {
-    width: 120px;
-    font-size: 0.85rem;
-  }
-  .container h4 {
-    margin: 10px 0;
-    padding: 10px;
-    font-size: 1rem;
-  }
-}
 
 .selected {
   transform: scale(1.1);
   box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    padding: 0 10px;
+  }
+  .contentWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    width: 100%;
+  }
+  .titulo,
+  .container h2,
+  .container h4 {
+    font-size: 1.3rem;
+    margin: 20px 0;
+    padding: 15px 0;
+  }
+  .produtosGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  .produtoCard {
+    width: 100%;
+  }
+  .produtoCard:hover {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+  .produtoImagem {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  .produtoNome {
+    font-size: 1.2rem;
+  }
+  .produtoPreco {
+    font-size: 1.4rem;
+  }
+  .promoPrice {
+    font-size: 1.6rem;
+  }
+  .originalPrice {
+    font-size: 1rem;
+  }
+  .sortSelect {
+    width: 100%;
+    font-size: 0.85rem;
+  }
+  .filterGroup {
+    margin-bottom: 1.5rem;
+  }
+  .dropdown {
+    width: 100%;
+  }
+  .filterItem {
+    gap: 0.4rem;
+    margin: 0.4rem 0;
+  }
+  .filterItem input {
+    transform: scale(0.9);
+  }
+  .colorIndicator,
+  .produtoCor {
+    width: 14px;
+    height: 14px;
+  }
+  .ocasioesContainer {
+    gap: 1rem;
+    padding: 8px;
+    margin-bottom: 30px;
+  }
+  .ocasioCard {
+    width: 45%;
+    height: 100px;
+  }
+  .ocasioNome {
+    width: 120px;
+    height: 80px;
+    font-size: 1rem;
+  }
+  .loading {
+    margin: 30px auto;
+    width: 30px;
+    height: 30px;
+    border-width: 3px;
+  }
+  .filterToggle {
+    margin-left: auto;
+    margin-bottom: 1rem;
+    width: 60px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+  .closeButton {
+    font-size: 1.2rem;
+  }
+  img {
+    min-width: 250px;
+    min-height: 270px;
+  }
 }
+@media (max-width: 480px) {
+  .container {
+    padding: 0 5px;
+  }
+  .contentWrapper {
+    gap: 1rem;
+    padding: 0.5rem 0;
+  }
+  .produtosGrid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .produtoCard {
+    margin: 0 auto;
+  }
+  .produtoImagem {
+    height: 160px;
+  }
+  .produtoNome {
+    font-size: 1.1rem;
+  }
+  .produtoPreco {
+    font-size: 1.2rem;
+  }
+  .promoPrice {
+    font-size: 1.4rem;
+  }
+  .sortSelect {
+    font-size: 0.8rem;
+  }
+
+  .ocasioesContainer {
+    gap: 0.75rem;
+  }
+  .ocasioCard {
+    width: 100%;
+    height: 80px;
+  }
+  .ocasioNome {
+    width: 100%;
+    height: 60px;
+    font-size: 0.95rem;
+  }
+  .filterToggle{
+    width: 100px;
+  }
+}
+
 
   

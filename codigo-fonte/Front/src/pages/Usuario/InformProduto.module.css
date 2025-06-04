@@ -31,15 +31,17 @@
 
 .mainImage img {
   width: 100%;
-  height: 500px;
+  height: 600px;
   object-fit: contain;
   border-radius: 8px;
+  max-width: 470px;
+  max-height: 550px;
 }
 
 .thumbnails {
   display: flex;
+  flex-direction: row;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
 .thumbnail {
@@ -62,14 +64,16 @@
 }
 
 .productTitle {
-  font-size: 2rem;
+  font-size: 2.3rem;
   color: #333;
+  margin-bottom: 20px;
 }
 
 .productPrice {
   font-size: 1.8rem;
   color: #2a7f62;
   font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .colorOption {
@@ -79,6 +83,7 @@
   border: none;
   cursor: pointer;
   transition: transform 0.2s;
+  margin-top: 10px;
 }
 
 .colorOption:hover {
@@ -98,6 +103,7 @@
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s;
+  margin-top: 10px;
 }
 
 .sizeOption.selected {
@@ -164,13 +170,34 @@
   gap: 1rem;
 }
 
-.vermelho { background-color: #b60d0d; }
-.azul { background-color: #0101ce; }
-.amarelo { background-color: #fafa35; }
-.verde { background-color: #02a702; }
-.preto { background-color: #000; }
-.branco { background-color: #fff; border: 1px solid #ccc !important; }
-.rosa { background-color: #ff69b4; }
+.vermelho {
+  background-color: #b60d0d;
+}
+
+.azul {
+  background-color: #0101ce;
+}
+
+.amarelo {
+  background-color: #fafa35;
+}
+
+.verde {
+  background-color: #02a702;
+}
+
+.preto {
+  background-color: #000;
+}
+
+.branco {
+  background-color: #fff;
+  border: 1px solid #ccc !important;
+}
+
+.rosa {
+  background-color: #ff69b4;
+}
 
 
 .loading {
@@ -181,15 +208,6 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 50px auto;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 .freteSection {
@@ -212,6 +230,7 @@
   background-color: white;
   color: #000;
   margin-right: 10px;
+  margin-top: 20px;
 }
 
 .calcFreteButton {
@@ -224,10 +243,12 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
+
 .calcFreteButton:disabled {
   background-color: #aac4f3;
   cursor: not-allowed;
 }
+
 .calcFreteButton:hover:not(:disabled) {
   background-color: #005bb5;
 }
@@ -243,8 +264,8 @@
   align-items: center;
   padding: 0.75rem;
   border-bottom: 1px solid #e0e0e0;
-  cursor: pointer;
 }
+
 .freteItem:last-child {
   border-bottom: none;
 }
@@ -260,102 +281,153 @@
   font-size: 0.95rem;
   color: #222;
 }
+
 .freteItem span {
   font-size: 0.9rem;
   color: #555;
-}
-.selectedFreteItem {
-  border: 2px solid #2a7f62;
-  background-color: #f5fdfb;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 0 2px rgba(42, 127, 98, 0.2);
 }
 
 .freteItem .price,
 .freteItem .deliveryTime {
   margin-left: 1rem;
 }
+
 h4 {
-  margin: 15px;
-  padding:15px;
-}
-
-@media (max-width: 1200px) {
-  .container {
-    padding: 15px;
-  }
-  .productWrapper {
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .productWrapper {
-    grid-template-columns: 1fr;
-  }
-  .mainImage img {
-    height: auto;
-  }
-  .gallery {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  .thumbnails {
-    justify-content: center;
-  }
+  margin-top: 25px;
+  padding: 0px;
 }
 
 @media (max-width: 768px) {
+
   .container {
     padding: 10px;
   }
+
   .breadcrumb {
     font-size: 0.8rem;
+    margin-bottom: 10px;
   }
+
+  .breadcrumb a {
+    font-size: 0.8rem;
+  }
+
+  .productWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .gallery {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .mainImage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mainImage img {
+    min-height: 300px;
+    min-width: 300px;
+  }
+  .productInfo {
+    width: 100%;
+    padding: 0 5px;
+  }
+  
   .productTitle {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
   }
+
   .productPrice {
     font-size: 1.5rem;
+    margin-bottom: 8px;
   }
-  .thumbnail {
-    width: 60px;
-    height: 60px;
+
+  .colorOption {
+    width: 30px;
+    height: 30px;
+    margin-top: 8px;
   }
+
+  .sizeOption {
+    padding: 8px 12px;
+    margin-top: 8px;
+  }
+
+  .quantityControls {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
   .quantityControls button {
     padding: 5px 10px;
   }
-}
 
-@media (max-width: 480px) {
-  .breadcrumb {
-    font-size: 0.75rem;
+  .addToCartButton {
+    margin-left: 45%;
+    width: 100%;
+    font-size: 1rem;
   }
-  .productTitle {
-    font-size: 1.2rem;
+
+  .addPayButtons {
+    flex-direction: column;
+    gap: 10px;
   }
-  .productPrice {
-    font-size: 1.2rem;
+
+  .cepInput {
+    width: 50%;
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .calcFreteButton {
+    width: 120px;
+    height: 40px;
+    margin-top: 17px;
+  }
+
+  .freteItem {
+    padding: 0.5rem;
   }
   .thumbnails {
-    gap: 5px;
+    max-width: 80px;    
+    display: flex;        
+    flex-direction: column;
+    gap: 10px;
   }
+
   .thumbnail {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
   }
-  .calcFreteButton, .sizeOption, .colorOption {
-    padding: 8px;
+
+  .freteItem strong {
+    font-size: 0.9rem;
   }
-  .cepInput {
-    width: 120px;
+
+  .freteItem span {
+    font-size: 0.8rem;
+  }
+
+  .freteItem .price,
+  .freteItem .deliveryTime {
+    margin-left: 0.5rem;
     font-size: 0.85rem;
   }
+
   h4 {
-    margin: 10px 0;
-    padding: 10px;
     font-size: 1rem;
+    margin-top: 20px;
+  }
+  .freteCalcRow{
+    display: flex;
+    align-items: center;
+    justify-content: centers;
   }
 }
