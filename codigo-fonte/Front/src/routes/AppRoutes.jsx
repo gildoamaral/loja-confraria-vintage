@@ -10,21 +10,31 @@ import Estoque from "../pages/Estoque/Estoque.jsx";
 import Carrinho from '../pages/Carrinho/Carrinho.jsx';
 import Pagamento from '../pages/Pagamento/Pagamento.jsx';
 import Pedidos from "../pages/Pedidos/Pedidos.jsx";
+import ProtectedLayout from '../components/ProtectedLayout';
 
 function AppRoutes() {
   return (
     <Routes>
+      {/* Rotas públicas */}
       <Route path="/" element={<HomeCliente />} />
-      <Route path="/cadastro-produto" element={<CadastroProduto />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro-usuario" element={<CadastroUsuario />} />
-      <Route path="/homeprodutos" element={<HomeProdutos />} />
       <Route path="/produto/:id" element={<InformProduto />} />
-      <Route path="/conta" element={<Conta />} />
-      <Route path="/estoque" element={<Estoque />} />
-      <Route path="/pagamento" element={<Pagamento />} />
       <Route path='/carrinho' element={<Carrinho />} />
-      <Route path='/pedidos' element={<Pedidos />} />
+
+      {/* Rotas privadas para qualquer usuário logado */}
+      <Route element={<ProtectedLayout />}>
+        <Route path="/conta" element={<Conta />} />
+        <Route path="/pagamento" element={<Pagamento />} />
+        <Route path="/pedidos" element={<Pedidos />} />
+      </Route>
+
+      {/* Rotas privadas só para admin */}
+      <Route element={<ProtectedLayout adminOnly />}>
+        <Route path="/estoque" element={<Estoque />} />
+        <Route path="/cadastro-produto" element={<CadastroProduto />} />
+        <Route path="/homeprodutos" element={<HomeProdutos />} />
+      </Route>
     </Routes>
   );
 }
