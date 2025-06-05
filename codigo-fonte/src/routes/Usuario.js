@@ -196,6 +196,7 @@ router.post("/logout", (req, res) => {
   res.status(200).json({ message: "Deslogado com sucesso" });
 });
 
+
 router.get('/admin', authAdmin, (req, res) => {
   res.json({ isAdmin: true });
 });
