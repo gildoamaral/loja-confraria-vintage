@@ -133,6 +133,10 @@ const Pedidos = () => {
 
                     {estaExpandido && (
                       <>
+                        <p><strong>Nome:</strong> {pedido.usuario?.nome + ' ' + pedido.usuario?.sobrenome}</p>
+                        <p><strong>Email:</strong> {pedido.usuario?.email}</p>
+                        <p><strong>Telefone:</strong> {pedido.usuario?.telefone}</p>
+                        <br/>
                         <p><strong>Status do pedido:</strong> {pedido.status}</p>
                         <p><strong>Status do pagamento:</strong> {pedido.pagamento?.status || 'Não informado'}</p>
                         <p><strong>Método de pagamento:</strong> {pedido.pagamento?.metodo || 'Não informado'}</p>
