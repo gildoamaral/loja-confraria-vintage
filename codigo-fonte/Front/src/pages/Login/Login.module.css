@@ -60,7 +60,7 @@
     border-radius: 4px;
     font-size: 14px;
     background-color: #e4e4e4da;
-    color:#fae0d2;
+    color:var(--cor-fonte);
 }
 
 .button {   /*Transformei em uma classe, se não teria efeito global */
