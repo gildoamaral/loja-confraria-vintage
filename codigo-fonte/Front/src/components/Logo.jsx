@@ -22,22 +22,25 @@ const Logo = () => {
       }}
     >
       <img
-        src={logo}
-        alt="logo"
-        style={{
-          width: isMobile ? '30rem' : '28rem',
-          height: '100%',
-          objectFit: 'cover',
-          filter: hover
-            ? 'drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.9)) contrast(1.2)'
-            : 'none',
-          transition: 'filter 0.3s ease-in-out',
-          cursor: 'pointer'
-        }}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        onClick={() => navigate('/')}
-      />
+  src={logo}
+  alt="Logo Confraria Vintage"
+  style={{
+    width: isMobile ? '24rem' : '22rem',
+    height: 'auto',
+    objectFit: 'contain',
+    filter: hover
+      ? 'drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.6)) contrast(1.1)'
+      : 'none',
+    transition: 'filter 0.3s ease-in-out',
+    cursor: 'pointer',
+    display: 'block',
+    maxWidth: '100%'
+  }}
+  onMouseEnter={() => setHover(true)}
+  onMouseLeave={() => setHover(false)}
+  onClick={() => navigate('/')}
+/>
+
     </div>
   );
 };

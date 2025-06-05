@@ -3,8 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Allison&display=swap');
 /*
-"Caudex" fonte para o fundo
-"Darker Grotesque" fonte para o texto
+"Courier New" fonte para o fundo
+"Courier " fonte para o texto
 */
 
 * {
@@ -14,16 +14,16 @@
 }
 
 :root {
-  --cor-principal: #fce4bf;
-  --cor-principal2: #f8ae61;
+  --cor-principal: #fcddbf;
+  --cor-principal2: #ec7148;
 
-  --cor-secundaria: #440e0b;
-  --cor-fonte: #4B2626;
+  --cor-secundaria: #fa8f6b;
+  --cor-fonte: #202215;
 
-  --cor-fonte-claro: #fae0d2;
+  --cor-fonte-claro: #202215;
 
 
-  font-family: 'Caudex', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:'Courier New', Courier, monospace;
   line-height: 1.5;
   font-weight: 600;
 
