@@ -3,6 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const auth = require('../middlewares/Auth');
+const authAdmin = require('../middlewares/AuthAdmin');
 
 require("dotenv").config();
 
@@ -189,6 +190,10 @@ router.get('/conta', auth, async (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Deslogado com sucesso" });
+});
+
+router.get('/admin', authAdmin, (req, res) => {
+  res.json({ isAdmin: true });
 });
 
 module.exports = router;
