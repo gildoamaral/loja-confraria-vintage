@@ -11,6 +11,7 @@ import Carrinho from '../pages/Carrinho/Carrinho.jsx';
 import Pagamento from '../pages/Pagamento/Pagamento.jsx';
 import Pedidos from "../pages/Pedidos/Pedidos.jsx";
 import ProtectedLayout from '../components/ProtectedLayout';
+import NotFound from "../pages/NotFound/NotFound"; // Crie esse componente
 
 function AppRoutes() {
   return (
@@ -35,6 +36,9 @@ function AppRoutes() {
         <Route path="/cadastro-produto" element={<CadastroProduto />} />
         <Route path="/homeprodutos" element={<HomeProdutos />} />
       </Route>
+
+      {/* Rota para página não encontrada */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
