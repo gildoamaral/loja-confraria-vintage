@@ -19,6 +19,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import PagamentoCartao from './PagamentoCartao';
 import Header from '../../components/Header1';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const Pagamento = () => {
   const location = useLocation();
@@ -50,6 +51,8 @@ const Pagamento = () => {
         const res = await api.get('/usuarios/conta');
         setUsuario(res.data);
 
+        console.log('Usuário logado:', res.data);
+
       } catch (err) {
         console.error('Erro ao buscar usuário:', err);
       }
@@ -61,7 +64,6 @@ const Pagamento = () => {
         const response = await api.get('/pedidos/carrinho');
         if (response.data && response.data.id) {
           setPedidoId(response.data.id);
-          console.log('Endereço do usuário:', response.data.enderecoEntrega);
 
           setEndereco(parseEndereco(response.data.enderecoEntrega));
           setEnderecoFormatado(response.data.enderecoEntrega);
@@ -74,15 +76,16 @@ const Pagamento = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+
   useEffect(() => {
     if (valorTotal === undefined || quantidadeTotal === undefined) {
       navigate('/carrinho', { replace: true });
     }
   }, [valorTotal, quantidadeTotal, navigate]);
 
-    if (valorTotal === undefined || quantidadeTotal === undefined) {
-      return null; // ou um spinner
-    }
+  if (valorTotal === undefined || quantidadeTotal === undefined) {
+    return null; // ou um spinner
+  }
 
   function parseEndereco(enderecoStr) {
     const match = enderecoStr.match(/^(.*), (\d+)(?:, (.*))?, (.*), (.*) - (\w{2}), CEP: (.*)$/);
@@ -124,37 +127,14 @@ const Pagamento = () => {
 
   const handleContinuar = async () => {
     if (usarEnderecoCadastrado) {
-      try {
-        // TESTANDO
-        // if (!pedidoId) {
-        //   alert('Pedido não encontrado!');
-        //   return;
-        // }
+      // Endereço do usuario já foi colocado no pedido através do backend
 
-        // TESTANDO
-        // await api.put(`/pedidos/endereco/${pedidoId}`, {
-        //   enderecoEntrega: enderecoCompleto,
-        // });
-
-        setEtapa(2);
-      } catch (error) {
-        console.error('Erro ao continuar para a próxima etapa:', error);
-      }
-
+      setEtapa(2);
       return;
     }
 
-
     const { cep, rua, numero, complemento, bairro, cidade, estado } = endereco;
 
-
-    // if (!cep || !rua || !numero || !bairro || !cidade || !estado) {
-    //   alert('Por favor, preencha todos os campos obrigatórios.');
-    //   return;
-    // }
-
-    // const enderecoCompleto =
-    //   `${rua}, ${numero}${complemento ? ', ' + complemento : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
 
     const enderecoCompletoFormatado = (
       <>
@@ -165,21 +145,17 @@ const Pagamento = () => {
       </>
     )
 
+    const enderecoCompleto = ` ${rua}, ${numero}${complemento ? `, ${complemento}` : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
+
     setEnderecoFormatado(enderecoCompletoFormatado);
 
     console.log('Endereço completo:', enderecoCompletoFormatado);
 
     try {
-      // TESTANDO
-      // if (!pedidoId) {
-      //   alert('Pedido não encontrado!');
-      //   return;
-      // }
 
-      // TESTANDO
-      // await api.put(`/pedidos/endereco/${pedidoId}`, {
-      //   enderecoEntrega: enderecoCompleto,
-      // });
+      await api.put(`/pedidos/endereco/${pedidoId}`, {
+        enderecoEntrega: enderecoCompleto,
+      });
 
       setEtapa(2);
     } catch (error) {
@@ -197,11 +173,19 @@ const Pagamento = () => {
       }}
     >
       <Header invisivel />
-      <Paper elevation={3} sx={{ mx: 'auto', p: 3, borderRadius: 3, maxWidth: 900 }}>
-
-        <Typography variant="h5" fontWeight={700} sx={{ textAlign: 'center', mb: 2 }}>
-          {etapa === 1 ? 'Endereço de Entrega' : 'Pagamento'}
-        </Typography>
+      <Paper elevation={3} sx={{ mx: 'auto', p: 3, borderRadius: 3, maxWidth: 900, mt:{xs: 0, sm: 4} }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Button
+            onClick={() => navigate(-1)}
+            sx={{ minWidth: 0, mr: 1, color: 'primary.main' }}
+            aria-label="Voltar"
+          >
+            <ArrowBackIosNewIcon />
+          </Button>
+          <Typography variant="h5" fontWeight={700} sx={{ textAlign: 'center', flex: 1 }}>
+            {etapa === 1 ? 'Endereço de Entrega' : 'Pagamento'}
+          </Typography>
+        </Box>
         <Divider sx={{ mb: 3 }} />
 
         <Grid container spacing={4} >

@@ -193,17 +193,21 @@ const PagamentoCartao = (props) => {
             }}
           // maxWidth='460px'
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: {xs: "1rem", sm: 0} }}>
               <Typography sx={{ color: 'black' }} variant="subtitle2"> Cartão de Crédito </Typography>
               <CreditCardRoundedIcon sx={{ color: 'text.secondary' }} />
             </Box>
 
-            <img src={imagem} alt="Imagem do cartão"
-              style={{
+            <Box
+              component="img"
+              src={imagem}
+              alt="Imagem do cartão"
+              sx={{
                 opacity: 0.6,
                 width: '13%',
                 height: 'auto',
-                marginTop: "2em"
+                marginTop: "2em",
+                display: { xs: 'none', sm: 'block' }
               }}
             />
             <Box

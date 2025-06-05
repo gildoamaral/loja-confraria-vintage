@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import CarrinhoItemCard from './CarrinhoItemCard';
 import Header from '../../components/Header1';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 function Carrinho() {
   const [carrinho, setCarrinho] = useState([]);
@@ -103,14 +104,14 @@ function Carrinho() {
       <Header invisivel />
       <Box
         sx={{
-          maxWidth: 730,
+          maxWidth: { xs: '100%', sm: 730 },
           mx: 'auto',
-          mt: 4,
+          mt: { xs: 2, sm: 4 },
           p: { xs: 1, sm: 3 },
           backgroundColor: '#fff',
-          borderRadius: 3,
+          borderRadius: { xs: 0, sm: 3 },
           boxShadow: 4,
-          marginTop: '2rem',
+          marginTop: { xs: '1rem', sm: '2rem' },
           minHeight: 500,
           position: 'relative',
         }}
@@ -121,7 +122,14 @@ function Carrinho() {
           </Box>
         ) : (
           <>
-            <Box sx={{ display: 'flex', alignItems: 'center',justifyContent: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+              <Button
+                onClick={() => navigate(-1)}
+                sx={{ minWidth: 0, mr: 2, color: 'primary.main', position: 'absolute', left: 16 }}
+                aria-label="Voltar"
+              >
+                <ArrowBackIosNewIcon />
+              </Button>
               <ShoppingCartIcon sx={{ fontSize: 38, color: '#FF967E', mr: 1 }} />
               <Typography variant="h4" fontWeight={700}>
                 Seu Carrinho
@@ -130,15 +138,16 @@ function Carrinho() {
 
             <Divider sx={{ mb: 3 }} />
 
-            <Grid container spacing={3}>
+            <Grid container spacing={2} direction="column">
               {carrinho.map((item) => (
-                <CarrinhoItemCard
-                  key={item.id}
-                  item={item}
-                  parseImagens={parseImagens}
-                  atualizarQuantidade={atualizarQuantidade}
-                  removerDoCarrinho={removerDoCarrinho}
-                />
+                <Grid item xs={12} key={item.id}>
+                  <CarrinhoItemCard
+                    item={item}
+                    parseImagens={parseImagens}
+                    atualizarQuantidade={atualizarQuantidade}
+                    removerDoCarrinho={removerDoCarrinho}
+                  />
+                </Grid>
               ))}
             </Grid>
 
