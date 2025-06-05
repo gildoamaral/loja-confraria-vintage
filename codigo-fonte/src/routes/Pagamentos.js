@@ -13,10 +13,37 @@ const client = new MercadoPagoConfig(
 );
 const payment = new Payment(client);
 
+// Teste simples
 router.get('/', (req, res) => {
   res.send('Rota de pagamentos funcionando!');
 });
 
+// Nova rota para buscar pagamento por pedidoId
+router.get('/por-pedido/:pedidoId', async (req, res) => {
+  const pedidoId = Number(req.params.pedidoId);
+  
+  if (!pedidoId) {
+    return res.status(400).json({ error: "Pedido ID inválido" });
+  }
+
+  try {
+    const pagamento = await prisma.pagamentos.findFirst({
+      where: { pedidoId },
+      orderBy: { id: 'desc' } // pega o pagamento mais recente, se houver mais de um
+    });
+
+    if (!pagamento) {
+      return res.status(404).json({ error: "Pagamento não encontrado para esse pedido" });
+    }
+
+    res.json(pagamento);
+  } catch (error) {
+    console.error("Erro ao buscar pagamento por pedido:", error);
+    res.status(500).json({ error: "Erro interno ao buscar pagamento" });
+  }
+});
+
+// Criar pagamento via PIX
 router.post('/criar-pix', (req, res, next) => {
   console.log('REQUEST');
   console.log(req.body);
@@ -48,9 +75,9 @@ router.post('/criar-pix', (req, res, next) => {
       console.log(error);
       res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error });
     });
-
 });
 
+// Criar pagamento via cartão
 router.post('/criar-cartao', async (req, res) => {
   const { transaction_amount, pedidoId, token, description, installments, payment_method_id, issuer_id, payer } = req.body;
 

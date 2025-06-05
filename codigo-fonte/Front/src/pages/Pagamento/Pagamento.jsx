@@ -15,15 +15,18 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import PagamentoCartao from './PagamentoCartao';
 import Header from '../../components/Header1';
 
 const Pagamento = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const valorTotal = location.state?.valorTotal;
   const quantidadeTotal = location.state?.quantidadeTotal;
+
+
 
   const [pedidoId, setPedidoId] = useState(null);
   const [metodo, setMetodo] = useState('');
@@ -42,7 +45,6 @@ const Pagamento = () => {
   const [etapa, setEtapa] = useState(1);
 
   useEffect(() => {
-    // Busca dados do usuário logado
     const fetchUsuario = async () => {
       try {
         const res = await api.get('/usuarios/conta');
@@ -54,7 +56,6 @@ const Pagamento = () => {
     };
     fetchUsuario();
 
-    // Busca pedido
     const fetchPedidoCarrinho = async () => {
       try {
         const response = await api.get('/pedidos/carrinho');
@@ -73,10 +74,17 @@ const Pagamento = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Função para converter string de endereço em objeto
+  useEffect(() => {
+    if (valorTotal === undefined || quantidadeTotal === undefined) {
+      navigate('/carrinho', { replace: true });
+    }
+  }, [valorTotal, quantidadeTotal, navigate]);
+
+    if (valorTotal === undefined || quantidadeTotal === undefined) {
+      return null; // ou um spinner
+    }
+
   function parseEndereco(enderecoStr) {
-    // Exemplo simples, adapte conforme seu formato real
-    // "Rua X, 123, Bairro, Cidade - UF, CEP: 00000-000"
     const match = enderecoStr.match(/^(.*), (\d+)(?:, (.*))?, (.*), (.*) - (\w{2}), CEP: (.*)$/);
     if (!match) return endereco;
     return {
@@ -90,7 +98,6 @@ const Pagamento = () => {
     };
   }
 
-  // Ao clicar em "Usar endereço cadastrado"
   const handleUsarEnderecoCadastrado = () => {
     if (usuario?.endereco) {
       setEndereco(parseEndereco(usuario.endereco));
@@ -98,7 +105,6 @@ const Pagamento = () => {
     }
   };
 
-  // Ao clicar em "Preencher novo endereço"
   const handleNovoEndereco = () => {
     setEndereco({
       cep: '',

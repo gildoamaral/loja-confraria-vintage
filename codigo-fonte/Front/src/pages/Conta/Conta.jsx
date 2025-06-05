@@ -26,6 +26,7 @@ const Conta = () => {
   const [msgErro, setMsgErro] = useState("");
 
   const [pedidosExpandido, setPedidosExpandido] = useState([]);
+  const [pagamentosPorPedido, setPagamentosPorPedido] = useState({});
 
   const parseImagens = (imagemData) => {
     if (!imagemData) return [];
@@ -68,6 +69,35 @@ const Conta = () => {
     fetchData();
   }, []);
 
+  const buscarPagamento = async (pedidoId) => {
+    try {
+      const response = await api.get(`/pagamentos/por-pedido/${pedidoId}`, {
+        withCredentials: true,
+      });
+      console.log(`Pagamento recebido para pedido ${pedidoId}:`, response.data);
+      setPagamentosPorPedido((prev) => ({
+        ...prev,
+        [pedidoId]: response.data,
+      }));
+    } catch (err) {
+      console.error(`Erro ao buscar pagamento do pedido ${pedidoId}`, err);
+    }
+  };
+
+  const toggleExpandirPedido = (id) => {
+    setPedidosExpandido((prev) => {
+      const atualizado = prev.includes(id)
+        ? prev.filter((pid) => pid !== id)
+        : [...prev, id];
+
+      if (!prev.includes(id) && !pagamentosPorPedido[id]) {
+        buscarPagamento(id);
+      }
+
+      return atualizado;
+    });
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormDados((prev) => ({
@@ -93,14 +123,6 @@ const Conta = () => {
     } finally {
       setSalvando(false);
     }
-  };
-
-  const toggleExpandirPedido = (id) => {
-    setPedidosExpandido((prev) =>
-      prev.includes(id)
-        ? prev.filter((pid) => pid !== id)
-        : [...prev, id]
-    );
   };
 
   if (loading) return <p>Carregando dados da conta...</p>;
@@ -256,90 +278,90 @@ const Conta = () => {
           </div>
         )}
 
+
         {abaAtiva === "pedidos" && (
           <div className={styles.formContainer}>
             <h2>Meus pedidos</h2>
-            {pedidos.filter(p => p.status !== "CARRINHO").length === 0 ? (
-              <p>Você ainda não realizou nenhum pedido.</p>
-            ) : (
-              pedidos
-                .filter(pedido => pedido.status !== "CARRINHO")
-                .map((pedido) => {
-                  const totalPedido = pedido.itens?.reduce((acc, item) => {
-                    const precoUnitario = item.produto.preco || 0;
-                    return acc + precoUnitario * item.quantidade;
-                  }, 0) || 0;
+            {pedidos
+              .filter(pedido => pedido.status !== "CARRINHO")
+              .map((pedido) => {
+                const estaExpandido = pedidosExpandido.includes(pedido.id);
+                const pagamento = pagamentosPorPedido[pedido.id];
 
-                  const estaExpandido = pedidosExpandido.includes(pedido.id);
+                const totalPago = pagamento?.valor ?? null;
 
-                  return (
-                    <div key={pedido.id} className={styles.pedidoCard}>
-                      <h3
-                        style={{ cursor: "pointer", userSelect: "none" }}
-                        onClick={() => toggleExpandirPedido(pedido.id)}
-                      >
-                        Pedido #{pedido.id}{" "}
-                        <span style={{
-                          display: "inline-block",
-                          transform: estaExpandido ? "rotate(90deg)" : "rotate(0deg)",
-                          transition: "transform 0.2s ease",
-                          fontWeight: "bold",
-                          marginLeft: "5px",
-                        }}>
-                          &gt;
-                        </span>
-                      </h3>
+                return (
+                  <div key={pedido.id} className={styles.pedidoCard}>
+                    <h3
+                      style={{ cursor: "pointer", userSelect: "none" }}
+                      onClick={() => toggleExpandirPedido(pedido.id)}
+                    >
+                      Pedido #{pedido.id}{" "}
+                      <span style={{
+                        display: "inline-block",
+                        transform: estaExpandido ? "rotate(90deg)" : "rotate(0deg)",
+                        transition: "transform 0.2s ease",
+                        fontWeight: "bold",
+                        marginLeft: "5px",
+                      }}>
+                        &gt;
+                      </span>
+                    </h3>
 
-                      {estaExpandido && (
-                        <>
-                          <p><strong>Status do pedido:</strong> {pedido.status}</p>
-                          <p><strong>Status do pagamento:</strong> {pedido.pagamento?.status || 'Não informado'}</p>
-                          <p><strong>Método de pagamento:</strong> {pedido.pagamento?.metodo || 'Não informado'}</p>
+                    {estaExpandido && (
+                      <>
+                        <p><strong>Método de pagamento:</strong> {pagamento?.metodo || 'Carregando...'}</p>
+                        <p><strong>Status do pagamento:</strong> {pagamento?.status || 'Carregando...'}</p>
+                        <p><strong>Número de parcelas:</strong> {pagamento?.parcelas ?? 'Carregando...'}</p>
+                        <p>
+                          <strong>Data do pedido:</strong>{" "}
+                          {pedido?.criadoEm
+                            ? new Date(pedido.criadoEm.split("T")[0] + "T12:00:00").toLocaleDateString()
+                            : "Data não informada"}
+                        </p>
+                        <p><strong>Endereço de entrega:</strong> {pedido.enderecoEntrega || 'Não informado'}</p>
+
+                        <div>
+                          <strong>Itens:</strong>
+                          <ul>
+                            {pedido.itens?.map(item => {
+                              const produtoImagens = parseImagens(item.produto.imagem);
+                              const imagem = produtoImagens[0] || "/placeholder.png";
+                              const precoUnitario = item.produto.preco || 0;
+
+                              return (
+                                <li key={item.id} className={styles.itemPedido}>
+                                  <img
+                                    src={imagem}
+                                    alt={item.produto.nome}
+                                    className={styles.imagemProduto}
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
+                                  <div>
+                                    <strong>{item.produto.nome}</strong><br />
+                                    Tamanho: {item.produto.tamanho || "Não informado"}<br />
+                                    Cor: {item.produto.cor || "Não informada"}<br />
+                                    Quantidade: {item.quantidade}<br />
+                                    Preço unitário: R$ {precoUnitario.toFixed(2)}
+                                  </div>
+                                </li>
+                              );
+                            })}
+                          </ul>
+
                           <p>
-                            <strong>Data do pedido:</strong>{" "}
-                            {pedido?.criadoEm
-                              ? new Date(pedido.criadoEm.split("T")[0] + "T12:00:00").toLocaleDateString()
-                              : "Data não informada"}
+                            <strong>Total do pedido:</strong>{" "}
+                            {totalPago !== null
+                              ? `R$ ${totalPago.toFixed(2)}`
+                              : "Carregando preço do pedido..."}
                           </p>
-                          <p><strong>Endereço de entrega:</strong> {pedido.enderecoEntrega || 'Não informado'}</p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
 
-                          <div>
-                            <strong>Itens:</strong>
-                            <ul>
-                              {pedido.itens?.map(item => {
-                                const produtoImagens = parseImagens(item.produto.imagem);
-                                const imagem = produtoImagens[0] || "/placeholder.png";
-                                const precoUnitario = item.produto.preco || 0;
-                                const subtotal = precoUnitario * item.quantidade;
-
-                                return (
-                                  <li key={item.id} className={styles.itemPedido}>
-                                    <img
-                                      src={imagem}
-                                      alt={item.produto.nome}
-                                      className={styles.imagemProduto}
-                                      onError={(e) => { e.target.style.display = 'none'; }}
-                                    />
-                                    <div>
-                                      <strong>{item.produto.nome}</strong><br />
-                                      Tamanho: {item.produto.tamanho || "Não informado"}<br />
-                                      Cor: {item.produto.cor || "Não informada"}<br />
-                                      Quantidade: {item.quantidade}<br />
-                                      Preço unitário: R$ {precoUnitario.toFixed(2)}<br />
-                                      Subtotal: R$ {subtotal.toFixed(2)}
-                                    </div>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                            <p><strong>Total do pedido:</strong> R$ {totalPedido.toFixed(2)}</p>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  );
-                })
-            )}
           </div>
         )}
       </PageContainer>
