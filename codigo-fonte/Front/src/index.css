@@ -14,10 +14,13 @@
 }
 
 :root {
-  --cor-principal: #fcddbf;
-  --cor-principal2: #ec7148;
+  /* --cor-principal: #fcddbf;
+  --cor-principal2: #f13c00; */
 
-  --cor-secundaria: #fa8f6b;
+  --cor-principal: #ffa3a3;
+  --cor-principal2: #ffc4c4;
+
+  --cor-secundaria: #ff8282;
   --cor-fonte: #202215;
 
   --cor-fonte-claro: #202215;
@@ -37,10 +40,8 @@
   ); */
 
     background: radial-gradient(
-    circle at 50% 50%,
-    var(--cor-principal) 0%,
-    var(--cor-principal) 70%,
-    var(--cor-principal2) 120%
+    var(--cor-principal) 50%,
+    var(--cor-principal2) 180%
   );
 
   font-synthesis: none;

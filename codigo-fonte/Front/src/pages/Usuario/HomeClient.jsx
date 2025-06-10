@@ -6,6 +6,7 @@ import DownHeader from '../../components/DownHeader';
 import PageContainer from '../../components/PageContainer';
 import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
+import Carrossel from '../../components/Carrossel/Carrossel';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG'];
 const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
@@ -63,7 +64,8 @@ const HomeCliente = () => {
   return (
     <>
       <Header />
-      <DownHeader />
+      {/* <DownHeader /> */}
+      <Carrossel />
       <PageContainer className={Styles.container}>
         <h2>Ocasiões Especiais</h2>
         <h4>Confira as melhores opções para cada tipo de evento</h4>

@@ -6,7 +6,7 @@ import Navbar from './navbar'
 const Header = ({ invisivel }) => {
   return (
     <header style={styles.header}>
-      <Logo />
+      {/* <Logo /> */}
       <Navbar invisivel={invisivel}/>
     </header>
   )

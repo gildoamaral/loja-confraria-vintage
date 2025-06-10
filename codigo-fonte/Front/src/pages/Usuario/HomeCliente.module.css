@@ -254,10 +254,6 @@
     font-size: 1.1rem;
     color: #333;
   }
-  img{
-    max-width: 300px;
-    max-height: 430px;
-  }
 
 .selected {
   transform: scale(1.1);
@@ -298,6 +294,10 @@
     width: 100%;
     height: 200px;
     object-fit: cover;
+    /* max-width: 300px;
+    max-height: 430px; */
+    min-width: 250px;   /* Tirei estas propriedades da tag "img" para não ter efeito global*/
+    min-height: 270px;
   }
   .produtoNome {
     font-size: 1.2rem;
@@ -362,10 +362,6 @@
   }
   .closeButton {
     font-size: 1.2rem;
-  }
-  img {
-    min-width: 250px;
-    min-height: 270px;
   }
 }
 @media (max-width: 480px) {
