@@ -29,7 +29,7 @@ function Navbar({ invisivel }) {
           setUsuario(res.data);
           setLogado(true);
         }
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setLogado(false);
       }
@@ -123,11 +123,13 @@ function Navbar({ invisivel }) {
         >
           <MenuIcon fontSize="large" sx={{ color: "#fae0d2" }} />
         </IconButton>
+
         <Link to="/carrinho" style={{ marginRight: '1rem' }}>
           <Badge badgeContent={qtdCarrinho} color="error" overlap="circular">
             <ShoppingCartIcon sx={{ fontSize: 32, color: "#fae0d2" }} />
           </Badge>
         </Link>
+
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
@@ -145,6 +147,7 @@ function Navbar({ invisivel }) {
                 fontFamily: "Playfair Display",
                 fontSize: { xs: "1.2rem", md: "1.7rem" },
                 color: "var(--cor-fonte-claro)",
+                width: '100vw',
               }}
             >
               {link.label}

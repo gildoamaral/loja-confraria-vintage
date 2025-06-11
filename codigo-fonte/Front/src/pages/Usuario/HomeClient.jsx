@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Styles from './HomeCliente.module.css';
 import api from '../../services/api';
-import DownHeader from '../../components/DownHeader';
 import PageContainer from '../../components/PageContainer';
 import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
@@ -64,26 +63,27 @@ const HomeCliente = () => {
   return (
     <>
       <Header />
-      {/* <DownHeader /> */}
       <Carrossel />
       <PageContainer className={Styles.container}>
-        <h2>Ocasiões Especiais</h2>
-        <h4>Confira as melhores opções para cada tipo de evento</h4>
 
-        <div className={Styles.ocasioesContainer}>
-          {OCASIOES.map(ocasiao => (
-            <div
-              key={ocasiao}
-              className={`${Styles.ocasioCard} ${selectedOcasioes.includes(ocasiao) ? Styles.active : ''}`}
-              onClick={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
-            >
-              <span className={Styles.ocasioNome}>
-                {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
-              </span>
-            </div>
-          ))}
-        </div>
+        {/* OCASIOES */}
 
+          <div className={Styles.ocasioesContainer}>
+            {OCASIOES.map(ocasiao => (
+              <div
+                key={ocasiao}
+                className={`${Styles.ocasioCard} ${selectedOcasioes.includes(ocasiao) ? Styles.active : ''}`}
+                onClick={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
+              >
+                <span className={Styles.ocasioNome}>
+                  {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
+                </span>
+              </div>
+            ))}
+          </div>
+
+
+        {/* FILTRO BUTTON */}
         <button
           className={Styles.filterToggle}
           onClick={() => setShowFiltersDrawer(v => !v)}
@@ -91,7 +91,10 @@ const HomeCliente = () => {
           Filtrar
         </button>
 
+
         <div className={Styles.contentWrapper}>
+
+        {/* FILTRO MENU */}
           {showFiltersDrawer && (
             <aside className={Styles.filtersSidebarRight}>
               <details className={Styles.dropdown} open>
@@ -123,6 +126,7 @@ const HomeCliente = () => {
             </aside>
           )}
 
+          {/* ROUPAS */}
           <div className={Styles.produtosGrid}>
             {filteredProdutos.map(produto => {
               const imagens = parseImagens(produto.imagem);
@@ -141,11 +145,14 @@ const HomeCliente = () => {
                         onError={e => e.target.style.display = 'none'}
                       />
                     )}
+            
+
                     <div className={Styles.produtoInfo}>
                       <h3 className={Styles.produtoNome}>{produto.nome}</h3>
+
                       <p className={Styles.produtoPreco}>
                         {produto.precoPromocional != null ? (
-                          <> 
+                          <>
                             <span className={Styles.originalPrice}>
                               R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
                             </span>
@@ -157,13 +164,16 @@ const HomeCliente = () => {
                           <span>R$ {Number(produto.preco).toFixed(2).replace('.', ',')}</span>
                         )}
                       </p>
+
                     </div>
                   </div>
                 </Link>
               );
             })}
           </div>
+          
         </div>
+
       </PageContainer>
       <Footer />
     </>

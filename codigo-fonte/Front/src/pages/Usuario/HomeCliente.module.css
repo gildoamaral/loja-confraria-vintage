@@ -1,6 +1,7 @@
 .container {
     margin: 0 auto;
     position: relative;
+    padding: 4rem;
   }
   .contentWrapper {
     display: flex;
@@ -32,32 +33,40 @@
   .titulo, .container h2, .container h4 {     /* Coloquei dessa forma para não ter efeito global em todos os h2 e h4 do app */
     text-align: center;
     padding: 20px 0;
-    margin: 30px 0;
     color: #333;
   }
+
+
+  /* PRODUTO */
+
   .produtosGrid {
+    background-color: red;
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    /* grid-template-columns: repeat(4, 1fr); */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
   }
   .produtoCardLink {
-    display: block;
+    display: inline-block;
     text-decoration: none;
     color: inherit;
     height: 100%;
+    /* width: 80%; */
   }
   .produtoCard {
-    width: 80%;
-    height: 100%;
+    background-color: blue;
+    /* min-width: 250px; */
+    height: 25rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   .produtoCard:hover {
+    background-color: yellow;
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   }
@@ -68,10 +77,13 @@
     border-radius: 3px;
     object-fit: cover;
   }
+
   .produtoInfo {
+    background-color: green;
     padding: 15px;
     text-align: center;
   }
+
   .produtoNome {
     margin-bottom: 10px;
     font-size: 1.5rem;
@@ -146,7 +158,8 @@
   .ocasioesContainer {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.625rem;
+    /* gap: 1.625rem; */
+    gap: 6rem;
     justify-content: center;
     align-items: center;
     padding: 10px;
@@ -154,18 +167,21 @@
   }
   .ocasioCard {
     position: relative;
-    border-radius: 12px;
+    /* border-radius: 12px; */
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    /* box-shadow: 0 2px 6px rgba(0,0,0,0.1); */
     transition: transform 0.3s, box-shadow 0.3s;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
+    height: 10rem;
+    width: 15rem;
   }
   .ocasioCard:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    /* box-shadow: 0 4px 12px rgba(0,0,0,0.2); */
   }
   .ocasioImagem {
     position: absolute;
@@ -178,21 +194,26 @@
   }
   .ocasioNome {
     position: relative;
+    font-family: Tangerine;
     width: 200px;
     height: 100px;
     padding: 6px 12px;
     border-radius: 3px;
-    background: linear-gradient(90deg, #440e0b 0%, #f8ae61 100%);
-    color: #ffffff;
+    /* background: linear-gradient(90deg, #440e0b 0%, #f8ae61 100%); */
+    /* background: var(--cor-secundaria); */
+    color: #000000;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    /* font-size: 1.25rem; */
+    font-size: 2.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     transition: background 0.3s ease;
   }
   .ocasioCard:hover .ocasioNome {
-    background: linear-gradient(90deg, #f8ae61 0%, #440e0b 100%);
+    /* background: linear-gradient(90deg, #f8ae61 0%, #440e0b 100%); */
+    /* background: linear-gradient(90deg, var(--cor-principal) 1%, var(--cor-principal2) 190%); */
+
   }
   
   .loading {
@@ -205,6 +226,7 @@
     animation: spin 1s linear infinite;
   }
   .active {
+    /* background: linear-gradient(90deg, var(--cor-principal) 1%, var(--cor-principal2) 190%); */
     outline: 1px solid #000000;
     outline-offset: 3px;
   }
@@ -397,6 +419,7 @@
 
   .ocasioesContainer {
     gap: 0.75rem;
+    /* margin-top: 3rem */
   }
   .ocasioCard {
     width: 100%;
