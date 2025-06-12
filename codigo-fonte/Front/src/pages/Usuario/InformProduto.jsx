@@ -6,6 +6,7 @@ import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 import CircularProgress from '@mui/material/CircularProgress';
+import { MdLocalShipping } from 'react-icons/md';
 
 const InformProduto = () => {
   const { id } = useParams();
@@ -27,6 +28,19 @@ const InformProduto = () => {
       .then(({ data }) => setProduto(data))
       .catch(err => console.error('Erro ao buscar produto:', err));
   }, [id]);
+
+  useEffect(() => {
+    if (produto) {
+      if (produto.cor) {
+        const primeiraCor = produto.cor.split(',')[0].trim().toUpperCase();
+        setSelectedCor(primeiraCor);
+      }
+      if (produto.tamanho) {
+        const primeiroTamanho = produto.tamanho.split(',')[0].trim().toUpperCase();
+        setSelectedTamanho(primeiroTamanho);
+      }
+    }
+  }, [produto]);
 
   if (!produto) {
     return (
@@ -155,8 +169,10 @@ const InformProduto = () => {
     <div>
       <Header />
       <PageContainer className={Styles.container}>
-        <div className={Styles.breadcrumb}><span>{produto.nome}</span></div>
+
         <div className={Styles.productWrapper}>
+
+          {/* ESQUERDA */}
           <div className={Styles.gallery}>
             <div className={Styles.mainImage}>
               <img src={imagens[activeImageIndex]} alt={produto.nome} />
@@ -173,25 +189,45 @@ const InformProduto = () => {
               ))}
             </div>
           </div>
+
+          {/* DIREITA */}
           <div className={Styles.productInfo}>
-            <h1 className={Styles.productTitle}>{produto.nome}</h1>
-            <p className={Styles.productPrice}>R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}</p>
-            <div className={Styles.productDescription}><p>{produto.descricao}</p></div>
-
-            {renderOptions(produto.cor.split(','), selectedCor, setSelectedCor, 'cor')}
-            {renderOptions(produto.tamanho.split(','), selectedTamanho, setSelectedTamanho, 'tamanho')}
-
-            <div className={Styles.quantitySelector}>
-              <h4>Quantidade:</h4>
-              <div className={Styles.quantityControls}>
-                <button onClick={() => setQuantidade(q => Math.max(1, q - 1))} disabled={quantidade === 1}>-</button>
-                <span>{quantidade}</span>
-                <button onClick={() => setQuantidade(q => q + 1)}>+</button>
-              </div>
+            <div className={Styles.quad1}>
+              <p style={{ marginBottom: "0.7rem", fontSize: "0.8rem" }}>{produto.categoria} {produto.ocasiao ? `| ${produto.ocasiao}` : ""} </p>
+              <h1 className={Styles.productTitle}>{produto.nome}</h1>
+              <p className={Styles.productPrice}>R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}</p>
+              <div className={Styles.productDescription}><p>{produto.descricao}</p></div>
             </div>
 
+            <div className={Styles.quad2}>
+              {renderOptions(produto.cor.split(','), selectedCor, setSelectedCor, 'cor')}
+              {renderOptions(produto.tamanho.split(','), selectedTamanho, setSelectedTamanho, 'tamanho')}
+
+              <div className={Styles.quantitySelector}>
+                <h4>Quantidade:</h4>
+                <div className={Styles.quantityControls}>
+                  <button onClick={() => setQuantidade(q => Math.max(1, q - 1))} disabled={quantidade === 1}>-</button>
+                  <span>{quantidade}</span>
+                  <button onClick={() => setQuantidade(q => q + 1)}>+</button>
+                </div>
+              </div>
+
+              <div className={Styles.addPayButtons}>
+                <button className={Styles.addToCartButton} onClick={handleAddToCart} disabled={loading}>
+                  Adicionar ao Carrinho
+                </button>
+              </div>
+
+            </div>
+
+
+            {loading && <CircularProgress style={{ marginTop: 16 }} />}
+
             <div className={Styles.freteSection}>
-              <h4>Calcular Frete</h4>
+              <h4>
+                <MdLocalShipping style={{ fontSize: 22, verticalAlign: 'middle', marginRight: 10 }} />
+                Calcular Frete
+              </h4>
               <div className={Styles.freteCalcRow}>
                 <input
                   type="text"
@@ -220,14 +256,6 @@ const InformProduto = () => {
                 </ul>
               )}
             </div>
-
-            <div className={Styles.addPayButtons}>
-              <button className={Styles.addToCartButton} onClick={handleAddToCart} disabled={loading}>
-                Adicionar ao Carrinho
-              </button>
-            </div>
-            {loading && <CircularProgress style={{ marginTop: 16 }} />}
-
           </div>
         </div>
       </PageContainer>

@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Allison&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Allison&family=Tangerine:wght@400;700&display=swap');
+
 /*
 "Courier New" fonte para o fundo
 "Courier " fonte para o texto
@@ -12,6 +14,35 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+/* :root {
+  --cor-principal: #ffa3a3;
+  --cor-principal2: #ffc4c4;
+
+  --cor-secundaria: #ff8282;
+  --cor-fonte: #202215;
+
+  --cor-fonte-claro: #202215;
+
+
+
+  font-family:'Courier New', Courier, monospace;
+  line-height: 1.5;
+  font-weight: 600;
+
+  color-scheme: light dark;
+  color: #202215;
+
+    background: radial-gradient(
+    var(--cor-principal) 50%,
+    var(--cor-principal2) 180%
+  );
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} */
 
 :root {
   --cor-principal: #fcddbf;
@@ -36,12 +67,14 @@
     var(--cor-principal2) 90%
   ); */
 
-    background: radial-gradient(
+    /* background: radial-gradient(
     circle at 50% 50%,
     var(--cor-principal) 0%,
     var(--cor-principal) 70%,
     var(--cor-principal2) 120%
-  );
+  ); */
+
+  background: var(--cor-principal);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -63,10 +96,6 @@ a {
   text-decoration: inherit;
 }
 
-a:hover {
-  color: white;
-}
-
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -86,9 +115,9 @@ h1 {
 
 button:hover {
   border-color: #646cff;
-} */
+}
 
-/* button:focus,
+button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 } */

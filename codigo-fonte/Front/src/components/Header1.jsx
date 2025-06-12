@@ -16,14 +16,11 @@ const styles = {
   header: {
     display: 'flex', 
     flexDirection: 'column',
-    // justifyContent: 'space-around', 
     alignItems: 'center',
-    // marginBottom: '3rem',
     width: '100%',
     // position: 'absolute',
     // top: '0',
-    // backgroundColor: 'red',
-    height: 'auto',
+    background: 'radial-gradient(circle, var(--cor-principal) 40%, var(--cor-principal2) 190%)'
   },
   }
 

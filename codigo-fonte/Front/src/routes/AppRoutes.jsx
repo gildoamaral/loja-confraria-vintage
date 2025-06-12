@@ -12,6 +12,7 @@ import Pagamento from '../pages/Pagamento/Pagamento.jsx';
 import Pedidos from "../pages/Pedidos/Pedidos.jsx";
 import ProtectedLayout from '../components/ProtectedLayout';
 import NotFound from "../pages/NotFound/NotFound"; // Crie esse componente
+import Carrossel from '../components/Carrossel/Carrossel.jsx';
 
 function AppRoutes() {
   return (
@@ -22,6 +23,7 @@ function AppRoutes() {
       <Route path="/cadastro-usuario" element={<CadastroUsuario />} />
       <Route path="/produto/:id" element={<InformProduto />} />
       <Route path='/carrinho' element={<Carrinho />} />
+      <Route path='/teste' element={<Carrossel />} />
 
       {/* Rotas privadas para qualquer usuário logado */}
       <Route element={<ProtectedLayout />}>

@@ -5,6 +5,8 @@
     min-height: 60vh;
     box-sizing: border-box;
     flex-direction: column;
+    margin-top: 5rem;
+    margin-bottom: 7rem;
 }
 
 .header h1 {

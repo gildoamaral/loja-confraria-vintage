@@ -8,6 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Badge from '@mui/material/Badge';
+import { Box } from '@mui/material';
 
 
 function Navbar({ invisivel }) {
@@ -28,7 +29,7 @@ function Navbar({ invisivel }) {
           setUsuario(res.data);
           setLogado(true);
         }
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setLogado(false);
       }
@@ -91,114 +92,148 @@ function Navbar({ invisivel }) {
   else if (isTablet) fontSize = "1.7rem";
 
   return (
-    <nav style={styles.navbar}>
-      {isMobile ? (
-        <div style={{display: "flex", width: '100vw', justifyContent: 'space-between', alignItems: 'center'}}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleMenuOpen}
-            sx={{ ml: 1 }}
+    <Box
+      component="nav"
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "center",
+        width: "100%",
+        height: "4rem",
+        backgroundColor: "var(--cor-secundaria)",
+
+      }}
+    >
+      {/* Mobile menu */}
+      <Box
+        sx={{
+          display: { xs: "flex", md: "none" }, // xs/sm: mobile, md+: hidden
+          width: '100vw',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <IconButton
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          onClick={handleMenuOpen}
+          sx={{ ml: 1 }}
+        >
+          <MenuIcon fontSize="large" sx={{ color: "#fae0d2" }} />
+        </IconButton>
+
+        <Link to="/carrinho" style={{ marginRight: '1rem' }}>
+          <Badge badgeContent={qtdCarrinho} color="error" overlap="circular">
+            <ShoppingCartIcon sx={{ fontSize: 32, color: "#fae0d2" }} />
+          </Badge>
+        </Link>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          {menuLinks.map((link) => (
+            <MenuItem
+              key={link.label}
+              onClick={() => {
+                handleMenuClose();
+                if (link.onClick) link.onClick();
+                else navigate(link.to);
+              }}
+              sx={{
+                fontFamily: "Playfair Display",
+                fontSize: { xs: "1.2rem", md: "1.7rem" },
+                color: "var(--cor-fonte-claro)",
+                width: '100vw',
+              }}
+            >
+              {link.label}
+            </MenuItem>
+          ))}
+        </Menu>
+      </Box>
+
+      {/* Desktop menu */}
+      <Box
+        sx={{
+          display: { xs: "none", md: "flex" }, // xs/sm: hidden, md+: flex
+          alignItems: "center",
+          width: "100%",
+          justifyContent: "space-around"
+        }}
+      >
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <Box
+            component="span"
+            sx={{
+              fontSize: { xs: "1.2rem", md: "1.7rem" },
+              px: 2,
+              fontFamily: "Playfair Display",
+              color: "var(--cor-fonte-claro)",
+              background: "none",
+            }}
           >
-            <MenuIcon fontSize="large" sx={{ color: "#fae0d2" }} />
-          </IconButton>
+            Home
+          </Box>
+        </Link>
+        {logado && usuario?.posicao === 'ADMIN' && (
+          <>
+            <Link to="/estoque" style={{ textDecoration: 'none' }}>
+              <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
+                Estoque
+              </Box>
+            </Link>
+            <Link to="/cadastro-produto" style={{ textDecoration: 'none' }}>
+              <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
+                Cadastro
+              </Box>
+            </Link>
+            <Link to="/pedidos" style={{ textDecoration: 'none' }}>
+              <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
+                Pedidos
+              </Box>
+            </Link>
+          </>
+        )}
 
-          <Link to="/carrinho" style={{ marginRight: '1rem' }}>
-            <Badge badgeContent={qtdCarrinho} color="error" overlap="circular">
-              <ShoppingCartIcon sx={{ fontSize: 32, color: "#fae0d2" }} />
-            </Badge>
+        {logado ? (
+          <>
+            <Link to="/conta" style={{ textDecoration: 'none' }}>
+              <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
+                Conta
+              </Box>
+            </Link>
+            <Link
+              to="/login"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+              style={{ textDecoration: 'none' }}
+            >
+              <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
+                Logout
+              </Box>
+            </Link>
+          </>
+        ) : (
+          <Link to="/login" style={{ textDecoration: 'none' }}>
+            <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
+              Login
+            </Box>
           </Link>
-          
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            {menuLinks.map((link) => (
-              <MenuItem
-                key={link.label}
-                onClick={() => {
-                  handleMenuClose();
-                  if (link.onClick) link.onClick();
-                  else navigate(link.to);
-                }}
-              >
-                {link.label}
-              </MenuItem>
-            ))}
-          </Menu>
-        </div>
-      ) : (
-        <>
-
-          <Link to="/" style={{ ...styles.link, fontSize }}>Home</Link>
-          {logado && usuario?.posicao === 'ADMIN' && (
-            <>
-              <Link to="/estoque" style={{ ...styles.link, fontSize, }}>Estoque</Link>
-              <Link to="/cadastro-produto" style={{ ...styles.link, fontSize }}>Cadastro</Link>
-              <Link to="/pedidos" style={{ ...styles.link, fontSize }}>Pedidos</Link>
-            </>
-          )}
-
-
-          {logado ? (
-            <>
-              <Link to="/conta" style={{ ...styles.link, fontSize }}>Conta</Link>
-              <Link
-                  to="/login"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLogout(); 
-                  }}
-                  style={{ ...styles.link, fontSize }}
-                >
-                  Logout
-                </Link>
-            </>
-          ) : (
-            <Link to="/login" style={{ ...styles.link, fontSize }}>Login</Link>
-          )}
-          <Link to="/carrinho" style={{ marginLeft: '1rem' }}>
-            <Badge badgeContent={qtdCarrinho} color="error" overlap="circular">
-              <ShoppingCartIcon sx={{ fontSize: 32, color: "#fae0d2" }} />
-            </Badge>
-          </Link>
-        </>
-      )}
-    </nav>
+        )}
+        <Link to="/carrinho" style={{ marginLeft: '1rem' }}>
+          <Badge badgeContent={qtdCarrinho} color="error" overlap="circular">
+            <ShoppingCartIcon sx={{ fontSize: 32, color: "#fae0d2" }} />
+          </Badge>
+        </Link>
+      </Box>
+    </Box>
   );
 }
-
-const styles = {
-  navbar: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: "100%",
-    height: "3rem",
-    backgroundColor: "var(--cor-secundaria)",
-    // padding: "0 2rem",
-    marginTop: "3em",
-  },
-  quad1: {
-    display: "flex",
-    alignItems: "center",
-    gap: "2rem",
-  },
-  quad2: {
-    display: "flex",
-    alignItems: "center",
-    gap: "2rem",
-  },
-  link: {
-    fontSize: "2.3rem",
-    padding: "0 1rem",
-    background: "none",
-    fontFamily: "Playfair Display",
-    color: "var(--cor-fonte-claro)",
-  },
-};
 
 export default Navbar;

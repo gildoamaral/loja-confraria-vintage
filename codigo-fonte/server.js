@@ -104,12 +104,15 @@ app.post('/frete', async (req, res) => {
       {
         from: { postal_code: '45820440' }, // CEP de origem
         to: { postal_code: cepDestino },
-        package: {
-          height: altura || 4,
-          width: largura || 12,
-          length: comprimento || 17,
-          weight: peso || 0.3,
-        },
+        products: [
+          {
+            height: altura || 4,
+            width: largura || 12,
+            length: comprimento || 17,
+            weight: peso || 0.3,
+          }
+        ],
+        "services": "1,2,3"
       },
       {
         headers: {
@@ -118,6 +121,7 @@ app.post('/frete', async (req, res) => {
         },
       }
     );
+
 
     res.json(response.data);
   } catch (error) {
