@@ -96,10 +96,6 @@ a {
   text-decoration: inherit;
 }
 
-a:hover {
-  color: white;
-}
-
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -119,9 +115,9 @@ h1 {
 
 button:hover {
   border-color: #646cff;
-} */
+}
 
-/* button:focus,
+button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 } */

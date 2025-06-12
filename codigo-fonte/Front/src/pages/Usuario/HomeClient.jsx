@@ -68,19 +68,19 @@ const HomeCliente = () => {
 
         {/* OCASIOES */}
 
-          <div className={Styles.ocasioesContainer}>
-            {OCASIOES.map(ocasiao => (
-              <div
-                key={ocasiao}
-                className={`${Styles.ocasioCard} ${selectedOcasioes.includes(ocasiao) ? Styles.active : ''}`}
-                onClick={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
-              >
-                <span className={Styles.ocasioNome}>
-                  {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
-                </span>
-              </div>
-            ))}
-          </div>
+        <div className={Styles.ocasioesContainer}>
+          {OCASIOES.map(ocasiao => (
+            <div
+              key={ocasiao}
+              className={`${Styles.ocasioCard} ${selectedOcasioes.includes(ocasiao) ? Styles.active : ''}`}
+              onClick={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
+            >
+              <span className={Styles.ocasioNome}>
+                {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
+              </span>
+            </div>
+          ))}
+        </div>
 
 
         {/* FILTRO BUTTON */}
@@ -94,7 +94,7 @@ const HomeCliente = () => {
 
         <div className={Styles.contentWrapper}>
 
-        {/* FILTRO MENU */}
+          {/* FILTRO MENU */}
           {showFiltersDrawer && (
             <aside className={Styles.filtersSidebarRight}>
               <details className={Styles.dropdown} open>
@@ -136,6 +136,7 @@ const HomeCliente = () => {
                   key={produto.id}
                   className={Styles.produtoCardLink}
                 >
+
                   <div className={Styles.produtoCard}>
                     {imagens[0] && (
                       <img
@@ -145,7 +146,7 @@ const HomeCliente = () => {
                         onError={e => e.target.style.display = 'none'}
                       />
                     )}
-            
+
 
                     <div className={Styles.produtoInfo}>
                       <h3 className={Styles.produtoNome}>{produto.nome}</h3>
@@ -171,7 +172,7 @@ const HomeCliente = () => {
               );
             })}
           </div>
-          
+
         </div>
 
       </PageContainer>
