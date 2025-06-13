@@ -18,6 +18,13 @@ model Usuarios {
   senha          String
   posicao        String   @default("USER")
 
+  isEmailVerified    Boolean  @default(false)
+  emailVerifyToken   String?
+  emailTokenExpires  DateTime?
+
+  resetToken         String?
+  resetTokenExpires  DateTime?
+
   pedidos        Pedidos[]   // Um usuário pode ter vários pedidos
 }
 

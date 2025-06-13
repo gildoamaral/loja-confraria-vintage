@@ -19,12 +19,14 @@
     "cookie-parser": "^1.4.7",
     "correios-brasil": "^3.0.6",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mercadopago": "^2.5.0",
     "mysql2": "^3.13.0",
+    "nodemailer": "^7.0.3",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {

@@ -7,6 +7,7 @@ import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 import { MdLocalShipping } from 'react-icons/md';
+import Loading from '../../components/Loading';
 
 const InformProduto = () => {
   const { id } = useParams();
@@ -25,8 +26,11 @@ const InformProduto = () => {
 
   useEffect(() => {
     api.get(`/produtos/${id}`)
-      .then(({ data }) => setProduto(data))
+      .then(({ data }) => {
+        setProduto(data)
+      })
       .catch(err => console.error('Erro ao buscar produto:', err));
+
   }, [id]);
 
   useEffect(() => {
@@ -47,7 +51,7 @@ const InformProduto = () => {
       <>
         <Header />
         <PageContainer>
-          <div className={Styles.loading} />
+          <Loading />
         </PageContainer>
         <Footer />
       </>

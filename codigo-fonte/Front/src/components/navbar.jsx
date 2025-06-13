@@ -48,7 +48,7 @@ function Navbar({ invisivel }) {
       }
     }
     fetchCarrinho();
-  }, [logado]);
+  }, [qtdCarrinho]);
 
   if (invisivel) {
     return null; // Não renderiza nada se "invisivel" for passado

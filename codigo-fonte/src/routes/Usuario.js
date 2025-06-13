@@ -4,13 +4,15 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const auth = require('../middlewares/Auth');
 const authAdmin = require('../middlewares/AuthAdmin');
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 require("dotenv").config();
 
 const prisma = new PrismaClient();
 const router = express.Router();
 
-// Rota POST para login
+// LOGIN
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
 
@@ -37,7 +39,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Rota GET para obter todos os usuários
+// GET USUARIOS
 router.get('/', async (req, res) => {
   try {
     const usuarios = await prisma.usuarios.findMany({
@@ -59,7 +61,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Rota POST para adicionar um novo usuário
+// CREATE USUARIO
 router.post('/', async (req, res) => {
   const { nome, sobrenome, dataNascimento, endereco, email, telefone, senha, posicao } = req.body;
 
@@ -97,7 +99,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Rota PUT para atualizar dados do usuário logado
+// UPDATE USUARIO
 router.put('/conta', auth, async (req, res) => {
   const userId = req.user.userId;
   const { nome, sobrenome, dataNascimento, endereco, email, telefone, senha, posicao } = req.body;
@@ -135,7 +137,7 @@ router.put('/conta', auth, async (req, res) => {
   }
 });
 
-// Rota DELETE para remover um usuário existente
+// DELETE USUARIO
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -157,7 +159,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Rota GET para obter os dados do usuário logado (precisa de autenticação)
+// READ USUARIO BY ID
 router.get('/conta', auth, async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -187,6 +189,7 @@ router.get('/conta', auth, async (req, res) => {
   }
 });
 
+ // LOGOUT
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
@@ -196,7 +199,7 @@ router.post("/logout", (req, res) => {
   res.status(200).json({ message: "Deslogado com sucesso" });
 });
 
-
+ // READ ADMIN BY ID
 router.get('/admin', authAdmin, (req, res) => {
   res.json({ isAdmin: true });
 });

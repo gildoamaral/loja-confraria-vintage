@@ -6,6 +6,7 @@ import PageContainer from '../../components/PageContainer';
 import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import Carrossel from '../../components/Carrossel/Carrossel';
+import Loading from '../../components/Loading';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG'];
 const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
@@ -54,7 +55,7 @@ const HomeCliente = () => {
     return (
       <>
         <Header />
-        <div className={Styles.loading}><div className={Styles.hourglass}></div></div>
+        <Loading />
         <Footer />
       </>
     );
