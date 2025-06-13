@@ -225,6 +225,10 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
+  @keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
   .active {
     /* background: linear-gradient(90deg, var(--cor-principal) 1%, var(--cor-principal2) 190%); */
     outline: 1px solid #000000;
@@ -322,7 +326,7 @@
     min-height: 270px;
   }
   .produtoNome {
-    font-size: 1.2rem;
+    font-size: 2rem;
   }
   .produtoPreco {
     font-size: 1.4rem;
@@ -367,7 +371,7 @@
   .ocasioNome {
     width: 120px;
     height: 80px;
-    font-size: 1rem;
+    font-size: 2.5rem;
   }
   .loading {
     margin: 30px auto;
@@ -388,7 +392,7 @@
 }
 @media (max-width: 480px) {
   .container {
-    padding: 0 5px;
+    padding: 2rem 10px;
   }
   .contentWrapper {
     gap: 1rem;
@@ -400,9 +404,11 @@
   }
   .produtoCard {
     margin: 0 auto;
+    height: 22rem;
   }
   .produtoImagem {
     height: 160px;
+    object-fit: cover;
   }
   .produtoNome {
     font-size: 1.1rem;
@@ -417,21 +423,34 @@
     font-size: 0.8rem;
   }
 
+  /*
   .ocasioesContainer {
-    gap: 0.75rem;
-    /* margin-top: 3rem */
+    gap: 0rem;
+    margin-top: 3rem 
   }
+  */
+
   .ocasioCard {
     width: 100%;
-    height: 80px;
+    height: 70px;
   }
   .ocasioNome {
     width: 100%;
     height: 60px;
-    font-size: 0.95rem;
+    font-size: 2.5rem;
   }
   .filterToggle{
     width: 100px;
+  }
+
+  /* .filtersSidebar, */
+  .filtersSidebarRight {
+    padding: 1rem;
+    position: initial;
+    flex-direction: row;
+    margin-left: 0;
+    align-self: flex-start;
+    width: 100%;
   }
 }
 

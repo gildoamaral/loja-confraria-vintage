@@ -45,6 +45,7 @@ app.post('/login', Login)
 app.use('/pedidos', Pedidos);
 app.use('/auth', Check);
 
+/*
 // ROTAS PRIVADAS
 //  //  Área de usuário
 app.get("/user/:id", auth, async (req, res) => {
@@ -64,7 +65,9 @@ app.get("/user/:id", auth, async (req, res) => {
     res.status(404).json({ message: "Usuário não encontrado" });
   }
 });
+*/
 
+/*
 //  //  Área de administrador
 app.get("/admin/:id", authAdmin, async (req, res) => {
   const id = req.params.id;
@@ -83,21 +86,15 @@ app.get("/admin/:id", authAdmin, async (req, res) => {
     res.status(404).json({ message: "Usuário não encontrado" });
   }
 });
+*/
 
-// Define a porta a partir da variável de ambiente do Heroku ou usa 3030 localmente
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
-
-//Consulta do frete
 app.post('/frete', async (req, res) => {
   const { cepDestino, altura, largura, comprimento, peso } = req.body;
-
+  
   if (!cepDestino) {
     return res.status(400).json({ error: 'Informe o CEP de destino.' });
   }
-
+  
   try {
     const response = await axios.post(
       'https://www.melhorenvio.com.br/api/v2/me/shipment/calculate',
@@ -121,11 +118,16 @@ app.post('/frete', async (req, res) => {
         },
       }
     );
-
-
+    
+    
     res.json(response.data);
   } catch (error) {
     console.error('Erro na cotação de frete:', error.response?.data || error.message);
     res.status(500).json({ error: 'Não foi possível calcular o frete.' });
   }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

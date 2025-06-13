@@ -191,11 +191,11 @@ const Pagamento = () => {
         <Grid container spacing={4} >
 
           {/* RESUMOS */}
-          <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: {xs: "100%",sm:'auto'} }}>
 
 
             {/* Resumo do Pedido */}
-            <Card sx={{ mb: 3, background: '#FFF7F2', borderRadius: 2 }}>
+            <Card sx={{ mb: 3, background: '#FFF7F2', borderRadius: 2, width: '100%' }}>
               <CardContent>
                 <Typography variant="h6" fontWeight={700} gutterBottom>
                   Resumo do Pedido
