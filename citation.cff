@@ -1,29 +1,35 @@
 message: Please cite this software using these metadata.
-title:
+title: System for Organization and Promotion of Products for Small Entrepreneurs
+
 authors:
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - name-suffix: Professor
+  - family-names: Dos Santos Lima
+    given-names: Carlos Eduardo
+  - family-names: Barbosa de Oliveira
+    given-names: Lais
+  - family-names: Henrique da Silva Vaz
+    given-names: Lucas
+  - family-names: Oliveira Soares
+    given-names: Lucas
+  - family-names: do Amaral Oliveira
+    given-names: Marco Antonio Gil
+  - family-names: Soares da Silva
+    given-names: Matheus
+
+  - family-names: Costa
+    given-names: José Wilson da
+    name-suffix: Professor
     affiliation: PUC Minas
-    family-names: 
-    given-names: 
-  - name-suffix: Professor
-    affiliation: PUC Minas
-    family-names: 
-    given-names: 
+
 keywords:
-  - 
-  - 
-repository-code: 
+  - sociotechnical system
+  - product management
+  - small entrepreneurs
+  - university extension
+  - web application
+  - e-commerce
+  - PUC Minas
+  - Confraria Vintage
+
+repository-code: https://github.com/ICEI-PUC-Minas-PMV-ADS/pmv-ads-2025-1-e5-proj-empext-t4-g3
 version: 1.0.0
-date-released: 2023-10-31
+date-released: 2025-06-22
