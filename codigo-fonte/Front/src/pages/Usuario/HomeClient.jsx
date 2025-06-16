@@ -16,7 +16,7 @@ const HomeCliente = () => {
   const [produtos, setProdutos] = useState([]);
   const [selectedTamanhos, setSelectedTamanhos] = useState([]);
   const [selectedCategorias, setSelectedCategorias] = useState([]);
-  const [selectedOcasioes, setSelectedOcasioes] = useState([]);
+  const [selectedOcasiao, setSelectedOcasiao] = useState(null); // Alterado para string ou null
   const [showFiltersDrawer, setShowFiltersDrawer] = useState(false);
 
   useEffect(() => {
@@ -35,6 +35,10 @@ const HomeCliente = () => {
     setter(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
   };
 
+  const handleOcasiaoClick = (ocasiao) => {
+    setSelectedOcasiao(prev => prev === ocasiao ? null : ocasiao);
+  };
+
   const parseImagens = (imagemData) => {
     if (!imagemData) return [];
     try {
@@ -47,8 +51,17 @@ const HomeCliente = () => {
   const filteredProdutos = produtos.filter(produto => {
     const matchTamanho = !selectedTamanhos.length || selectedTamanhos.includes(produto.tamanho);
     const matchCategoria = !selectedCategorias.length || selectedCategorias.includes(produto.categoria);
-    const matchOcasiao = !selectedOcasioes.length || selectedOcasioes.includes(produto.ocasiao);
-    return matchTamanho && matchCategoria && matchOcasiao;
+
+    // Filtro de ocasião:
+    if (selectedOcasiao) {
+      // Só mostra produtos da ocasião selecionada
+      if (produto.ocasiao !== selectedOcasiao) return false;
+    } else {
+      // Nenhuma ocasião selecionada: só mostra produtos sem ocasião
+      if (produto.ocasiao && produto.ocasiao.trim() !== '') return false;
+    }
+
+    return matchTamanho && matchCategoria;
   });
 
   if (!produtos.length) {
@@ -68,15 +81,14 @@ const HomeCliente = () => {
       <PageContainer className={Styles.container}>
 
         {/* OCASIOES */}
-
         <div className={Styles.ocasioesContainer}>
           {OCASIOES.map(ocasiao => (
             <div
               key={ocasiao}
-              className={`${Styles.ocasioCard} ${selectedOcasioes.includes(ocasiao) ? Styles.active : ''}`}
-              onClick={() => handleFilterChange(setSelectedOcasioes)(ocasiao)}
+              className={`${Styles.ocasioCard} `}
+              onClick={() => handleOcasiaoClick(ocasiao)}
             >
-              <span className={Styles.ocasioNome}>
+              <span className={`${Styles.ocasioNome} ${selectedOcasiao === ocasiao ? Styles.active : ''}`}>
                 {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
               </span>
             </div>

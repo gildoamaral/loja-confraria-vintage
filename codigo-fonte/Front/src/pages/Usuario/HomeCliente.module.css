@@ -45,7 +45,7 @@
     flex: 1;
     display: grid;
     /* grid-template-columns: repeat(4, 1fr); */
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 0.3rem;
   }
   .produtoCardLink {
@@ -57,7 +57,7 @@
   }
   .produtoCard {
     /* background-color: blue; */
-    /* min-width: 250px; */
+    max-width: 310px;
     height: 25rem;
     display: flex;
     flex-direction: column;
@@ -230,9 +230,8 @@
 }
 
   .active {
-    /* background: linear-gradient(90deg, var(--cor-principal) 1%, var(--cor-principal2) 190%); */
-    outline: 1px solid #000000;
-    outline-offset: 3px;
+    background: var(--cor-gradiente);
+    
   }
   .filterToggle {
     padding: 0.5rem 1rem;
@@ -403,6 +402,7 @@
     gap: 0.5rem;
   }
   .produtoCard {
+        max-width: 400px;
     margin: 0 auto;
     height: 22rem;
   }

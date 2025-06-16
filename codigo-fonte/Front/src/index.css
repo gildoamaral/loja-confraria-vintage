@@ -47,7 +47,8 @@
 :root {
   --cor-principal: #fcddbf;
   --cor-principal2: #ec7148;
-
+  --cor-gradiente: radial-gradient(circle at 50% 50%, var(--cor-principal) 30%, var(--cor-principal2) 200%);
+  --cor-gradiente2: linear-gradient(135deg, #fbeee6 0%, #ec7148 100%);
   --cor-secundaria: #ec7148;
   --cor-fonte: #202215;
 
@@ -67,12 +68,7 @@
     var(--cor-principal2) 90%
   ); */
 
-    /* background: radial-gradient(
-    circle at 50% 50%,
-    var(--cor-principal) 0%,
-    var(--cor-principal) 70%,
-    var(--cor-principal2) 120%
-  ); */
+    /* background: radial-gradient(circle at 50% 50%, var(--cor-principal) 30%, var(--cor-principal2) 200%); */
 
   background: var(--cor-principal);
 
