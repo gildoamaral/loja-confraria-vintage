@@ -30,6 +30,41 @@
   font-weight: 700;
 }
 
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  border-bottom: 2px solid #ddd;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.9rem 1.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  border: none;
+  background: none;
+  color: #555;
+  border-bottom: 3px solid transparent;
+  transition: color 0.3s, border-color 0.3s, background-color 0.25s;
+  white-space: normal;
+  min-width: 160px;
+  text-align: center;
+  border-radius: 8px 8px 0 0;
+}
+
+.tab:hover {
+  color: #440e0b;
+  background-color: #fce9f3;
+}
+
+.activeTab {
+  color: #440e0b;
+  border-color: #440e0b;
+  background-color: #fde9f4;
+}
+
 .formContainer {
   display: flex;
   flex-direction: column;

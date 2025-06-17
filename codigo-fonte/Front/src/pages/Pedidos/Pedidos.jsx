@@ -9,6 +9,7 @@ const Pedidos = () => {
 //   const [usuario, setUsuario] = useState(null);
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [abaAtiva, setAbaAtiva] = useState("pedidos");
 
   // Estado para edição
 //   const [editando, setEditando] = useState(false);
@@ -93,7 +94,27 @@ const Pedidos = () => {
       <PageContainer className={styles.container}>
         <div className={styles.header}>
           {/* <h1>Olá, <span className={styles.highlight}>{"Administrador"}</span>!</h1> */}
-          <h2>Gerencie e acompanhe pedidos</h2>
+          <h2>Área do Administrador</h2>
+        </div>
+        <div className={styles.tabs}>
+          <button
+            className={`${styles.tab} ${abaAtiva === "estoque" ? styles.activeTab : ""}`}
+            onClick={() => setAbaAtiva("estoque")}
+          >
+            Estoque
+          </button>
+          <button
+            className={`${styles.tab} ${abaAtiva === "cadastro" ? styles.activeTab : ""}`}
+            onClick={() => setAbaAtiva("cadastro")}
+          >
+            Cadastro
+          </button>
+          <button
+            className={`${styles.tab} ${abaAtiva === "pedidos" ? styles.activeTab : ""}`}
+            onClick={() => setAbaAtiva("pedidos")}
+          >
+            Pedidos
+          </button>
         </div>
           <div className={styles.formContainer}>
             <h2>Lista de pedidos</h2>
