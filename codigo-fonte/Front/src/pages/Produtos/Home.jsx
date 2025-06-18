@@ -155,133 +155,139 @@ const HomeProdutos = () => {
   return (
     <div>
       <Header />
-
-
-      <h1 style={{ 
-        marginLeft: "34%", 
+      <h1 style={{
+        marginLeft: "34%",
         marginBottom: '4%'
-        }}>Produtos cadastrados</h1>
+      }}>Produtos cadastrados</h1>
       <div className={Styles.listcard}>
         {produtos.map(produto => (
           <div key={produto.id} className={Styles.produtoContainer}>
             {editando === produto.id ? (
-              <div className={Styles.formContainer}>
-                <h2>Editar Produto</h2>
-                <form onSubmit={handleSave}>
-                  <div className={Styles.formGroup}>
-                    <label htmlFor="nome">Nome:</label>
-                    <input
-                      id="nome"
-                      name="nome"
-                      value={formData.nome}
-                      onChange={handleChange}
-                      className={Styles.inputField}
-                    />
-                  </div>
-                  <div className={Styles.formGroup}>
-                    <label htmlFor="descricao">Descrição:</label>
-                    <input
-                      id="descricao"
-                      name="descricao"
-                      value={formData.descricao}
-                      onChange={handleChange}
-                      className={Styles.inputField}
-                    />
-                  </div>
-                  <div className={Styles.formGroup}>
-                    <label htmlFor="preco">Preço:</label>
-                    <input
-                      id="preco"
-                      type="number"
-                      name="preco"
-                      value={formData.preco}
-                      onChange={handleChange}
-                      step="0.01"
-                      className={Styles.inputField}
-                    />
-                  </div>
-                  <div className={Styles.formGroup}>
-                    <label htmlFor="precoPromocional">Preço Promocional:</label>
-                    <input
-                      id="precoPromocional"
-                      type="number"
-                      name="precoPromocional"
-                      value={formData.precoPromocional}
-                      onChange={handleChange}
-                      step="0.01"
-                      className={Styles.inputField}
-                      placeholder="Opcional"
-                    />
-                  </div>
-                  <div className={Styles.formGroup}>
-                    <label htmlFor="quantidade">Quantidade:</label>
-                    <input
-                      id="quantidade"
-                      type="number"
-                      name="quantidade"
-                      value={formData.quantidade}
-                      onChange={handleChange}
-                      className={Styles.inputField}
-                    />
-                  </div>
-                  <div className={Styles.formGroup}>
-                    <label>Imagens:</label>
-                    <input
-                      type="file"
-                      multiple
-                      onChange={handleImageChange}
-                      className={Styles.fileInput}
-                      disabled={formData.imagens.length >= 5}
-                    />
-                    <div className={Styles.galeria}>
-                      {formData.imagens.map((img, i) => (
-                        <div key={i} className={Styles.imageContainer}>
-                          <img
-                            src={img}
-                            alt={`Imagem ${i + 1}`}
-                            className={Styles.imagePreview}
-                          />
-                          <button
-                            type="button"
-                            className={Styles.removeButton}
-                            onClick={() => handleRemoveImage(i)}>
-                            ×
-                          </button>
+              <div className={Styles.formOverlay}>
+                <div className={Styles.formContainer}>
+                  <form onSubmit={handleSave}>
+                    <form onSubmit={handleSave}>
+                      <div className={Styles.formGroup}>
+                        <label htmlFor="nome">Nome:</label>
+                        <input
+                          id="nome"
+                          name="nome"
+                          value={formData.nome}
+                          onChange={handleChange}
+                          className={Styles.inputField}
+                        />
+                      </div>
+                      <div className={Styles.formGroup}>
+                        <label htmlFor="descricao">Descrição:</label>
+                        <input
+                          id="descricao"
+                          name="descricao"
+                          value={formData.descricao}
+                          onChange={handleChange}
+                          className={Styles.inputField}
+                        />
+                      </div>
+                      <div className={Styles.formGroup}>
+                        <label htmlFor="preco">Preço:</label>
+                        <input
+                          id="preco"
+                          type="number"
+                          name="preco"
+                          value={formData.preco}
+                          onChange={handleChange}
+                          step="0.01"
+                          className={Styles.inputField}
+                        />
+                      </div>
+                      <div className={Styles.formGroup}>
+                        <label htmlFor="precoPromocional">Preço Promocional:</label>
+                        <input
+                          id="precoPromocional"
+                          type="number"
+                          name="precoPromocional"
+                          value={formData.precoPromocional}
+                          onChange={handleChange}
+                          step="0.01"
+                          className={Styles.inputField}
+                          placeholder="Opcional"
+                        />
+                      </div>
+                      <div className={Styles.formGroup}>
+                        <label htmlFor="quantidade">Quantidade:</label>
+                        <input
+                          id="quantidade"
+                          type="number"
+                          name="quantidade"
+                          value={formData.quantidade}
+                          onChange={handleChange}
+                          className={Styles.inputField}
+                        />
+                      </div>
+                      <div className={Styles.formGroup}>
+                        <label>Imagens:</label>
+                        <input
+                          type="file"
+                          multiple
+                          onChange={handleImageChange}
+                          className={Styles.fileInput}
+                          disabled={formData.imagens.length >= 5}
+                        />
+                        <div className={Styles.galeria}>
+                          {formData.imagens.map((img, i) => (
+                            <div key={i} className={Styles.imageContainer}>
+                              <img
+                                src={img}
+                                alt={`Imagem ${i + 1}`}
+                                className={Styles.imagePreview}
+                              />
+                              <button
+                                type="button"
+                                className={Styles.removeButton}
+                                onClick={() => handleRemoveImage(i)}>
+                                ×
+                              </button>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className={Styles.buttonGroup}>
-                    <button type="submit" className={Styles.primaryButton}>Salvar</button>
-                    <button type="button" className={Styles.cancelButton} onClick={cancelarEdicao}>Cancelar</button>
-                  </div>
-                </form>
+                      </div>
+                      <div className={Styles.buttonGroup}>
+                        <button type="submit" className={Styles.primaryButton}>Salvar</button>
+                        <button type="button" className={Styles.cancelButton} onClick={cancelarEdicao}>Cancelar</button>
+                      </div>
+                    </form>
+                  </form>
+                </div>
               </div>
             ) : (
               <div>
                 <div className={Styles.galeria}>
-                  {parseImagens(produto.imagem).map((img, i) => (
-                    <div key={i} className={Styles.imageContainer}>
-                      <img
-                        src={img}
-                        alt={`${produto.nome} ${i + 1}`}
-                        className={Styles.imagePreview}
-                        onError={e => e.target.style.display = 'none'}
-                      />
-                    </div>
-                  ))}
+                  {(() => {
+                    const imagens = parseImagens(produto.imagem);
+                    const primeiraImagem = imagens.length > 0 ? imagens[0] : null;
+                    return (
+                      primeiraImagem && (
+                        <div className={Styles.imageContainer}>
+                          <img
+                            src={primeiraImagem}
+                            alt={`${produto.nome} 1`}
+                            className={Styles.imagePreview}
+                            onError={(e) => (e.target.style.display = 'none')}
+                          />
+                        </div>
+                      )
+                    );
+                  })()}
                 </div>
-                <h2>{produto.nome}</h2>
+                <h3>{produto.nome}</h3>
                 <p className={Styles.priceDisplay}>
-                  {produto.precoPromocional != null ? (
-                    <>
-                      <span className={Styles.originalPrice}> Valor: R${produto.preco.toFixed(2)}</span>
-                      <span className={Styles.promoPrice}> Preço promocional: R$ {produto.precoPromocional.toFixed(2)}</span>
-                    </>
-                  ) : (
-                    <span>R$ {produto.preco.toFixed(2)}</span>
-                  )}
+                  <span className={Styles.originalPrice}>
+                    Valor: R$ {produto.preco?.toFixed(2) ?? '0,00'}
+                  </span>
+                  <span className={Styles.promoPrice}>
+                    Preço promocional: R$ {(produto.precoPromocional ?? 0).toFixed(2)}
+                  </span>
                 </p>
+
                 <p><strong>Quantidade:</strong> {produto.quantidade}</p>
 
                 <div className={Styles.buttonGroup}>

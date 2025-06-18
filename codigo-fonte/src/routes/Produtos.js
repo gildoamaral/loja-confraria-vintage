@@ -172,6 +172,7 @@ router.put('/:id', AuthAdmin, async (req, res) => {
 // DELETE - Excluir produto
 router.delete('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
+  console.log(`Requisição DELETE recebida para o ID: ${id}`);
 
   try {
     const produtoExistente = await prisma.produtos.findUnique({
@@ -179,16 +180,23 @@ router.delete('/:id', AuthAdmin, async (req, res) => {
     });
 
     if (!produtoExistente) {
+      console.log('Produto não encontrado no banco de dados.');
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
+
+    console.log('Produto encontrado:', produtoExistente);
 
     await prisma.produtos.delete({
       where: { id },
     });
+
+    console.log('Produto excluído com sucesso.');
     res.status(204).send();
   } catch (error) {
+    console.error('Erro ao excluir produto:', error);
     res.status(500).json({ error: 'Erro ao excluir produto' });
   }
 });
+
 
 module.exports = router;

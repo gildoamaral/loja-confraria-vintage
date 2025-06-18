@@ -63,7 +63,7 @@ model ItemPedido {
   quantidade Int
 
   pedido   Pedidos   @relation(fields: [pedidoId], references: [id])
-  produto  produtos  @relation(fields: [produtoId], references: [id])
+  produto    produtos @relation(fields: [produtoId], references: [id], onDelete: Cascade)
 }
 
 model Pagamentos {
