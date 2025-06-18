@@ -13,6 +13,8 @@ router.post('/criar', auth, async (req, res) => {
   where: { id: usuarioId }
 });
 
+console.log('Usuário encontrado:', usuario);
+
   try {
     // Verifica se o usuário já tem pedido com status CARRINHO
     let pedido = await prisma.pedidos.findFirst({

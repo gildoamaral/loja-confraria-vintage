@@ -173,7 +173,7 @@ const Pagamento = () => {
       }}
     >
       <Header invisivel />
-      <Paper elevation={3} sx={{ mx: 'auto', p: 3, borderRadius: 3, maxWidth: 900, mt:{xs: 0, sm: 4} }}>
+      <Paper elevation={3} sx={{ mx: 'auto', p: 3, borderRadius: 3, maxWidth: 1000, mt: { xs: 0, sm: 4 } }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <Button
             onClick={() => navigate(-1)}
@@ -191,7 +191,7 @@ const Pagamento = () => {
         <Grid container spacing={4} >
 
           {/* RESUMOS */}
-          <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: {xs: "100%",sm:'auto'} }}>
+          <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: { xs: "100%", sm: 270}, background: "pink" }}>
 
 
             {/* Resumo do Pedido */}
@@ -219,7 +219,7 @@ const Pagamento = () => {
               <CardContent >
                 {usuario && (
                   <>
-                    <Typography variant="subtitle1" fontWeight={700}>Seus dados</Typography>
+                    <Typography variant="h6" gutterBottom fontWeight={700}>Dados do Usuário</Typography>
                     <Typography variant="body2">Nome: <b>{usuario.nome} {usuario.sobrenome}</b></Typography>
                     <Typography variant="body2">E-mail: <b>{usuario.email}</b></Typography>
                     <Divider sx={{ my: 2 }} />
@@ -237,38 +237,34 @@ const Pagamento = () => {
           </Grid>
 
           {/* CONTEUDOS */}
-          <Grid xs={12} md={8} sx={{ ml: { xs: 0, md: 8 } }}>
+          <Grid xs={12} md={8} sx={{ ml: { xs: 0, md: 8 }, bgcolor: 'green' }}>
             <Box>
 
 
               {/* FORMGROUP */}
               {etapa === 1 && (
                 <Box sx={{ mb: 2 }}>
-                  <FormControl component="fieldset">
-                    <RadioGroup
-                      row
-                      value={usarEnderecoCadastrado ? "cadastrado" : "novo"}
-                      onChange={(e) => {
-
-                        if (e.target.value === "cadastrado") {
-                          handleUsarEnderecoCadastrado();
-                        } else {
-                          handleNovoEndereco();
-                        }
-                      }}
+                  <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+                    <Button
+                      variant={usarEnderecoCadastrado ? 'contained' : 'outlined'}
+                      onClick={handleUsarEnderecoCadastrado}
+                      disabled={!usuario?.endereco}
                     >
-                      <FormControlLabel
-                        value="cadastrado"
-                        control={<Radio color="primary" />}
-                        label="Usar endereço cadastrado"
-                      />
-                      <FormControlLabel
-                        value="novo"
-                        control={<Radio color="primary" />}
-                        label="Preencher novo endereço"
-                      />
-                    </RadioGroup>
-                  </FormControl>
+                      Usar endereço cadastrado
+                    </Button>
+                    <Button
+                      variant={!usarEnderecoCadastrado ? 'contained' : 'outlined'}
+                      onClick={handleNovoEndereco}
+                    >
+                      Preencher novo endereço
+                    </Button>
+                  </Box>
+                    {!usuario?.endereco && (
+                      <Typography variant="caption" color="error">
+                        Nenhum endereço cadastrado.
+                      </Typography>
+                    )}
+
                 </Box>
               )}
 

@@ -9,15 +9,41 @@ const CadastroUsuario = () => {
     const [nome, setNome] = useState('');
     const [sobrenome, setSobrenome] = useState('');
     const [dataNascimento, setDataNascimento] = useState('');
-    const [endereco, setEndereco] = useState([]);
     const [email, setEmail] = useState('');
     const [telefone, setTelefone] = useState('');
     const [senha, setSenha] = useState('');
+    const [repetirSenha, setRepetirSenha] = useState('');
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // Função para formatar telefone
+    const formatTelefone = (value) => {
+        // Remove tudo que não for número
+        value = value.replace(/\D/g, '');
+        // Aplica a máscara
+        if (value.length > 11) value = value.slice(0, 11);
+        if (value.length > 0) value = '(' + value;
+        if (value.length > 3) value = value.slice(0, 3) + ') ' + value.slice(3);
+        if (value.length > 10) value = value.slice(0, 10) + '-' + value.slice(10);
+        else if (value.length > 6) value = value.slice(0, 6) + ' ' + value.slice(6);
+        return value;
+    };
+
+    const handleTelefoneChange = (e) => {
+        const formatted = formatTelefone(e.target.value);
+        setTelefone(formatted);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setMessage('');
+
+        // Verifica se as senhas batem
+        if (senha !== repetirSenha) {
+            setMessage('As senhas não coincidem.');
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -25,7 +51,6 @@ const CadastroUsuario = () => {
                 nome,
                 sobrenome,
                 dataNascimento,
-                endereco,
                 email,
                 telefone,
                 senha,
@@ -35,10 +60,10 @@ const CadastroUsuario = () => {
             setNome('');
             setSobrenome('');
             setDataNascimento('');
-            setEndereco('');
             setEmail('');
             setTelefone('');
             setSenha('');
+            setRepetirSenha('');
         } catch (error) {
             console.error('Erro ao criar usuario:', error);
             setMessage(error.response?.data?.message || 'Erro ao criar usuario');
@@ -70,23 +95,30 @@ const CadastroUsuario = () => {
                         </div>
                         <div className={Styles.inputGroup}>
                             <label>Data de nascimento:</label>
-                            <input type="date" value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)} />
-                        </div>
-                        <div className={Styles.inputGroup}>
-                            <label>Endereço:</label>
-                            <input type="text" value={endereco} onChange={(e) => setEndereco(e.target.value)} />
+                            <input type="date" value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)} required />
                         </div>
                         <div className={Styles.inputGroup}>
                             <label>E-mail:</label>
-                            <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} required/>
                         </div>
                         <div className={Styles.inputGroup}>
                             <label>Telefone:</label>
-                            <input type="text" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+                            <input
+                                type="text"
+                                value={telefone}
+                                onChange={handleTelefoneChange}
+                                maxLength={16}
+                                placeholder="(99) 9 9999-9999"
+                                required
+                            />
                         </div>
                         <div className={Styles.inputGroup}>
                             <label>Senha:</label>
                             <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
+                        </div>
+                        <div className={Styles.inputGroup}>
+                            <label>Repetir Senha:</label>
+                            <input type="password" value={repetirSenha} onChange={(e) => setRepetirSenha(e.target.value)} required />
                         </div>
 
                         <button type="submit" disabled={isSubmitting} className={Styles.button}>
