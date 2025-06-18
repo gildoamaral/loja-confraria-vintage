@@ -181,7 +181,7 @@ function Navbar({ invisivel }) {
         </Link>
         {logado && usuario?.posicao === 'ADMIN' && (
           <>
-            <Link to="/estoque" style={{ textDecoration: 'none' }}>
+            {/* <Link to="/estoque" style={{ textDecoration: 'none' }}>
               <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
                 Estoque
               </Box>
@@ -190,10 +190,10 @@ function Navbar({ invisivel }) {
               <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
                 Cadastro
               </Box>
-            </Link>
+            </Link> */}
             <Link to="/pedidos" style={{ textDecoration: 'none' }}>
               <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
-                Pedidos
+                Administração
               </Box>
             </Link>
           </>
