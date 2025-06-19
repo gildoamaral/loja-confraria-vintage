@@ -59,7 +59,15 @@ model Pedidos {
   status     StatusPedido @default(CARRINHO) // ou PAGO, ENVIADO etc.
   usuarioId  Int
   pagamento  Pagamentos?  // Um pedido pode ter um pagamento
+
   enderecoEntrega String?
+  cep            String?
+  rua            String?
+  numero         String?
+  complemento    String?
+  bairro         String?
+  cidade         String?
+  estado         String?
 
   usuario    Usuarios     @relation(fields: [usuarioId], references: [id])
   itens      ItemPedido[] // Um pedido tem vários itens

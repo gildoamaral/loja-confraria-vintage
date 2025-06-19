@@ -79,7 +79,7 @@ router.post('/criar-pix', (req, res, next) => {
 
 // Criar pagamento via cartão
 router.post('/criar-cartao', async (req, res) => {
-  const { transaction_amount, pedidoId, token, description, installments, payment_method_id, issuer_id, payer } = req.body;
+  const { transaction_amount, pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete } = req.body;
 
   console.log('REQUEST');
   console.log(req.body);
@@ -98,10 +98,16 @@ router.post('/criar-cartao', async (req, res) => {
     return res.status(400).json({ error: 'Pedido não encontrado ou sem itens.' });
   }
 
-  const valorTotal = pedido.itens.reduce((total, item) => {
+  const valorTotalProdutos = pedido.itens.reduce((total, item) => {
     const preco = item.produto.precoPromocional ?? item.produto.preco;
     return total + preco * item.quantidade;
   }, 0);
+
+  // Some o valor do frete, se enviado
+  const valorTotal = Number(valorTotalProdutos) + Number(valorFrete || 0);
+  console.log('VALOR TOTAL DOS PRODUTOS: ', valorTotalProdutos);
+  console.log('VALOR TOTAL COM FRETE: ', valorTotal);
+  console.log('VALOR DO FRETE: ', valorFrete);
 
   const body = {
     transaction_amount: Number(valorTotal.toFixed(2)),

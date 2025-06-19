@@ -19,6 +19,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import PagamentoCartao from './PagamentoCartao';
 import Header from '../../components/Header1';
+import Loading from '../../components/Loading';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const Pagamento = () => {
@@ -26,24 +27,19 @@ const Pagamento = () => {
   const navigate = useNavigate();
   const valorTotal = location.state?.valorTotal;
   const quantidadeTotal = location.state?.quantidadeTotal;
-
-
-
   const [pedidoId, setPedidoId] = useState(null);
   const [metodo, setMetodo] = useState('');
   const [usuario, setUsuario] = useState(null); // Novo estado
   const [usarEnderecoCadastrado, setUsarEnderecoCadastrado] = useState(true);
-  const [enderecoFormatado, setEnderecoFormatado] = useState("");
-  const [endereco, setEndereco] = useState({
-    cep: '',
-    rua: '',
-    numero: '',
-    complemento: '',
-    bairro: '',
-    cidade: '',
-    estado: '',
-  });
+  const [enderecoLinha, setEnderecoLinha] = useState("");
+  const [endereco, setEndereco] = useState({});
   const [etapa, setEtapa] = useState(1);
+  const [opcoesFrete, setOpcoesFrete] = useState([]);
+  const [freteSelecionado, setFreteSelecionado] = useState(null);
+  const [carregandoFrete, setCarregandoFrete] = useState(false);
+  const [enderecoSelecionado, setEnderecoSelecionado] = useState(null);
+  const [valorFrete, setValorFrete] = useState(0);
+  const [subtotal, setSubtotal] = useState(valorTotal);
 
   useEffect(() => {
     const fetchUsuario = async () => {
@@ -51,7 +47,6 @@ const Pagamento = () => {
         const res = await api.get('/usuarios/conta');
         setUsuario(res.data);
 
-        console.log('Usuário logado:', res.data);
 
       } catch (err) {
         console.error('Erro ao buscar usuário:', err);
@@ -63,19 +58,28 @@ const Pagamento = () => {
       try {
         const response = await api.get('/pedidos/carrinho');
         if (response.data && response.data.id) {
+          console.log('Pedido do carrinho encontrado:', response.data);
           setPedidoId(response.data.id);
+          setEndereco({
+            rua: response.data.rua || '',
+            numero: response.data.numero || '',
+            complemento: response.data.complemento || '',
+            bairro: response.data.bairro || '',
+            cidade: response.data.cidade || '',
+            estado: response.data.estado || '',
+            cep: response.data.cep || '',
+          });
+          setEnderecoLinha(response.data.enderecoEntrega);
 
-          setEndereco(parseEndereco(response.data.enderecoEntrega));
-          setEnderecoFormatado(response.data.enderecoEntrega);
+          console.log('cepPlaced vindo do carrinho: ', response.data.cep);
         }
       } catch (error) {
         console.error('Erro ao buscar o pedido do carrinho:', error);
       }
     };
     fetchPedidoCarrinho();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
+  }, []);
 
   useEffect(() => {
     if (valorTotal === undefined || quantidadeTotal === undefined) {
@@ -87,23 +91,40 @@ const Pagamento = () => {
     return null; // ou um spinner
   }
 
-  function parseEndereco(enderecoStr) {
-    const match = enderecoStr.match(/^(.*), (\d+)(?:, (.*))?, (.*), (.*) - (\w{2}), CEP: (.*)$/);
-    if (!match) return endereco;
-    return {
-      rua: match[1] || '',
-      numero: match[2] || '',
-      complemento: match[3] || '',
-      bairro: match[4] || '',
-      cidade: match[5] || '',
-      estado: match[6] || '',
-      cep: match[7] || '',
-    };
+  if (!pedidoId || !usuario) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Loading />
+      </Box>
+    );
+  }
+
+
+  async function renderFreteOptions(cep) {
+    setCarregandoFrete(true);
+    try {
+      const res = await api.post('/frete', {
+        cepDestino: cep,
+        altura: 4,
+        largura: 12,
+        comprimento: 17,
+        peso: 0.3,
+      });
+
+      console.log('cheguei aqui 3');
+      console.log('Opções de frete:', res.data);
+      setOpcoesFrete(res.data);
+      setCarregandoFrete(false);
+
+    } catch (error) {
+      setCarregandoFrete(false);
+      console.error('Erro ao continuar para a próxima etapa:', error);
+    }
   }
 
   const handleUsarEnderecoCadastrado = () => {
     if (usuario?.endereco) {
-      setEndereco(parseEndereco(usuario.endereco));
+      // setEndereco(parseEndereco(usuario.endereco));
       setUsarEnderecoCadastrado(true);
     }
   };
@@ -121,46 +142,144 @@ const Pagamento = () => {
     setUsarEnderecoCadastrado(false);
   };
 
+  function formatarCep(valor) {
+    // Remove tudo que não for número
+    valor = valor.replace(/\D/g, '');
+    // Aplica a máscara
+    if (valor.length > 5) {
+      valor = valor.replace(/^(\d{2})(\d{3})(\d{3})/, '$1.$2-$3');
+    } else if (valor.length > 2) {
+      valor = valor.replace(/^(\d{2})(\d{0,3})/, '$1.$2');
+    }
+    return valor.slice(0, 10); // Limita ao tamanho máximo
+  }
+
   const handleEnderecoChange = (e) => {
-    setEndereco({ ...endereco, [e.target.name]: e.target.value });
+    let { name, value } = e.target;
+    if (name === 'cep') {
+      value = formatarCep(value);
+    }
+    setEndereco({ ...endereco, [name]: value });
   };
 
-  const handleContinuar = async () => {
+  const handleContinuarParaFrete = async () => {
     if (usarEnderecoCadastrado) {
-      // Endereço do usuario já foi colocado no pedido através do backend
+      if (!enderecoSelecionado) {
+        alert('Selecione um endereço!');
+        return;
+      }
+      setEnderecoLinha(enderecoSelecionado.linha);
+      setEndereco(enderecoSelecionado.dados);
+      const { cep, rua, numero, complemento, bairro, cidade, estado } = enderecoSelecionado.dados;
+      const enderecoCompleto = `${rua}, ${numero}${complemento ? `, ${complemento}` : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
+
+
+      try {
+        await api.put(`/pedidos/endereco/${pedidoId}`, {
+          enderecoEntrega: enderecoCompleto,
+          rua,
+          numero,
+          complemento,
+          bairro,
+          cidade,
+          estado,
+          cep,
+        });
+
+        renderFreteOptions(enderecoSelecionado.dados.cep);
+
+        console.log('cheguei aqui HE HE');
+      } catch (error) {
+        console.error('Erro ao atualizar o endereço do pedido:', error);
+        return;
+      }
+
 
       setEtapa(2);
       return;
     }
 
-    const { cep, rua, numero, complemento, bairro, cidade, estado } = endereco;
 
+    const {
+      cep = '', rua = '', numero = '', complemento = '', bairro = '', cidade = '', estado = ''
+    } = Object.fromEntries(
+      Object.entries(endereco).map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v])
+    );
 
-    const enderecoCompletoFormatado = (
-      <>
-        {rua}, {numero}
-        {complemento && `, ${complemento}`}<br />
-        {bairro}, {cidade} - {estado}<br />
-        CEP: {cep}
-      </>
-    )
+    if (
+      !cep || !rua || !numero || !bairro || !cidade || !estado ||
+      [cep, rua, numero, bairro, cidade, estado].some(val => !val)
+    ) {
+      alert('Preencha todos os campos obrigatórios do endereço!');
+      return;
+    }
+
 
     const enderecoCompleto = ` ${rua}, ${numero}${complemento ? `, ${complemento}` : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
 
-    setEnderecoFormatado(enderecoCompletoFormatado);
-
-    console.log('Endereço completo:', enderecoCompletoFormatado);
-
     try {
-
       await api.put(`/pedidos/endereco/${pedidoId}`, {
         enderecoEntrega: enderecoCompleto,
+        rua,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
       });
 
-      setEtapa(2);
+      renderFreteOptions(cep)
+      setEnderecoLinha(enderecoCompleto);
+
+      console.log('cheguei aqui 2');
     } catch (error) {
-      console.error('Erro ao continuar para a próxima etapa:', error);
+      console.error('Erro ao atualizar o endereço do pedido:', error);
+      return;
     }
+    setEtapa(2);
+
+    //   setCarregandoFrete(true);
+    //   const res = await api.post('/frete', {
+    //     cepDestino: cep,
+    //     altura: 4,
+    //     largura: 12,
+    //     comprimento: 17,
+    //     peso: 0.3,
+    //   });
+    //   console.log('cheguei aqui 3');
+    //   console.log('Opções de frete:', res.data);
+    //   setOpcoesFrete(res.data);
+    //   setCarregandoFrete(false);
+    //   setEtapa(2);
+    // } catch (error) {
+    //   setCarregandoFrete(false);
+    //   console.error('Erro ao continuar para a próxima etapa:', error);
+    // }
+    // } else if (etapa === 2) {
+
+    // if (!freteSelecionado) {
+    //   alert('Selecione uma opção de frete!');
+    //   return;
+    // }
+
+    // Aqui você pode salvar o frete selecionado no pedido, se desejar
+    // setEtapa(3);
+    // }
+  };
+
+  const handleContinuarParaPagamento = () => {
+    const frete = opcoesFrete.find(
+      (opcao) => String(opcao.id || opcao.nome) === String(freteSelecionado)
+    );
+    if (!frete) {
+      alert('Selecione uma opção de frete!');
+      return;
+    }
+    const valor = Number(frete.preco || frete.price || 0);
+    setValorFrete(valor);
+    setSubtotal(valorTotal + valor);
+    setEtapa(3);
   };
 
   return (
@@ -183,7 +302,7 @@ const Pagamento = () => {
             <ArrowBackIosNewIcon />
           </Button>
           <Typography variant="h5" fontWeight={700} sx={{ textAlign: 'center', flex: 1 }}>
-            {etapa === 1 ? 'Endereço de Entrega' : 'Pagamento'}
+            {etapa === 1 ? 'Endereço de Entrega' : etapa === 2 ? 'Frete' : 'Pagamento'}
           </Typography>
         </Box>
         <Divider sx={{ mb: 3 }} />
@@ -191,7 +310,7 @@ const Pagamento = () => {
         <Grid container spacing={4} >
 
           {/* RESUMOS */}
-          <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: { xs: "100%", sm: 270}, background: "pink" }}>
+          <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: { xs: "100%", sm: 270 } }}>
 
 
             {/* Resumo do Pedido */}
@@ -201,15 +320,22 @@ const Pagamento = () => {
                   Resumo do Pedido
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body1">Valor Total:</Typography>
+                <Typography variant="body1">
+                  Quantidade de produtos: <strong>{quantidadeTotal}</strong>
+                </Typography>
+                <Typography variant="body1">
+                  Frete: <strong>R$ {valorFrete.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                </Typography>
+                <Typography variant="body1">
+                  Produto(s): <strong> R$ {valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} </strong>
+                </Typography>
+                <Divider sx={{ my: 2 }} />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body1">Subtotal:</Typography>
                   <Typography variant="h5" fontWeight={700} color="primary">
-                    R$ {valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    R$ {(subtotal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </Typography>
                 </Box>
-                <Typography variant="body1">
-                  Quantidade de produtos: <b>{quantidadeTotal}</b>
-                </Typography>
                 <Divider sx={{ mt: 2 }} />
               </CardContent>
             </Card>
@@ -229,7 +355,7 @@ const Pagamento = () => {
                   Endereço de Entrega
                 </Typography>
                 <Typography variant="body2">
-                  {enderecoFormatado}
+                  {enderecoLinha}
                 </Typography>
               </CardContent>
             </Card>
@@ -237,7 +363,7 @@ const Pagamento = () => {
           </Grid>
 
           {/* CONTEUDOS */}
-          <Grid xs={12} md={8} sx={{ ml: { xs: 0, md: 8 }, bgcolor: 'green' }}>
+          <Grid xs={12} md={8} sx={{ ml: { xs: 0, md: 8 } }}>
             <Box>
 
 
@@ -248,7 +374,7 @@ const Pagamento = () => {
                     <Button
                       variant={usarEnderecoCadastrado ? 'contained' : 'outlined'}
                       onClick={handleUsarEnderecoCadastrado}
-                      disabled={!usuario?.endereco}
+                      disabled={!usuario?.endereco && !enderecoLinha}
                     >
                       Usar endereço cadastrado
                     </Button>
@@ -259,11 +385,80 @@ const Pagamento = () => {
                       Preencher novo endereço
                     </Button>
                   </Box>
-                    {!usuario?.endereco && (
-                      <Typography variant="caption" color="error">
-                        Nenhum endereço cadastrado.
-                      </Typography>
-                    )}
+
+                  {/* Opções de endereço só aparecem se usarEnderecoCadastrado for true */}
+                  {usarEnderecoCadastrado && (usuario?.endereco || enderecoLinha) && (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, my: 2, flexWrap: 'wrap' }}>
+                      {/* Endereço do Usuário */}
+                      {usuario?.endereco && (
+                        <Paper
+                          elevation={enderecoSelecionado?.linha === usuario.endereco ? 6 : 1}
+                          sx={{
+                            p: 2,
+                            cursor: 'pointer',
+                            // minWidth: 260,
+                            // width: {sm: 260},
+                            border: enderecoSelecionado?.linha === usuario.endereco ? '2px solid #1976d2' : '1px solid #ccc',
+                            background: enderecoSelecionado?.linha === usuario.endereco ? '#e3f2fd' : '#fff',
+                            '&:hover': {
+                              background: '#e3f2fd',
+                            },
+                          }}
+                          onClick={() => {
+                            setEnderecoSelecionado({
+                              linha: usuario.endereco,
+                              dados: {
+                                rua: usuario.rua || '',
+                                numero: usuario.numero || '',
+                                complemento: usuario.complemento || '',
+                                bairro: usuario.bairro || '',
+                                cidade: usuario.cidade || '',
+                                estado: usuario.estado || '',
+                                cep: usuario.cep || '',
+                              }
+                            });
+                          }}
+                        >
+                          <Typography variant="body2" fontWeight={700}>Endereço do Cadastro</Typography>
+                          <Typography variant="body2">{usuario.endereco}</Typography>
+                        </Paper>
+                      )}
+
+                      {/* Endereço do Pedido */}
+                      {enderecoLinha && (!usuario?.endereco || enderecoLinha !== usuario.endereco) && (
+                        <Paper
+                          elevation={enderecoSelecionado?.linha !== usuario.endereco ? 6 : 1}
+                          sx={{
+                            p: 2,
+                            cursor: 'pointer',
+                            // minWidth: 260,
+                            // width: {sm: 260},
+                            border: enderecoSelecionado?.linha === enderecoLinha ? '2px solid #1976d2' : '1px solid #ccc',
+                            background: enderecoSelecionado?.linha === enderecoLinha ? '#e3f2fd' : '#fff',
+                            '&:hover': {
+                              background: '#e3f2fd',
+                            },
+                          }}
+                          onClick={() => {
+                            setEnderecoSelecionado({
+                              linha: enderecoLinha,
+                              dados: { ...endereco }
+                            });
+                          }}
+                        >
+                          <Typography variant="body2" fontWeight={700}>Endereço do Pedido</Typography>
+                          <Typography variant="body2">{enderecoLinha}</Typography>
+                        </Paper>
+                      )}
+                    </Box>
+                  )}
+
+                  {/* Mensagem se nenhum endereço */}
+                  {usarEnderecoCadastrado && !usuario?.endereco && !enderecoLinha && (
+                    <Typography variant="caption" color="error">
+                      Nenhum endereço cadastrado.
+                    </Typography>
+                  )}
 
                 </Box>
               )}
@@ -347,6 +542,7 @@ const Pagamento = () => {
                         fullWidth
                         required
                         disabled={usarEnderecoCadastrado}
+                        slotProps={{ htmlInput: { maxLength: 10 } }}
                       />
                     </Grid>
                   </Grid>
@@ -356,7 +552,7 @@ const Pagamento = () => {
                       variant="contained"
                       color="primary"
                       sx={{ mt: 2, fontWeight: 700 }}
-                      onClick={handleContinuar}
+                      onClick={handleContinuarParaFrete}
                     >
                       Continuar para Pagamento
                     </Button>
@@ -371,7 +567,7 @@ const Pagamento = () => {
                     color="primary"
                     sx={{ mt: 2, fontWeight: 700 }}
                     fullWidth
-                    onClick={handleContinuar}
+                    onClick={handleContinuarParaFrete}
                   >
                     Continuar para Pagamento
                   </Button>
@@ -380,9 +576,9 @@ const Pagamento = () => {
 
 
               {/* ETAPA DE PAGAMENTO */}
+              {/*               
               {etapa === 2 && (
                 <Box>
-                  {/* Método de Pagamento */}
                   <FormControl component="fieldset" fullWidth>
                     <FormLabel component="legend" >
                       Método de Pagamento
@@ -407,6 +603,82 @@ const Pagamento = () => {
                         valor={valorTotal}
                       />
                     </>
+                  ) : (
+                    <Typography variant="body1" color="text.secondary" sx={{ mt: 8 }}>
+                      Selecione um método de pagamento para continuar.
+                    </Typography>
+                  )}
+                </Box>
+              )} */}
+
+              {/* FRETE */}
+              {etapa === 2 && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="h6" fontWeight={700} gutterBottom>
+                    Selecione o frete
+                  </Typography>
+                  {carregandoFrete ? (
+                    <Loading />
+                  ) : (
+                    <RadioGroup
+                      value={freteSelecionado}
+                      onChange={e => setFreteSelecionado(e.target.value)}
+                    >
+                      {Array.isArray(opcoesFrete) && opcoesFrete.length > 0 ? (
+                        opcoesFrete.map((opcao, idx) => (
+                          <FormControlLabel
+                            key={idx}
+                            value={opcao.id || opcao.nome}
+                            control={<Radio />}
+                            label={`${opcao.nome || opcao.company?.name} - R$ ${Number(opcao.preco || opcao.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} - ${opcao.prazo_entrega || opcao.delivery_time} dias`}
+                          />
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="error">
+                          Nenhuma opção de frete disponível.
+                        </Typography>
+                      )}
+                    </RadioGroup>
+                  )}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 2, fontWeight: 700 }}
+                    onClick={handleContinuarParaPagamento}
+                    disabled={carregandoFrete}
+                  >
+                    Continuar para Pagamento
+                  </Button>
+                </Box>
+              )}
+
+              {/* PAGAMENTO */}
+              {etapa === 3 && (
+                <Box>
+                  {/* Método de Pagamento */}
+                  <FormControl component="fieldset" fullWidth>
+                    <FormLabel component="legend" >
+                      Método de Pagamento
+                    </FormLabel>
+                    <RadioGroup
+                      row
+                      value={metodo}
+                      onChange={(e) => setMetodo(e.target.value)}
+                    >
+                      <FormControlLabel
+                        value="cartao"
+                        control={<Radio color="primary" />}
+                        label="Cartão de Crédito"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                  <Divider sx={{ my: 3 }} />
+                  {metodo === 'cartao' ? (
+                    <PagamentoCartao
+                      pedidoId={pedidoId}
+                      valor={valorTotal}
+                      valorFrete={valorFrete}
+                    />
                   ) : (
                     <Typography variant="body1" color="text.secondary" sx={{ mt: 8 }}>
                       Selecione um método de pagamento para continuar.

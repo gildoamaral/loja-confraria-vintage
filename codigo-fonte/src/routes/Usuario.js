@@ -64,7 +64,11 @@ router.get('/', async (req, res) => {
 
 // CREATE USUARIO
 router.post('/', async (req, res) => {
-  const { nome, sobrenome, dataNascimento, endereco, email, telefone, senha, posicao } = req.body;
+  const {
+    nome, sobrenome, dataNascimento, endereco,
+    rua, numero, complemento, bairro, cidade, estado, cep,
+    email, telefone, senha, posicao
+  } = req.body;
 
   if (!dataNascimento || isNaN(Date.parse(dataNascimento))) {
     return res.status(400).json({ message: 'Data de nascimento inválida' });
@@ -79,7 +83,6 @@ router.post('/', async (req, res) => {
   const hashedPassword = await bcrypt.hash(senha, salt);
 
   const token = crypto.randomBytes(32).toString("hex");
-  console.log(`Token gerado para o usuário ${nome}: ${token}`);
   const tokenExpires = new Date(Date.now() + 1000 * 60 * 60); // 1h
 
   try {
@@ -89,6 +92,13 @@ router.post('/', async (req, res) => {
         sobrenome,
         dataNascimento: dataNascimentoISO,
         endereco,
+        rua,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
         email,
         telefone,
         senha: hashedPassword,
@@ -113,7 +123,11 @@ router.post('/', async (req, res) => {
 // UPDATE USUARIO
 router.put('/conta', auth, async (req, res) => {
   const userId = req.user.userId;
-  const { nome, sobrenome, dataNascimento, endereco, email, telefone, senha, posicao } = req.body;
+  const {
+    nome, sobrenome, dataNascimento, endereco,
+    rua, numero, complemento, bairro, cidade, estado, cep,
+    email, telefone, senha, posicao
+  } = req.body;
 
   if (dataNascimento && isNaN(Date.parse(dataNascimento))) {
     return res.status(400).json({ message: 'Data de nascimento inválida' });
@@ -134,6 +148,13 @@ router.put('/conta', auth, async (req, res) => {
         sobrenome,
         dataNascimento: dataNascimentoISO,
         endereco,
+        rua,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado,
+        cep,
         email,
         telefone,
         senha: hashedPassword,
@@ -177,23 +198,13 @@ router.get('/conta', auth, async (req, res) => {
 
     const user = await prisma.usuarios.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        nome: true,
-        sobrenome: true,
-        email: true,
-        telefone: true,
-        endereco: true,
-        dataNascimento: true,
-        posicao: true
-      }
     });
 
     if (!user) {
       return res.status(404).json({ message: 'Usuário não encontrado' });
     }
-
-    res.json(user);
+    const { senha, isEmailVerified, emailVerifyToken, emailTokenExpires, resetToken, resetTokenExpires, ...userClean } = user;
+    res.json(userClean);
   } catch (error) {
     console.error('Erro ao buscar conta do usuário:', error);
     res.status(500).json({ message: 'Erro no servidor' });
