@@ -10,7 +10,15 @@ import Loading from '../../components/Loading';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG'];
 const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
-const OCASIOES = ['CASAMENTO', 'BATIZADO', 'MADRINHAS', 'FORMATURA'];
+const OCASIOES = [
+  // 'CASAMENTO',
+  // 'BATIZADO',
+  // 'MADRINHAS',
+  // 'FORMATURA',
+  'FESTAS',
+  'OCASIÕES ESPECIAIS',
+  'CASUAL'
+];
 
 const HomeCliente = () => {
   const [produtos, setProdutos] = useState([]);

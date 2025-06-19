@@ -49,6 +49,7 @@ model produtos {
   categoria        Categoria
   ocasiao          Ocasiao?
   precoPromocional Float?
+  ativo           Boolean   @default(true)
 
   itensPedido ItemPedido[] // Um produto pode estar em vários itens de pedido
 }
