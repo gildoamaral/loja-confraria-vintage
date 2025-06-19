@@ -13,6 +13,8 @@ import Pedidos from "../pages/Pedidos/Pedidos.jsx";
 import ProtectedLayout from '../components/ProtectedLayout';
 import NotFound from "../pages/NotFound/NotFound"; // Crie esse componente
 import Carrossel from '../components/Carrossel/Carrossel.jsx';
+import EsqueciSenha from '../pages/ResetSenha/EsqueciSenha.jsx';
+import ResetarSenha from '../pages/ResetSenha/ResetSenha.jsx';
 
 function AppRoutes() {
   return (
@@ -24,6 +26,8 @@ function AppRoutes() {
       <Route path="/produto/:id" element={<InformProduto />} />
       <Route path='/carrinho' element={<Carrinho />} />
       <Route path='/teste' element={<Carrossel />} />
+      <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+      <Route path="/resetar-senha/:token" element={<ResetarSenha />} />
 
       {/* Rotas privadas para qualquer usuário logado */}
       <Route element={<ProtectedLayout />}>

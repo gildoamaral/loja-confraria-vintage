@@ -24,9 +24,10 @@ const PagamentoCartao = (props) => {
     const amount = (!isNaN(valorSeguro) && valorSeguro > 0)
       ? valorSeguro.toFixed(2)
       : "0.01";
+    const amountPlusFrete = props.valorFrete ? (Number(props.valorFrete) + Number(amount)).toFixed(2) : amount;
 
     const cardForm = mp.cardForm({
-      amount: amount,
+      amount: amountPlusFrete,
       iframe: true,
       form: {
         id: "form-checkout",
@@ -104,6 +105,7 @@ const PagamentoCartao = (props) => {
               },
             },
             pedidoId: props.pedidoId,
+            valorFrete: props.valorFrete ?? 0,
           })
             .then(async response => {
               console.log("log da response data: ", response.data)

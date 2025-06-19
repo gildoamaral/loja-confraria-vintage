@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import api from '../../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Styles from'./Login.module.css';
 import Footer from '../../components/Footer';  
 import PageContainer from '../../components/PageContainer';
@@ -74,7 +74,15 @@ const Login = () => {
 
                     {loginSucesso && <p className={Styles.successMessage}>Login realizado com sucesso!</p>}
                     {erroLogin && <p className={Styles.errorMessage}>{erroLogin}</p>}
-                    <p className={Styles.signupMessage}>Ainda não possui uma conta? <a href="/cadastro-usuario" className={Styles.signupLink}>Cadastre-se</a></p>
+                    <div className={Styles.links}>
+                        <Link to="/cadastro-usuario" className={Styles.link}>
+                            Cadastrar
+                        </Link>
+                        <span className={Styles.divider}>|</span>
+                        <Link to="/esqueci-senha" className={Styles.link}>
+                            Esqueci minha senha
+                        </Link>
+                    </div>
                 </div>
             </PageContainer>
             <Footer />

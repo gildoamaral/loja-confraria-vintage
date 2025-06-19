@@ -18,8 +18,17 @@ const Conta = () => {
     sobrenome: "",
     telefone: "",
     email: "",
-    endereco: "",
+    // endereco: "",     <-- Gil: Este campo foi removido para adicionar outros campos de endereço
     dataNascimento: "",
+
+    // Adicionando campos de endereço abaixo
+    rua: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    cep: "",
   });
   const [salvando, setSalvando] = useState(false);
   const [msgSucesso, setMsgSucesso] = useState("");
@@ -49,10 +58,19 @@ const Conta = () => {
           sobrenome: dadosUsuario.sobrenome || "",
           telefone: dadosUsuario.telefone || "",
           email: dadosUsuario.email || "",
-          endereco: dadosUsuario.endereco || "",
+          // endereco: dadosUsuario.endereco || "",  <-- Gil: Este campo foi removido para adicionar outros campos de endereço
           dataNascimento: dadosUsuario.dataNascimento
             ? dadosUsuario.dataNascimento.split("T")[0]
             : "",
+
+          // Adicionando campos de endereço abaixo
+          rua: dadosUsuario.rua || "",
+          numero: dadosUsuario.numero || "",
+          complemento: dadosUsuario.complemento || "",
+          bairro: dadosUsuario.bairro || "",
+          cidade: dadosUsuario.cidade || "",
+          estado: dadosUsuario.estado || "",
+          cep: dadosUsuario.cep || "",
         });
 
         const responsePedidos = await api.get('/pedidos', { withCredentials: true });
@@ -111,7 +129,18 @@ const Conta = () => {
     setMsgErro("");
     setMsgSucesso("");
     try {
-      const response = await api.put("/usuarios/conta", formDados, { withCredentials: true });
+      // Gil: Mudando o formato do endereço 
+      // const response = await api.put("/usuarios/conta", formDados, { withCredentials: true });
+
+      // Isto pega todos os campos de endereço e formata em uma string
+      const enderecoString = `${formDados.rua}, ${formDados.numero}${formDados.complemento ? ', ' + formDados.complemento : ''}, ${formDados.bairro}, ${formDados.cidade} - ${formDados.estado}, CEP: ${formDados.cep}`;
+
+      const payload = {
+        ...formDados,
+        endereco: enderecoString,
+      };
+
+      const response = await api.put("/usuarios/conta", payload, { withCredentials: true });
       const usuarioAtualizado = response.data.usuario || response.data;
 
       setUsuario(usuarioAtualizado);
@@ -234,15 +263,84 @@ const Conta = () => {
                     disabled
                   />
                 </div>
-                <div className={styles.inputGroup}>
-                  <label>Endereço:</label>
-                  <input
+                {/* 
+                <div className={styles.inputGroup}>   <--- Gil: Este era o código antigo. Tive que adicionar  
+                  <label>Endereço:</label>                      outros campos para fazer funcionar minha
+                  <input                                        funcionalidade na pagina do pagamento...
                     type="text"
                     name="endereco"
                     value={formDados.endereco}
                     onChange={handleChange}
                   />
                 </div>
+                 */}
+
+                {/* Adicionando campos de Endereço */}
+                <div className={styles.inputGroup}>
+                  <label>Rua:</label>
+                  <input
+                    type="text"
+                    name="rua"
+                    value={formDados.rua}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Número:</label>
+                  <input
+                    type="text"
+                    name="numero"
+                    value={formDados.numero}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Complemento:</label>
+                  <input
+                    type="text"
+                    name="complemento"
+                    value={formDados.complemento}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Bairro:</label>
+                  <input
+                    type="text"
+                    name="bairro"
+                    value={formDados.bairro}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Cidade:</label>
+                  <input
+                    type="text"
+                    name="cidade"
+                    value={formDados.cidade}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Estado:</label>
+                  <input
+                    type="text"
+                    name="estado"
+                    value={formDados.estado}
+                    onChange={handleChange}
+                    maxLength={2}
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>CEP:</label>
+                  <input
+                    type="text"
+                    name="cep"
+                    value={formDados.cep}
+                    onChange={handleChange}
+                  />
+                </div>
+
                 {msgErro && <p className={styles.erroMsg}>{msgErro}</p>}
                 {msgSucesso && <p className={styles.sucessoMsg}>{msgSucesso}</p>}
 

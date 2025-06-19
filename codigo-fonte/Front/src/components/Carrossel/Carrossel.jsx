@@ -60,8 +60,8 @@ const Carrossel = () => {
           right: 16,
           zIndex: 1,
           color: 'white',
-          backgroundColor: 'rgba(0,0,0,0.3)',
-          '&:hover': { backgroundColor: 'rgba(0,0,0,0.5)' }
+          backgroundColor: 'rgba(0,0,0,0.1)',
+          '&:hover': { backgroundColor: 'rgba(0,0,0,0.3)' }
         }}
       >
         <ArrowForwardIosIcon />
@@ -80,8 +80,8 @@ const Carrossel = () => {
           left: 16,
           zIndex: 1,
           color: 'white',
-          backgroundColor: 'rgba(0,0,0,0.3)',
-          '&:hover': { backgroundColor: 'rgba(0,0,0,0.5)' }
+          backgroundColor: 'rgba(0,0,0,0.1)',
+          '&:hover': { backgroundColor: 'rgba(0,0,0,0.3)' }
         }}
       >
         <ArrowBackIosNewIcon />

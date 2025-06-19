@@ -10,8 +10,10 @@ router.post('/criar', auth, async (req, res) => {
   const { produtoId, quantidade } = req.body;
 
   const usuario = await prisma.usuarios.findUnique({
-  where: { id: usuarioId }
-});
+    where: { id: usuarioId }
+  });
+
+  console.log('Usuário encontrado:', usuario);
 
   try {
     // Verifica se o usuário já tem pedido com status CARRINHO
@@ -28,7 +30,6 @@ router.post('/criar', auth, async (req, res) => {
         data: {
           usuarioId,
           status: 'CARRINHO',
-          enderecoEntrega: usuario.endereco,
         },
       });
     }
@@ -69,7 +70,7 @@ router.post('/criar', auth, async (req, res) => {
 // Deletar item do pedido
 router.delete('/item/:id', async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     await prisma.itemPedido.delete({
       where: { id: parseInt(id) },
@@ -143,16 +144,46 @@ router.put('/pagamento/:id', async (req, res) => {
 
 // Atualizar endereço de entrega do pedido
 router.put('/endereco/:pedidoId', async (req, res) => {
+  console.log("Atualizando endereço de entrega do pedido...", req.body);
+
   const { pedidoId } = req.params;
-  const { enderecoEntrega } = req.body;
+  const {
+    enderecoEntrega,
+    rua,
+    numero,
+    complemento,
+    bairro,
+    cidade,
+    estado,
+    cep
+  } = req.body;
+
+  enderecoFields = {
+    enderecoEntrega,
+    rua,
+    numero,
+    complemento,
+    bairro,
+    cidade,
+    estado,
+    cep,
+  };
+
+  console.log("Endereço a ser atualizado:", enderecoFields);
 
   try {
+    // Atualiza o endereço do pedido
     const pedido = await prisma.pedidos.update({
       where: { id: parseInt(pedidoId) },
-      data: { enderecoEntrega },
+      data: enderecoFields,
     });
+
+    console.log("teste", pedido);
+
+
     res.json(pedido);
   } catch (err) {
+    console.error("Erro ao atualizar endereço de entrega:", err);
     res.status(500).json({ erro: 'Erro ao atualizar endereço de entrega' });
   }
 });
@@ -205,16 +236,16 @@ router.get('/', auth, async (req, res) => {
   const usuarioId = req.user.userId;
   try {
     const pedidos = await prisma.pedidos.findMany({
-  where: { usuarioId },
-  include: {
-    itens: {
+      where: { usuarioId },
       include: {
-        produto: true, // inclui todos os campos do produto, incluindo preco e imagem
-      }
-    }
-  },
-  orderBy: { criadoEm: 'desc' }
-});
+        itens: {
+          include: {
+            produto: true, // inclui todos os campos do produto, incluindo preco e imagem
+          }
+        }
+      },
+      orderBy: { criadoEm: 'desc' }
+    });
     res.json(pedidos);
   } catch (err) {
     console.error(err);
@@ -226,20 +257,21 @@ router.get('/', auth, async (req, res) => {
 router.get('/pagos', auth, async (req, res) => {
   try {
     const pedidos = await prisma.pedidos.findMany({
-  where: {
-    status: {
-    in: ['PAGO', 'ENVIADO', 'CANCELADO']
-    }},
-  include: {
-    usuario: true,
-    itens: {
+      where: {
+        status: {
+          in: ['PAGO', 'ENVIADO', 'CANCELADO']
+        }
+      },
       include: {
-        produto: true,
-      }
-    }
-  },
-  orderBy: { criadoEm: 'desc' }
-});
+        usuario: true,
+        itens: {
+          include: {
+            produto: true,
+          }
+        }
+      },
+      orderBy: { criadoEm: 'desc' }
+    });
     res.json(pedidos);
   } catch (err) {
     console.error(err);

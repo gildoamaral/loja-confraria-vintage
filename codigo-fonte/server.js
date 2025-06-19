@@ -88,6 +88,30 @@ app.get("/admin/:id", authAdmin, async (req, res) => {
 });
 */
 
+app.get("/verify-email/:token", async (req, res) => {
+  const { token } = req.params;
+
+  const user = await prisma.usuarios.findFirst({
+    where: {
+      emailVerifyToken: token,
+      emailTokenExpires: { gt: new Date() },
+    },
+  });
+
+  if (!user) return res.status(400).send("Token inválido ou expirado");
+
+  await prisma.usuarios.update({
+    where: { id: user.id },
+    data: {
+      isEmailVerified: true,
+      emailVerifyToken: null,
+      emailTokenExpires: null,
+    },
+  });
+
+  res.send("E-mail verificado com sucesso!");
+});
+
 app.post('/frete', async (req, res) => {
   const { cepDestino, altura, largura, comprimento, peso } = req.body;
   
