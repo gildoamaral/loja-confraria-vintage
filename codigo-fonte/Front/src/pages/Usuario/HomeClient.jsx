@@ -16,9 +16,24 @@ const OCASIOES = [
   // 'MADRINHAS',
   // 'FORMATURA',
   'FESTAS',
-  'OCASIÕES ESPECIAIS',
+  'OCASIOES_ESPECIAIS',
   'CASUAL'
 ];
+
+// Função para exibir nome amigável
+const getOcasiaoLabel = (ocasiao) => {
+  switch (ocasiao) {
+    case 'OCASIOES_ESPECIAIS':
+      return 'Ocasiões Especiais';
+    case 'FESTAS':
+      return 'Festas';
+    case 'CASUAL':
+      return 'Casual';
+    default:
+      // Torna amigável qualquer outro valor
+      return ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase().replace(/_/g, ' ');
+  }
+};
 
 const HomeCliente = () => {
   const [produtos, setProdutos] = useState([]);
@@ -93,11 +108,11 @@ const HomeCliente = () => {
           {OCASIOES.map(ocasiao => (
             <div
               key={ocasiao}
-              className={`${Styles.ocasioCard} `}
+              className={`${Styles.ocasioCard} ${selectedOcasiao === ocasiao ? Styles.active : ''}`}
               onClick={() => handleOcasiaoClick(ocasiao)}
             >
-              <span className={`${Styles.ocasioNome} ${selectedOcasiao === ocasiao ? Styles.active : ''}`}>
-                {ocasiao.charAt(0) + ocasiao.slice(1).toLowerCase()}
+              <span className={`${Styles.ocasioNome}`}>
+                {getOcasiaoLabel(ocasiao)}
               </span>
             </div>
           ))}

@@ -1,6 +1,6 @@
 // src/routes/Produtos.js
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, Ocasiao } = require('@prisma/client');
 const AuthAdmin = require('../middlewares/AuthAdmin'); // Importa o middleware AuthAdmin
 
 const prisma = new PrismaClient();
@@ -75,6 +75,8 @@ router.post('/', AuthAdmin, async (req, res) => {
     categoria,
     ocasiao
   } = req.body;
+
+  console.log('req.body.image: ', req.body.imagem);
   if (!nome || preco == null || !imagem || quantidade == null || !tamanho || !cor || !categoria) {
     return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
   }
@@ -91,6 +93,8 @@ router.post('/', AuthAdmin, async (req, res) => {
     precoPromocional: null,                  
     ocasiao: null                            
   };
+
+  console.log('Dados do produto da imagem: ', data.imagem);
 
   if (req.body.hasOwnProperty('precoPromocional')) {
     data.precoPromocional = precoPromocional != null
