@@ -206,7 +206,7 @@ const Pedidos = () => {
     );
   };
 
-  const handleRemoveImageCadastro = idx => setImagens(prev => prev.filter((_, i) => i !== idx));
+  // const handleRemoveImageCadastro = idx => setImagens(prev => prev.filter((_, i) => i !== idx));
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -560,7 +560,7 @@ const Pedidos = () => {
                                 <button
                                   type="button"
                                   className={stylesEstoque.removeButton}
-                                  onClick={() => handleRemoveImageCadastro(index)}
+                                  onClick={() => handleRemoveImage(index)} // <-- CORRIGIDO
                                 >
                                   ×
                                 </button>
