@@ -37,18 +37,22 @@ const getOcasiaoLabel = (ocasiao) => {
 
 const HomeCliente = () => {
   const [produtos, setProdutos] = useState([]);
+  const [loading, setLoading] = useState(true); // Novo estado
   const [selectedTamanhos, setSelectedTamanhos] = useState([]);
   const [selectedCategorias, setSelectedCategorias] = useState([]);
-  const [selectedOcasiao, setSelectedOcasiao] = useState(null); // Alterado para string ou null
+  const [selectedOcasiao, setSelectedOcasiao] = useState(null);
   const [showFiltersDrawer, setShowFiltersDrawer] = useState(false);
 
   useEffect(() => {
     const fetchProdutos = async () => {
+      setLoading(true); // Inicia carregamento
       try {
         const response = await api.get('/produtos');
         setProdutos(response.data);
       } catch (error) {
         console.error('Erro ao buscar produtos:', error);
+      } finally {
+        setLoading(false); // Finaliza carregamento
       }
     };
     fetchProdutos();
@@ -87,7 +91,7 @@ const HomeCliente = () => {
     return matchTamanho && matchCategoria;
   });
 
-  if (!produtos.length) {
+  if (loading) { // Troque !produtos.length por loading
     return (
       <>
         <Header />
