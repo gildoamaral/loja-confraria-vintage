@@ -162,14 +162,15 @@ function Navbar({ invisivel }) {
           display: { xs: "none", md: "flex" }, // xs/sm: hidden, md+: flex
           alignItems: "center",
           width: "100%",
-          justifyContent: "space-around"
+          justifyContent: "space-around",
+          fontWeight: 500,
         }}
       >
         <Link to="/" style={{ textDecoration: 'none' }}>
           <Box
             component="span"
             sx={{
-              fontSize: { xs: "1.2rem", md: "1.7rem" },
+              fontSize: { xs: "1.2rem", md: 24 },
               px: 2,
               fontFamily: "Playfair Display",
               color: "var(--cor-fonte-claro)",
@@ -202,7 +203,11 @@ function Navbar({ invisivel }) {
         {logado ? (
           <>
             <Link to="/conta" style={{ textDecoration: 'none' }}>
-              <Box component="span" sx={{ fontSize, px: 2, fontFamily: "Playfair Display", color: "var(--cor-fonte-claro)" }}>
+              <Box component="span" sx={{ 
+                fontSize, 
+                px: 2, 
+                fontFamily: "Playfair Display", 
+                color: "var(--cor-fonte-claro)" }}>
                 Conta
               </Box>
             </Link>

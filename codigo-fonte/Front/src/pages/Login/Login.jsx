@@ -39,10 +39,9 @@ const Login = () => {
         <div>
             <Header />
             <PageContainer className={Styles.container}>
-                <div className={Styles.header}>
-                    <h1>Bem-vindo de volta a <span className={Styles.highlight}>Confraria Vintage</span></h1>
-                    <h3>Moda elegante com personalidade e graciosidade</h3>
-                </div>
+                {/* <div className={Styles.header}>
+                    <h1>Bem-vindo de volta à <span className={Styles.highlight}>Confraria Vintage</span></h1>
+                </div> */}
                 <div className={Styles.formContainer}>
                     <h2>Login</h2>
 

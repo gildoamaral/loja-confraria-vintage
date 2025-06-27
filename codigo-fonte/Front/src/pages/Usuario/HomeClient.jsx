@@ -7,6 +7,7 @@ import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import Carrossel from '../../components/Carrossel/Carrossel';
 import Loading from '../../components/Loading';
+import arabesc from './arabesc.png';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG'];
 const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
@@ -108,17 +109,39 @@ const HomeCliente = () => {
       <PageContainer className={Styles.container}>
 
         {/* OCASIOES */}
-        <div className={Styles.ocasioesContainer}>
+        {/* <div className={Styles.ocasioesContainer1}>
           {OCASIOES.map(ocasiao => (
             <div
               key={ocasiao}
-              className={`${Styles.ocasioCard} ${selectedOcasiao === ocasiao ? Styles.active : ''}`}
+              className={`${Styles.ocasioCard1} ${selectedOcasiao === ocasiao ? Styles.active : ''}`}
               onClick={() => handleOcasiaoClick(ocasiao)}
             >
               <span className={`${Styles.ocasioNome}`}>
                 {getOcasiaoLabel(ocasiao)}
               </span>
             </div>
+          ))}
+        </div> */}
+
+        <div className={Styles.ocasioesContainer1}>
+          {OCASIOES.map((ocasiao, index) => (
+            <React.Fragment key={ocasiao}>
+              <div
+                className={`${Styles.ocasioCard1} ${selectedOcasiao === ocasiao ? Styles.active : ''}`}
+                onClick={() => handleOcasiaoClick(ocasiao)}
+              >
+                <span className={`${Styles.ocasioNome}`}>
+                  {getOcasiaoLabel(ocasiao)}
+                </span>
+              </div>
+              
+              {index < OCASIOES.length - 1 && (
+                <div style={{ display: 'flex', alignItems: 'center', height: "2rem" }}>
+                  <img src={arabesc} alt=" Divider" className={Styles.arabesc} />
+                </div>
+              )}
+              {/* {index < OCASIOES.length - 1 && <span className={Styles.divider}>|</span>} */}
+            </React.Fragment>
           ))}
         </div>
 
