@@ -62,20 +62,40 @@ const CadastroProdutos = () => {
       return;
     }
 
+    const formData = new FormData();
+    imagens.forEach(img => formData.append('imagens', img)); // importante: campo igual ao do multer
+    formData.append('nome', nome);
+    formData.append('descricao', descricao);
+    formData.append('preco', preco);
+    formData.append('quantidade', quantidade);
+    formData.append('tamanho', tamanho);
+    formData.append('cor', cor);
+    formData.append('categoria', categoria);
+    formData.append('ocasiao', ocasiao);
+
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
     try {
-      const imagensJSON = JSON.stringify(imagens);
-      console.log('Imagens JSON:', imagensJSON);
-      console.log(imagens)
-      await api.post('/produtos', {
-        nome,
-        descricao,
-        preco: parseFloat(preco),
-        imagem: imagensJSON,
-        quantidade: parseInt(quantidade, 10),
-        tamanho,
-        cor,
-        categoria,
-        ocasiao,
+      // const imagensJSON = JSON.stringify(imagens);
+
+      // await api.post('/produtos', {
+      //   nome,
+      //   descricao,
+      //   preco: parseFloat(preco),
+      //   imagem: imagensJSON,
+      //   quantidade: parseInt(quantidade, 10),
+      //   tamanho,
+      //   cor,
+      //   categoria,
+      //   ocasiao,
+      // });
+
+      
+      // eslint-disable-next-line no-unused-vars
+      const response = await api.post('/produtos', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       setMessage('Produto criado com sucesso!');
@@ -110,22 +130,31 @@ const CadastroProdutos = () => {
     }
   };
 
+  // const handleImageChangeCadastro = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   if (files.length + imagens.length > 5) {
+  //     alert('Máximo de 5 imagens permitidas');
+  //     return;
+  //   }
+  //   const readers = files.map(file => {
+  //     return new Promise(resolve => {
+  //       const reader = new FileReader();
+  //       reader.onloadend = () => resolve(reader.result);
+  //       reader.readAsDataURL(file);
+  //     });
+  //   });
+  //   Promise.all(readers).then(results => {
+  //     setImagens(prev => [...prev, ...results]);
+  //   });
+  // };
+
   const handleImageChangeCadastro = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + imagens.length > 5) {
       alert('Máximo de 5 imagens permitidas');
       return;
     }
-    const readers = files.map(file => {
-      return new Promise(resolve => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(file);
-      });
-    });
-    Promise.all(readers).then(results => {
-      setImagens(prev => [...prev, ...results]);
-    });
+    setImagens(prev => [...prev, ...files]);
   };
 
   const handleRemoveImage = (idx) => {
@@ -238,7 +267,8 @@ const CadastroProdutos = () => {
             onChange={handleImageChangeCadastro}
           />
           <div className={stylesCadastro.imageGallery}>
-            {imagens.map((img, idx) => (
+
+            {/* {imagens.map((img, idx) => (
               <div key={idx} className={stylesCadastro.imageItem}>
                 <img src={img} alt={`Preview ${idx}`} className={stylesCadastro.thumb} />
                 <button
@@ -248,7 +278,24 @@ const CadastroProdutos = () => {
                   aria-label="Remover imagem"
                 >×</button>
               </div>
+            ))} */}
+
+            {imagens.map((img, idx) => (
+              <div key={idx} className={stylesCadastro.imageItem}>
+                <img
+                  src={URL.createObjectURL(img)} // cria URL temporária
+                  alt={`Preview ${idx}`}
+                  className={stylesCadastro.thumb}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveImage(idx)}
+                  className={stylesCadastro.removeButton}
+                >×</button>
+              </div>
             ))}
+
+
           </div>
         </div>
 

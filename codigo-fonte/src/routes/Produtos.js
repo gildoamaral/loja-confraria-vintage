@@ -76,7 +76,7 @@ router.post('/', AuthAdmin, async (req, res) => {
     ocasiao
   } = req.body;
 
-  console.log('req.body.image: ', req.body.imagem);
+  console.log('req.body: ', req.body);
   if (!nome || preco == null || !imagem || quantidade == null || !tamanho || !cor || !categoria) {
     return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
   }
