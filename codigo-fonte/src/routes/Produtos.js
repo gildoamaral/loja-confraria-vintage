@@ -10,24 +10,22 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const produtos = await prisma.produtos.findMany({
-      select: {
-        id: true,
-        nome: true,
-        descricao: true,
-        preco: true,
-        precoPromocional: true,
-        imagem: true,
-        quantidade: true,
-        cor: true,
-        tamanho: true,
-        categoria: true,
-        ocasiao: true,
+      // "Inclua" os dados da relação 'imagens' na busca
+      include: {
+        imagens: {
+          // Ordena para garantir que a imagem principal (posição 0) venha primeiro
+          orderBy: {
+            posicao: 'asc',
+          },
+          // Pega apenas 1 imagem. Super eficiente para a página de listagem!
+          take: 1,
+        },
       },
     });
     res.json(produtos);
   } catch (error) {
-    console.error("Erro detalhado:", error);
-    res.status(500).json({ error: 'Erro ao buscar produtos', details: error.message });
+    console.error("Erro ao buscar produtos com imagens:", error);
+    res.status(500).json({ error: "Erro ao buscar produtos." });
   }
 });
 
@@ -63,64 +61,65 @@ router.get('/:id', async (req, res) => {
 
 // POST 
 router.post('/', AuthAdmin, async (req, res) => {
+  // 1. A estrutura do body agora espera um array de objetos de imagem
   const {
     nome,
     descricao,
     preco,
-    precoPromocional,
-    imagem,
     quantidade,
     tamanho,
     cor,
     categoria,
-    ocasiao
+    ocasiao,
+    precoPromocional,
+    uploadResults, // <-- MUDANÇA: Recebe o resultado completo do upload
   } = req.body;
 
-  console.log('req.body: ', req.body);
-  if (!nome || preco == null || !imagem || quantidade == null || !tamanho || !cor || !categoria) {
-    return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
-  }
-
-  const data = {
-    nome,
-    descricao: descricao || null,          
-    preco: parseFloat(preco),
-    imagem,
-    quantidade: parseInt(quantidade, 10),
-    tamanho,
-    cor,
-    categoria,
-    precoPromocional: null,                  
-    ocasiao: null                            
-  };
-
-  console.log('Dados do produto da imagem: ', data.imagem);
-
-  if (req.body.hasOwnProperty('precoPromocional')) {
-    data.precoPromocional = precoPromocional != null
-      ? parseFloat(precoPromocional)
-      : null;
-  }
-
-  if (req.body.hasOwnProperty('ocasiao')) {
-    if (ocasiao == null || ocasiao === '') {
-      data.ocasiao = null;
-    } else {
-      const ocasiaoFormatado = String(ocasiao).toUpperCase();
-
-      if (!Object.values(Ocasiao).includes(ocasiaoFormatado)) {
-        return res.status(400).json({ error: 'Ocasiao inválido.' });
-      }
-      data.ocasiao = ocasiaoFormatado;
-    }
+  // 2. Validação atualizada
+  if (
+    !nome ||
+    !preco ||
+    !quantidade ||
+    !uploadResults || // Verifica se os resultados do upload existem
+    !Array.isArray(uploadResults) ||
+    uploadResults.length === 0
+  ) {
+    return res.status(400).json({ error: 'Campos obrigatórios ausentes ou nenhuma imagem foi enviada.' });
   }
 
   try {
-    const novoProduto = await prisma.produtos.create({ data });
+    // 3. Cria o produto e as imagens relacionadas com o novo formato
+    const novoProduto = await prisma.produtos.create({
+      data: {
+        nome,
+        descricao: descricao || null,
+        preco: parseFloat(preco),
+        quantidade: parseInt(quantidade, 10),
+        tamanho,
+        cor,
+        categoria,
+        ocasiao: ocasiao || null,
+        precoPromocional: precoPromocional ? parseFloat(precoPromocional) : null,
+        
+        // Mágica do Prisma com o campo JSON
+        imagens: {
+          create: uploadResults.map((result, index) => ({
+            // Para cada imagem enviada, salvamos o objeto de URLs no campo 'urls'
+            urls: result.urls, // <-- MUDANÇA: Salva o objeto {thumbnail, medium, large}
+            posicao: index,
+          })),
+        },
+      },
+      include: {
+        imagens: true,
+      },
+    });
+
     return res.status(201).json(novoProduto);
+
   } catch (error) {
     console.error('Erro ao criar produto:', error);
-    return res.status(500).json({ error: 'Erro ao criar produto.' });
+    return res.status(500).json({ error: 'Erro interno ao criar produto.' });
   }
 });
 

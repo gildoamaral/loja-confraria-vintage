@@ -13,6 +13,7 @@ const cookieParser = require("cookie-parser");
 const { parseStringPromise } = require('xml2js');
 const axios = require('axios');
 const bodyParser = require('body-parser');
+const uploadRouter = require('./src/routes/upload.routes.js');
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -44,6 +45,7 @@ app.use('/pagamentos', auth, Pagamentos);
 app.post('/login', Login)
 app.use('/pedidos', Pedidos);
 app.use('/auth', Check);
+app.use('/api', uploadRouter);
 
 /*
 // ROTAS PRIVADAS

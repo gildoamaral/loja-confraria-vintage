@@ -67,14 +67,14 @@ const HomeCliente = () => {
     setSelectedOcasiao(prev => prev === ocasiao ? null : ocasiao);
   };
 
-  const parseImagens = (imagemData) => {
-    if (!imagemData) return [];
-    try {
-      return Array.isArray(imagemData) ? imagemData : JSON.parse(imagemData);
-    } catch {
-      return [imagemData];
-    }
-  };
+  // const parseImagens = (imagemData) => {
+  //   if (!imagemData) return [];
+  //   try {
+  //     return Array.isArray(imagemData) ? imagemData : JSON.parse(imagemData);
+  //   } catch {
+  //     return [imagemData];
+  //   }
+  // };
 
   const filteredProdutos = produtos.filter(produto => {
     const matchTamanho = !selectedTamanhos.length || selectedTamanhos.includes(produto.tamanho);
@@ -134,7 +134,7 @@ const HomeCliente = () => {
                   {getOcasiaoLabel(ocasiao)}
                 </span>
               </div>
-              
+
               {index < OCASIOES.length - 1 && (
                 <div style={{ display: 'flex', alignItems: 'center', height: "2rem" }}>
                   <img src={arabesc} alt=" Divider" className={Styles.arabesc} />
@@ -192,43 +192,29 @@ const HomeCliente = () => {
           {/* ROUPAS */}
           <div className={Styles.produtosGrid}>
             {filteredProdutos.map(produto => {
-              const imagens = parseImagens(produto.imagem);
+              // Acessa diretamente a URL da imagem principal que o backend enviou
+              const imagemPrincipalUrl = produto.imagens && produto.imagens.length > 0
+                ? produto.imagens[0].url
+                : null; // Garante que não quebra se um produto não tiver imagem
+
               return (
                 <Link
                   to={`/produto/${produto.id}`}
                   key={produto.id}
                   className={Styles.produtoCardLink}
                 >
-
                   <div className={Styles.produtoCard}>
-                    {imagens[0] && (
+                    {imagemPrincipalUrl && ( // Renderiza a imagem apenas se a URL existir
                       <img
-                        src={imagens[0]}
+                        src={imagemPrincipalUrl} // <<< Correção aplicada
                         alt={produto.nome}
                         className={Styles.produtoImagem}
                         onError={e => e.target.style.display = 'none'}
                       />
                     )}
-
-
+                    {/* O resto do seu card de produto... */}
                     <div className={Styles.produtoInfo}>
-                      <h3 className={Styles.produtoNome}>{produto.nome}</h3>
-
-                      <p className={Styles.produtoPreco}>
-                        {produto.precoPromocional != null ? (
-                          <>
-                            <span className={Styles.originalPrice}>
-                              R$ {Number(produto.preco).toFixed(2).replace('.', ',')}
-                            </span>
-                            <span className={Styles.promoPrice}>
-                              R$ {Number(produto.precoPromocional).toFixed(2).replace('.', ',')}
-                            </span>
-                          </>
-                        ) : (
-                          <span>R$ {Number(produto.preco).toFixed(2).replace('.', ',')}</span>
-                        )}
-                      </p>
-
+                      {/* ... */}
                     </div>
                   </div>
                 </Link>

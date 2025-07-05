@@ -42,7 +42,6 @@ model produtos {
   nome             String
   descricao        String    @db.VarChar(500)
   preco            Float
-  imagem           Json
   quantidade       Int
   cor              Cor
   tamanho          Tamanho
@@ -50,8 +49,20 @@ model produtos {
   ocasiao          Ocasiao?
   precoPromocional Float?
   ativo            Boolean   @default(true)
+  imagens          ProdutoImagem[] // ADICIONE ESTA LINHA para a relação
 
   itensPedido ItemPedido[] // Um produto pode estar em vários itens de pedido
+}
+
+model ProdutoImagem {
+  id        String   @id @default(uuid())
+  urls      Json     // Armazena um objeto como { thumbnail: "...", medium: "...", large: "..." }
+  posicao   Int      @default(0) 
+  
+  produtoId String
+  produto   produtos @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@map("produto_imagens")
 }
 
 model Pedidos {

@@ -45,6 +45,11 @@ const CadastroProdutos = () => {
       return;
     }
 
+    if (imagens.length === 0) {
+      setMessage('Adicione pelo menos uma imagem.');
+      return;
+    }
+
     // Validação de enums locais (evita envio de valor inesperado)
     if (!tamanhosValidos.includes(tamanho)) {
       setMessage(`Tamanho inválido. Escolha: ${tamanhosValidos.join(', ')}`);
@@ -62,8 +67,9 @@ const CadastroProdutos = () => {
       return;
     }
 
+    /*
     const formData = new FormData();
-    imagens.forEach(img => formData.append('imagens', img)); // importante: campo igual ao do multer
+    imagens.forEach(img => formData.append('imagens', img)); 
     formData.append('nome', nome);
     formData.append('descricao', descricao);
     formData.append('preco', preco);
@@ -78,28 +84,12 @@ const CadastroProdutos = () => {
     }
 
     try {
-      // const imagensJSON = JSON.stringify(imagens);
 
-      // await api.post('/produtos', {
-      //   nome,
-      //   descricao,
-      //   preco: parseFloat(preco),
-      //   imagem: imagensJSON,
-      //   quantidade: parseInt(quantidade, 10),
-      //   tamanho,
-      //   cor,
-      //   categoria,
-      //   ocasiao,
-      // });
-
-      
-      // eslint-disable-next-line no-unused-vars
-      const response = await api.post('/produtos', formData, {
+      await api.post('/produtos', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       setMessage('Produto criado com sucesso!');
-      // Reset dos campos
       setNome('');
       setDescricao('');
       setPreco('');
@@ -115,6 +105,70 @@ const CadastroProdutos = () => {
     } finally {
       setIsSubmitting(false);
     }
+
+    */
+
+    setMessage('Enviando imagens...');
+
+    try {
+      // --- CORREÇÃO AQUI ---
+    // ETAPA 1: Upload de todas as imagens em UMA ÚNICA requisição.
+    
+    // 1. Cria um único FormData.
+    const formData = new FormData();
+    
+    // 2. Adiciona cada arquivo de imagem ao mesmo campo 'images'.
+    imagens.forEach(imageFile => {
+      formData.append('images', imageFile);
+    });
+
+    // 3. Faz uma única chamada para a API de upload.
+    const uploadResponse = await api.post('/api/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    // 4. O resultado (uploadResults) já é o array de objetos que precisamos.
+    const uploadResults = uploadResponse.data;
+
+    setMessage('Imagens enviadas! Criando produto...');
+
+    // ETAPA 2: Criação do produto (esta parte agora receberá os dados corretos)
+    const produtoData = {
+      nome,
+      descricao,
+      preco: parseFloat(preco),
+      quantidade: parseInt(quantidade, 10),
+      tamanho,
+      cor,
+      categoria,
+      ocasiao: ocasiao || null,
+      uploadResults, // Envia o array de resultados correto para o backend
+    };
+
+    await api.post('/produtos', produtoData);
+
+      setMessage('Produto criado com sucesso!');
+      // Reset dos campos após o sucesso
+      setNome('');
+      setDescricao('');
+      setPreco('');
+      setImagens([]);
+      setQuantidade('');
+      setTamanho('');
+      setCor('');
+      setCategoria('');
+      setOcasiao('');
+
+    } catch (error) {
+      console.error('Erro no processo de criação:', error);
+      setMessage(error.response?.data?.message || 'Ocorreu um erro. Verifique o console.');
+    } finally {
+      setIsSubmitting(false);
+    }
+
+
   };
 
   const getOcasiaoLabel = (ocasiao) => {
