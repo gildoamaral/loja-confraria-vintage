@@ -34,19 +34,14 @@ router.get('/:id', async (req, res) => {
   try {
     const produto = await prisma.produtos.findUnique({
       where: { id },
-      select: {
-        id: true,
-        nome: true,
-        descricao: true,
-        preco: true,
-        precoPromocional: true,
-        imagem: true,
-        quantidade: true,
-        cor: true,
-        tamanho: true,
-        categoria: true,
-        ocasiao: true,
-      },
+      include: {
+        imagens: {
+          // Ordena para garantir que a imagem principal (posição 0) venha primeiro
+          orderBy: {
+            posicao: 'asc',
+          },
+        }
+      }
     });
     if (!produto) {
       return res.status(404).json({ error: 'Produto não encontrado' });

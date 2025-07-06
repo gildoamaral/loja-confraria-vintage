@@ -20,6 +20,7 @@ const EstoqueProdutos = () => {
       try {
         const response = await api.get('/produtos');
         setProdutos(response.data);
+        console.log("Produtos carregados:", response.data);
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
       } finally {

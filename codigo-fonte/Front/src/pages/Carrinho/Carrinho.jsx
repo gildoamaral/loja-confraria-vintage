@@ -22,12 +22,12 @@ function Carrinho() {
 
   useEffect(() => {
     async function fetchCarrinho() {
-      console.log('Buscando carrinho...');
       try {
         const res = await api.get('/pedidos/carrinho');
         setCarrinho(res.data.itens || []);
         setCarrinhoOriginal(res.data.itens || []);
-        console.log('Carrinho carregado');
+        console.log('Carrinho carregado:', res.data.itens);
+
       } catch (error) {
         console.error('Erro ao buscar carrinho:', error);
         setCarrinho([]);
@@ -38,17 +38,6 @@ function Carrinho() {
     }
     fetchCarrinho();
   }, []);
-
-  console.log(carrinho)
-
-  const parseImagens = (imagemData) => {
-    if (!imagemData) return [];
-    try {
-      return Array.isArray(imagemData) ? imagemData : JSON.parse(imagemData);
-    } catch {
-      return [imagemData];
-    }
-  };
 
   const removerDoCarrinho = async (itemId) => {
     try {
@@ -145,7 +134,6 @@ function Carrinho() {
                 <Grid item xs={12} key={item.id}>
                   <CarrinhoItemCard
                     item={item}
-                    parseImagens={parseImagens}
                     atualizarQuantidade={atualizarQuantidade}
                     removerDoCarrinho={removerDoCarrinho}
                   />

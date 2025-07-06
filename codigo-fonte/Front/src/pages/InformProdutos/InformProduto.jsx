@@ -28,6 +28,7 @@ const InformProduto = () => {
     api.get(`/produtos/${id}`)
       .then(({ data }) => {
         setProduto(data)
+        console.log('Produto carregado:', data);
       })
       .catch(err => console.error('Erro ao buscar produto:', err));
 
@@ -58,15 +59,6 @@ const InformProduto = () => {
     );
   }
 
-  const parseImagens = (imagemData) => {
-    if (!imagemData) return [];
-    try {
-      return Array.isArray(imagemData) ? imagemData : JSON.parse(imagemData);
-    } catch {
-      return [imagemData];
-    }
-  };
-
   const calcularFrete = async () => {
     if (!cepDestino.match(/^\d{5}-?\d{3}$/)) {
       alert('Informe um CEP válido (8 dígitos).');
@@ -94,32 +86,13 @@ const InformProduto = () => {
       alert('Por favor selecione o tamanho e a cor');
       return;
     }
-    /*
-        TESTE ENQUANTO NÃO POSSUO TOKEN DO FRETE
-    
-        if (!selectedFrete) {
-          alert('Por favor selecione uma opção de frete');
-          return;
-        }
-    
-        const precoProduto = parseFloat(produto.preco);
-        const precoFrete = parseFloat(selectedFrete.price || selectedFrete.valor);
-        const subtotal = precoProduto * quantidade;
-        const totalComFrete = subtotal + precoFrete;
-    */
+
     const item = {
       produtoId: produto.id,
       quantidade,
       tamanho: selectedTamanho,
       cor: selectedCor,
-      /*
-            nome: produto.nome,
-            imagem: parseImagens(produto.imagem)[0],
-            precoUnitario: precoProduto,
-            frete: { ...selectedFrete, price: precoFrete },
-            subtotal,
-            totalComFrete,
-       */
+
     };
 
     setLoading(true);
@@ -127,10 +100,6 @@ const InformProduto = () => {
       await api.post('/pedidos/criar', item);
       alert('Produto adicionado ao carrinho com sucesso!');
 
-      // alert(`Adicionado: R$ ${subtotal.toFixed(2).replace('.', ',')} + frete R$ ${precoFrete.toFixed(2).replace('.', ',')} = R$ ${totalComFrete.toFixed(2).replace('.', ',')}`);
-
-      //   Botão só adiciona ao carrinho. Usuário pode continuar comprando
-      // navigate('/carrinho');
     } catch (error) {
       if (error.response && error.response.status === 401) {
 
@@ -145,7 +114,6 @@ const InformProduto = () => {
       setLoading(false); // Finaliza o carregamento
     }
   };
-
 
   const renderOptions = (options, selectedValue, onChange, type) => (
     <div className={Styles.optionGroup}>
@@ -167,7 +135,7 @@ const InformProduto = () => {
     </div>
   );
 
-  const imagens = parseImagens(produto.imagem);
+  const imagensDoProduto = produto.imagens?.sort((a, b) => a.posicao - b.posicao) || [];
 
   return (
     <div>
@@ -179,13 +147,16 @@ const InformProduto = () => {
           {/* ESQUERDA */}
           <div className={Styles.gallery}>
             <div className={Styles.mainImage}>
-              <img src={imagens[activeImageIndex]} alt={produto.nome} />
+              {imagensDoProduto.length > 0 && (
+                <img src={imagensDoProduto[activeImageIndex].urls.large} alt={produto.nome} />
+              )}
             </div>
+
             <div className={Styles.thumbnails}>
-              {imagens.map((src, idx) => (
+              {imagensDoProduto.map((imagem, idx) => (
                 <img
-                  key={idx}
-                  src={src}
+                  key={imagem.id}
+                  src={imagem.urls.thumbnail}
                   alt={`Vista ${idx + 1}`}
                   className={`${Styles.thumbnail} ${idx === activeImageIndex ? Styles.activeThumbnail : ''}`}
                   onClick={() => setActiveImageIndex(idx)}

@@ -1,119 +1,86 @@
+import React from 'react';
 import {
+  Box,
   Card,
   CardContent,
   CardMedia,
   Typography,
   IconButton,
-  TextField,
-  Stack,
-  Grid
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-const CarrinhoItemCard = ({
-  item,
-  parseImagens,
-  atualizarQuantidade,
-  removerDoCarrinho
-}) => (
-  <Grid>
-    <Card
-      sx={{
-        display: 'flex',
-        flexDirection: { xs: 'row', sm: 'row' }, // Coluna no mobile, linha no desktop
-        alignItems: { xs: 'stretch', sm: 'center' },
-        p: { xs: 1, sm: 2 },
-        backgroundColor: '#f3f3f3',
-        mb: { xs: 2, sm: 0 },
-      }}
-    >
-      <CardContent sx={{p:0, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-        <CardMedia
-          component="img"
-          sx={{
-            width: { xs: '100%', sm: '160px !important' }, // ajuste aqui
-            height: { xs: '100% !important', sm: '160px !important' }, // ajuste aqui
-            objectFit: 'cover',
-            borderRadius: 2,
-            mr: { xs: 0, sm: 2 },
-            mb: { xs: 1, sm: 0 },
-            maxWidth: { xs: 70, sm: 160 },
-            maxHeight: { xs: 100, sm: 160 },
-            minWidth: { xs: 60, sm: 120 },
-            minHeight: { xs: 80, sm: 120 },
-          }}
+const CarrinhoItemCard = ({ item, atualizarQuantidade, removerDoCarrinho }) => {
+  // 1. Acessa a URL da imagem de forma segura e otimizada
+  // Ele usa optional chaining (?.) para não quebrar se 'produto' ou 'imagens' não existirem
+  const imagemUrl =
+    item.produto?.imagens?.[0]?.urls?.thumbnail ||
+    'https://dummyimage.com/600x400/000/fc5858&text=image'; // Uma imagem placeholder
 
-          image={parseImagens(item.produto?.imagem)[0]}
-          alt={item.produto?.nome}
-        />
-      </CardContent>
-      <CardContent
-        sx={{
-          flex: 1,
-          width: '100%',
-          p: { xs: 1, sm: 2 },
-          background: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: { xs: 'center', sm: 'flex-start' },
-        }}
-      >
-        <Typography variant="h6" fontWeight={600} sx={{ mb: 2, lineHeight: 1, fontSize: { xs: '1rem', sm: '1.25rem' }, textAlign: 'center' }}>
-          {item.produto?.nome}
-        </Typography>
-        <Stack direction="row" spacing={2} mb={1} flexWrap="wrap">
-          <Typography variant="body2">
-            <b>Cor:</b> {item.produto?.selectedCor || item.produto?.cor}
+  // 2. Acessa o preço de forma segura
+  const preco = item.produto?.precoPromocional ?? item.produto?.preco ?? 0;
+
+  return (
+    <Card sx={{ display: 'flex', mb: 2, position: 'relative', boxShadow: 'none', borderBottom: '1px solid #e0e0e0', borderRadius: 0 }}>
+      {/* Imagem do Produto */}
+      <CardMedia
+        component="img"
+        sx={{ width: 120, height: 120, objectFit: 'cover', alignSelf: 'center', m: 1, borderRadius: 1 }}
+        image={imagemUrl}
+        alt={item.produto.nome}
+      />
+
+      <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, p: 1 }}>
+        <CardContent sx={{ flex: '1 0 auto', p: 1, pb: 0 }}>
+          {/* Nome do Produto */}
+          <Typography component="div" variant="h6" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+            {item.produto.nome}
           </Typography>
-          <Typography variant="body2">
-            <b>Tamanho:</b> {item.produto?.selectedTamanho || item.produto?.tamanho}
+
+          {/* Atributos */}
+          <Typography variant="body2" color="text.secondary" component="div">
+            Tamanho: {item.produto.tamanho} | Cor: {item.produto.cor}
           </Typography>
-        </Stack>
-        <Stack direction={{ xs: 'row', sm: 'row' }} spacing={1} alignItems={{ xs: 'flex-start', sm: 'center' }}>
-          <div fontWeight={500} style={{ lineHeight: 10 }}>
-            {item.produto?.precoPromocional ? (
-              <>
-                <Typography>R$</Typography>
-                <Typography style={{ marginTop: "0rem", fontSize: "0.85em", textDecoration: 'line-through', color: '#888', marginRight: 8 }}>
-                  {(item.produto?.preco ?? 0).toFixed(2)}
-                </Typography>
-                <Typography style={{ marginTop: "0rem", color: '#d32f2f' }}>
-                  {(item.produto?.precoPromocional ?? 0).toFixed(2)}
-                </Typography>
-              </>
-            ) : (
-              <>
-                <Typography>R$</Typography>
-                <Typography style={{ margin: 0, padding: 0 }}>
-                  {(item.produto?.preco ?? 0).toFixed(2)}
-                </Typography>
-              </>
-            )}
-          </div>
-          <TextField
-            label="Qtd"
-            type="number"
-            size="small"
-            value={item.quantidade}
-            inputProps={{ min: 1, style: { width: 60 } }}
-            onChange={(e) => {
-              const value = Math.max(1, parseInt(e.target.value) || 1);
-              atualizarQuantidade(item.id, value);
-            }}
-            sx={{ ml: { xs: 0, sm: 2 }, mt: { xs: 1, sm: 0 } }}
-          />
+
+          {/* Preço */}
+          <Typography variant="subtitle1" color="text.primary" component="div" sx={{ fontWeight: 'bold', mt: 1 }}>
+            R$ {preco.toFixed(2).replace('.', ',')}
+          </Typography>
+        </CardContent>
+
+        {/* Controles de Quantidade */}
+        <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
           <IconButton
-            color="error"
-            onClick={() => removerDoCarrinho(item.id)}
-            sx={{ ml: { xs: 0, sm: 2 }, mt: { xs: 1, sm: 0 } }}
+            aria-label="diminuir quantidade"
+            onClick={() => atualizarQuantidade(item.id, Math.max(1, item.quantidade - 1))}
+            disabled={item.quantidade <= 1}
+            size="small"
           >
-            <DeleteIcon />
+            <RemoveCircleOutlineIcon />
           </IconButton>
-        </Stack>
-      </CardContent>
+          <Typography sx={{ mx: 2 }}>{item.quantidade}</Typography>
+          <IconButton
+            aria-label="aumentar quantidade"
+            onClick={() => atualizarQuantidade(item.id, item.quantidade + 1)}
+            size="small"
+          >
+            <AddCircleOutlineIcon />
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* Botão de Remover */}
+      <IconButton
+        aria-label="remover do carrinho"
+        onClick={() => removerDoCarrinho(item.id)}
+        sx={{ position: 'absolute', top: 4, right: 4 }}
+        size="small"
+      >
+        <DeleteForeverIcon color="error" />
+      </IconButton>
     </Card>
-  </Grid>
-);
+  );
+};
 
 export default CarrinhoItemCard;

@@ -199,9 +199,22 @@ router.get('/carrinho', auth, async (req, res) => {
       },
       include: {
         itens: {
-          include: { produto: true }
-        }
-      }
+          include: {
+            // Agora, dentro de 'produto', nós também pedimos para incluir as 'imagens'
+            produto: {
+              include: {
+                imagens: {
+                  orderBy: {
+                    posicao: 'asc',
+                  },
+                  // No carrinho, geralmente só precisamos da imagem principal (thumbnail)
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
+      },
     });
     if (!pedido) {
       return res.status(404).json({ message: 'Nenhum pedido em andamento encontrado.' });

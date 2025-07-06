@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import Styles from './HomeCliente.module.css';
 import api from '../../services/api';
 import PageContainer from '../../components/PageContainer';
@@ -7,6 +6,7 @@ import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import Carrossel from '../../components/Carrossel/Carrossel';
 import Loading from '../../components/Loading';
+import ProductCard from './components/ProductCard';
 import arabesc from './arabesc.png';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG'];
@@ -50,6 +50,7 @@ const HomeCliente = () => {
       try {
         const response = await api.get('/produtos');
         setProdutos(response.data);
+        console.log('Produtos carregados:', response.data);
       } catch (error) {
         console.error('Erro ao buscar produtos:', error);
       } finally {
@@ -107,21 +108,6 @@ const HomeCliente = () => {
       <Header />
       <Carrossel />
       <PageContainer className={Styles.container}>
-
-        {/* OCASIOES */}
-        {/* <div className={Styles.ocasioesContainer1}>
-          {OCASIOES.map(ocasiao => (
-            <div
-              key={ocasiao}
-              className={`${Styles.ocasioCard1} ${selectedOcasiao === ocasiao ? Styles.active : ''}`}
-              onClick={() => handleOcasiaoClick(ocasiao)}
-            >
-              <span className={`${Styles.ocasioNome}`}>
-                {getOcasiaoLabel(ocasiao)}
-              </span>
-            </div>
-          ))}
-        </div> */}
 
         <div className={Styles.ocasioesContainer1}>
           {OCASIOES.map((ocasiao, index) => (
@@ -191,35 +177,9 @@ const HomeCliente = () => {
 
           {/* ROUPAS */}
           <div className={Styles.produtosGrid}>
-            {filteredProdutos.map(produto => {
-              // Acessa diretamente a URL da imagem principal que o backend enviou
-              const imagemPrincipalUrl = produto.imagens && produto.imagens.length > 0
-                ? produto.imagens[0].url
-                : null; // Garante que não quebra se um produto não tiver imagem
-
-              return (
-                <Link
-                  to={`/produto/${produto.id}`}
-                  key={produto.id}
-                  className={Styles.produtoCardLink}
-                >
-                  <div className={Styles.produtoCard}>
-                    {imagemPrincipalUrl && ( // Renderiza a imagem apenas se a URL existir
-                      <img
-                        src={imagemPrincipalUrl} // <<< Correção aplicada
-                        alt={produto.nome}
-                        className={Styles.produtoImagem}
-                        onError={e => e.target.style.display = 'none'}
-                      />
-                    )}
-                    {/* O resto do seu card de produto... */}
-                    <div className={Styles.produtoInfo}>
-                      {/* ... */}
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+            {filteredProdutos.map((produto) => (
+              <ProductCard key={produto.id} produto={produto} />
+            ))}
           </div>
 
         </div>
