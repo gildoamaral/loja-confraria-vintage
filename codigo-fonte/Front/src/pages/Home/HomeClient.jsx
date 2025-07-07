@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Styles from './HomeCliente.module.css';
 import api from '../../services/api';
 import PageContainer from '../../components/PageContainer';
-import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import Carrossel from '../../components/Carrossel/Carrossel';
 import Loading from '../../components/Loading';
@@ -96,7 +95,6 @@ const HomeCliente = () => {
   if (loading) { // Troque !produtos.length por loading
     return (
       <>
-        <Header />
         <Loading />
         <Footer />
       </>
@@ -105,7 +103,6 @@ const HomeCliente = () => {
 
   return (
     <>
-      <Header />
       <Carrossel />
       <PageContainer className={Styles.container}>
 

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
 import styles from "./Conta.module.css";
-import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 
@@ -159,7 +158,6 @@ const Conta = () => {
 
   return (
     <div>
-      <Header />
       <PageContainer className={styles.container}>
         <div className={styles.header}>
           <h1>Olá, <span className={styles.highlight}>{usuario?.nome || "Usuário"}</span>!</h1>

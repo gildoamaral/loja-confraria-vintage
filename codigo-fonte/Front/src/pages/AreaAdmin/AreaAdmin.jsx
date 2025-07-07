@@ -8,11 +8,10 @@ import EstoqueProdutos from './EstoqueProdutos';
 import ListaPedidos from './ListaPedidos';
 
 const AreaAdmin = () => {
-  const [abaAtiva, setAbaAtiva] = useState("pedidos");
+  const [abaAtiva, setAbaAtiva] = useState("estoque");
 
   return (
     <div>
-      <Header />
       <PageContainer className={styles.container}>
         <div className={styles.header}>
           <h2>Área do Administrador</h2>

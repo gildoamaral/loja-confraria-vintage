@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Styles from '../Login/Login.module.css';
-import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import api from '../../services/api';
 import PageContainer from '../../components/PageContainer';
@@ -74,7 +73,6 @@ const CadastroUsuario = () => {
 
     return (
         <div>
-            <Header />
             <PageContainer className={Styles.container}>
                 <div className={Styles.header}>
                     {/* <img src={logo} alt="Logo AutoCare" className={styles.logo} /> */}

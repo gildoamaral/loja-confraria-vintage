@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Styles from './InformProduto.module.css';
 import api from '../../services/api';
-import Header from '../../components/Header1';
 import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -50,7 +49,6 @@ const InformProduto = () => {
   if (!produto) {
     return (
       <>
-        <Header />
         <PageContainer>
           <Loading />
         </PageContainer>
@@ -98,6 +96,9 @@ const InformProduto = () => {
     setLoading(true);
     try {
       await api.post('/pedidos/criar', item);
+
+      window.dispatchEvent(new Event('cartUpdated'));
+      
       alert('Produto adicionado ao carrinho com sucesso!');
 
     } catch (error) {
@@ -139,7 +140,6 @@ const InformProduto = () => {
 
   return (
     <div>
-      <Header />
       <PageContainer className={Styles.container}>
 
         <div className={Styles.productWrapper}>

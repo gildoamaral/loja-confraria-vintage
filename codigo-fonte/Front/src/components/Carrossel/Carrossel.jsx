@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Slider from 'react-slick'
 import { IconButton, useMediaQuery } from '@mui/material'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
@@ -14,6 +14,20 @@ import img3 from './Gen3.png'
 
 const Carrossel = () => {
   const isMobile = useMediaQuery('(max-width:600px)')
+
+  // useEffect para esconder overflow horizontal globalmente
+  useEffect(() => {
+    // Salva o valor original
+    const originalOverflowX = document.body.style.overflowX
+    
+    // Força overflow horizontal a ser hidden
+    document.body.style.overflowX = 'hidden'
+    
+    // Cleanup: restaura o valor original quando o componente for desmontado
+    return () => {
+      document.body.style.overflowX = originalOverflowX
+    }
+  }, [])
 
   const images =
     [
@@ -57,7 +71,7 @@ const Carrossel = () => {
         sx={{
           position: 'absolute',
           top: '50%',
-          right: 16,
+          right: {xs: 16, sm: 26},
           zIndex: 1,
           color: 'white',
           backgroundColor: 'rgba(0,0,0,0.1)',
@@ -106,7 +120,7 @@ const Carrossel = () => {
   return (
     <div
       style={{
-        width: '100%',
+        width: '100vw',
         height: '100vh',
         overflow: 'hidden',
         position: 'relative'

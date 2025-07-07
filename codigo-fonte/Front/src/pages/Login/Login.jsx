@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import api from '../../services/api';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Styles from'./Login.module.css';
 import Footer from '../../components/Footer';  
 import PageContainer from '../../components/PageContainer';
-import Header from '../../components/Header1';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -12,7 +11,8 @@ const Login = () => {
     const [loginSucesso, setLoginSucesso] = useState(false);
     const [erroLogin, setErroLogin] = useState('');
 
-    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/';
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -26,7 +26,7 @@ const Login = () => {
             setErroLogin('');
 
             alert('Login realizado com sucesso!');
-            navigate(-1);
+            window.location.replace(from);
 
         } catch (error) {
             console.error('Erro no login', error);
@@ -37,7 +37,6 @@ const Login = () => {
 
     return (
         <div>
-            <Header />
             <PageContainer className={Styles.container}>
                 {/* <div className={Styles.header}>
                     <h1>Bem-vindo de volta à <span className={Styles.highlight}>Confraria Vintage</span></h1>

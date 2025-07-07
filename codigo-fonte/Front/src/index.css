@@ -45,6 +45,8 @@
 } */
 
 :root {
+  --primary-color-theme: #FDF7F2;
+
   --cor-principal: #fcddbf;
   --cor-principal2: #ec7148;
   --cor-gradiente: radial-gradient(circle at 50% 50%, var(--cor-principal) 30%, var(--cor-principal2) 200%);
