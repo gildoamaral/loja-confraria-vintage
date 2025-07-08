@@ -1,16 +1,13 @@
 import { Routes, Route } from "react-router-dom";
-import HomeProdutos from "../pages/Produtos/Home.jsx";
-import CadastroProduto from "../pages/Produtos/CadastroProduto.jsx";
 import Login from "../pages/Login/Login.jsx";
 import CadastroUsuario from "../pages/Cadastro/CadastroUsuario.jsx";
 import HomeCliente from "../pages/Home/HomeClient.jsx";
 import InformProduto from "../pages/InformProdutos/InformProduto.jsx";
 import Conta from "../pages/Conta/Conta.jsx";
-import Estoque from "../pages/Estoque/Estoque.jsx";
 import Carrinho from '../pages/Carrinho/Carrinho.jsx';
 import Pagamento from '../pages/Pagamento/Pagamento.jsx';
 import ProtectedLayout from '../components/ProtectedLayout';
-import NotFound from "../pages/NotFound/NotFound"; // Crie esse componente
+import NotFound from "../pages/NotFound/NotFound"; 
 import EsqueciSenha from '../pages/ResetSenha/EsqueciSenha.jsx';
 import ResetarSenha from '../pages/ResetSenha/ResetSenha.jsx';
 import AreaAdmin from '../pages/AreaAdmin/AreaAdmin.jsx';
@@ -36,9 +33,6 @@ function AppRoutes() {
         {/* ADMIN */}
         <Route element={<ProtectedLayout adminOnly />}>
           <Route path="/admin" element={<AreaAdmin />} />
-          <Route path="/estoque" element={<Estoque />} />
-          <Route path="/cadastro-produto" element={<CadastroProduto />} />
-          <Route path="/homeprodutos" element={<HomeProdutos />} />
         </Route>
 
         {/* NOT FOUND */}

@@ -4,6 +4,7 @@ import PageContainer from '../../components/PageContainer';
 import CadastroProdutos from './CadastroProdutos';
 import EstoqueProdutos from './EstoqueProdutos';
 import ListaPedidos from './ListaPedidos';
+import GerenciarCarrossel from './GerenciarCarrossel';
 
 const AreaAdmin = () => {
   const [abaAtiva, setAbaAtiva] = useState("estoque");
@@ -33,11 +34,18 @@ const AreaAdmin = () => {
           >
             Pedidos
           </button>
+          <button
+            className={`${styles.tab} ${abaAtiva === "carrossel" ? styles.activeTab : ""}`}
+            onClick={() => setAbaAtiva("carrossel")}
+          >
+            Carrossel
+          </button>
         </div>
 
         {abaAtiva === "pedidos" && <ListaPedidos />}
         {abaAtiva === "estoque" && <EstoqueProdutos />}
         {abaAtiva === "cadastro" && <CadastroProdutos />}
+        {abaAtiva === "carrossel" && <GerenciarCarrossel />}
       </PageContainer>
     </div>
   );

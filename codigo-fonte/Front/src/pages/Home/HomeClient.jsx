@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Styles from './HomeCliente.module.css';
 import api from '../../services/api';
 import PageContainer from '../../components/PageContainer';
-import Footer from '../../components/Footer';
-import Carrossel from '../../components/Carrossel/Carrossel';
+import Carrossel from '../../components/Carrossel';
 import Loading from '../../components/Loading';
 import ProductCard from './components/ProductCard';
 import arabesc from './arabesc.png';
-import NewFooter from '../../components/NewFooter';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG'];
 const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
