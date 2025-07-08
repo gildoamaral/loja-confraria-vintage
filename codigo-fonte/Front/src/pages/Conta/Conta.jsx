@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../services/api";
 import styles from "./Conta.module.css";
-import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 
 const Conta = () => {
@@ -461,7 +460,6 @@ const Conta = () => {
           </div>
         )}
       </PageContainer>
-      <Footer />
     </div>
   );
 };

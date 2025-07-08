@@ -7,6 +7,7 @@ import Carrossel from '../../components/Carrossel/Carrossel';
 import Loading from '../../components/Loading';
 import ProductCard from './components/ProductCard';
 import arabesc from './arabesc.png';
+import NewFooter from '../../components/NewFooter';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG'];
 const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO'];
@@ -96,7 +97,6 @@ const HomeCliente = () => {
     return (
       <>
         <Loading />
-        <Footer />
       </>
     );
   }
@@ -182,7 +182,6 @@ const HomeCliente = () => {
         </div>
 
       </PageContainer>
-      <Footer />
     </>
   );
 };

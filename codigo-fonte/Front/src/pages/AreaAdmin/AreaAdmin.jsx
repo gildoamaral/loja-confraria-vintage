@@ -1,7 +1,5 @@
 import { useState } from "react";
 import styles from "./Pedidos.module.css";
-import Header from '../../components/Header1';
-import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 import CadastroProdutos from './CadastroProdutos';
 import EstoqueProdutos from './EstoqueProdutos';
@@ -41,7 +39,6 @@ const AreaAdmin = () => {
         {abaAtiva === "estoque" && <EstoqueProdutos />}
         {abaAtiva === "cadastro" && <CadastroProdutos />}
       </PageContainer>
-      <Footer />
     </div>
   );
 };

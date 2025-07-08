@@ -2,7 +2,6 @@ import { useState } from 'react';
 import api from '../../services/api';
 import { Link, useLocation } from 'react-router-dom';
 import Styles from'./Login.module.css';
-import Footer from '../../components/Footer';  
 import PageContainer from '../../components/PageContainer';
 
 const Login = () => {
@@ -83,7 +82,6 @@ const Login = () => {
                     </div>
                 </div>
             </PageContainer>
-            <Footer />
         </div>
     );
 };

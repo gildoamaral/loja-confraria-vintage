@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Styles from '../Login/Login.module.css';
-import Footer from '../../components/Footer';
 import api from '../../services/api';
 import PageContainer from '../../components/PageContainer';
 
@@ -128,7 +127,6 @@ const CadastroUsuario = () => {
                     {message && <p style={{ color: message.includes('sucesso') ? 'green' : 'red' }}>{message}</p>}
                 </div>
             </PageContainer>
-            <Footer />
         </div>
     );
 }

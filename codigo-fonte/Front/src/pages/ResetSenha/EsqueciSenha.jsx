@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Container, Button, Typography, Alert, Box, TextField } from '@mui/material';
 import api from '../../services/api';
-import Header from '../../components/Header1';
-import Footer from '../../components/Footer';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
@@ -37,7 +35,6 @@ const EsqueciSenha = () => {
   return (
     <ThemeProvider theme={theme}>
 
-      <Header />
       <Container maxWidth="sm" sx={{ my: 16 }}>
         <Typography variant="h4" gutterBottom textAlign={'center'}>
           Esqueci minha senha
@@ -81,7 +78,6 @@ const EsqueciSenha = () => {
           )}
         </Box>
       </Container>
-      <Footer />
     </ThemeProvider>
   );
 };

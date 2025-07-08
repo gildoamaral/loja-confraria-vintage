@@ -5,8 +5,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import api from '../../services/api';
-import Footer from '../../components/Footer';
-import Header from '../../components/Header1';
 
 const theme = createTheme({
   palette: {
@@ -47,7 +45,6 @@ const ResetarSenha = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Header />
       <Container maxWidth="sm">
         <Box my={8}>
           <Typography variant="h4" gutterBottom align="center">
@@ -125,7 +122,6 @@ const ResetarSenha = () => {
           )}
         </Box>
       </Container>
-      <Footer />
     </ThemeProvider>
   );
 };

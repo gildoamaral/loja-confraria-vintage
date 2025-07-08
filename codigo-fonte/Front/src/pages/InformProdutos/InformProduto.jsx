@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Styles from './InformProduto.module.css';
 import api from '../../services/api';
-import Footer from '../../components/Footer';
 import PageContainer from '../../components/PageContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 import { MdLocalShipping } from 'react-icons/md';
@@ -52,7 +51,6 @@ const InformProduto = () => {
         <PageContainer>
           <Loading />
         </PageContainer>
-        <Footer />
       </>
     );
   }
@@ -234,7 +232,6 @@ const InformProduto = () => {
           </div>
         </div>
       </PageContainer>
-      <Footer />
     </div>
   );
 };
