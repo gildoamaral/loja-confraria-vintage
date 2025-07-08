@@ -107,6 +107,18 @@ model Pagamentos {
   pedido Pedidos @relation(fields: [pedidoId], references: [id])
 }
 
+model CarrosselImagem {
+  id        String   @id @default(uuid())
+  urls      Json     
+  posicao   Int      @default(0) 
+  ativo     Boolean  @default(true) 
+  link      String? 
+  
+  createdAt DateTime @default(now()) 
+
+  @@map("carrossel_imagens")
+}
+
 enum StatusPedido {
   CARRINHO
   AGUARDANDO_PAGAMENTO
