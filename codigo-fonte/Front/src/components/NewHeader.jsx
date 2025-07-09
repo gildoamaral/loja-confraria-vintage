@@ -89,11 +89,8 @@ const Navbar = () => {
       }
     };
 
-    // Adiciona o 'ouvinte' de eventos
     window.addEventListener('cartUpdated', updateCartCount);
 
-    // Função de limpeza: remove o 'ouvinte' quando o componente for desmontado
-    // Isso é muito importante para evitar vazamentos de memória.
     return () => {
       window.removeEventListener('cartUpdated', updateCartCount);
     };

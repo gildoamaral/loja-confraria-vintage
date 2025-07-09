@@ -26,7 +26,7 @@ const NewFooter = () => {
         <Grid container spacing={5} justifyContent="space-between">
 
           {/* COLUNA 1: A MARCA E REDES SOCIAIS */}
-          <Grid item xs={12} md={4}>
+          <Grid>
             <Typography variant="h5" gutterBottom sx={{ fontFamily: '"Cinzel", serif', fontWeight: 'bold' }}>
               CONFRARIA VINTAGE
             </Typography>
@@ -55,7 +55,7 @@ const NewFooter = () => {
           </Grid> */}
 
           {/* COLUNA 3: CONTATO E ENDEREÇO */}
-          <Grid item xs={12} md={4}>
+          <Grid>
             <Typography variant="h6" gutterBottom sx={{ fontFamily: '"Cinzel", serif', fontWeight: 'bold' }}>
               Contato
             </Typography>

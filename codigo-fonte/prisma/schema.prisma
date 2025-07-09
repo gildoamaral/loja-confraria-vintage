@@ -49,14 +49,14 @@ model produtos {
   ocasiao          Ocasiao?
   precoPromocional Float?
   ativo            Boolean   @default(true)
-  imagens          ProdutoImagem[] // ADICIONE ESTA LINHA para a relação
+  imagens          ProdutoImagem[] 
 
-  itensPedido ItemPedido[] // Um produto pode estar em vários itens de pedido
+  itensPedido ItemPedido[]
 }
 
 model ProdutoImagem {
   id        String   @id @default(uuid())
-  urls      Json     // Armazena um objeto como { thumbnail: "...", medium: "...", large: "..." }
+  urls      Json     // large, medium, thumbnail
   posicao   Int      @default(0) 
   
   produtoId String
@@ -68,9 +68,9 @@ model ProdutoImagem {
 model Pedidos {
   id        Int          @id @default(autoincrement())
   criadoEm  DateTime     @default(now())
-  status    StatusPedido @default(CARRINHO) // ou PAGO, ENVIADO etc.
+  status    StatusPedido @default(CARRINHO)
   usuarioId Int
-  pagamento Pagamentos? // Um pedido pode ter um pagamento
+  pagamento Pagamentos? 
 
   enderecoEntrega String?
   cep             String?
