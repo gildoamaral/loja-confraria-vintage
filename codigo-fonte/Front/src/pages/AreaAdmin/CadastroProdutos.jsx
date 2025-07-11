@@ -1,8 +1,27 @@
 import { useState } from 'react';
+import {
+  Box,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  Alert,
+  IconButton,
+  ImageList,
+  ImageListItem,
+  FormHelperText,
+  Paper,
+  Container
+} from '@mui/material';
+import { PhotoCamera, Close } from '@mui/icons-material';
 import api from '../../services/api';
-import stylesCadastro from '../Produtos/CadastroProduto.module.css';
 
-// Definição de enums como arrays
 const categorias = [
   'SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO',
   'CALCADO', 'ACESSORIOS', 'OUTROS'
@@ -31,7 +50,6 @@ const CadastroProdutos = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validação de campos
     if (
       !nome ||
       !preco ||
@@ -50,7 +68,6 @@ const CadastroProdutos = () => {
       return;
     }
 
-    // Validação de enums locais (evita envio de valor inesperado)
     if (!tamanhosValidos.includes(tamanho)) {
       setMessage(`Tamanho inválido. Escolha: ${tamanhosValidos.join(', ')}`);
       setIsSubmitting(false);
@@ -67,90 +84,40 @@ const CadastroProdutos = () => {
       return;
     }
 
-    /*
-    const formData = new FormData();
-    imagens.forEach(img => formData.append('imagens', img)); 
-    formData.append('nome', nome);
-    formData.append('descricao', descricao);
-    formData.append('preco', preco);
-    formData.append('quantidade', quantidade);
-    formData.append('tamanho', tamanho);
-    formData.append('cor', cor);
-    formData.append('categoria', categoria);
-    formData.append('ocasiao', ocasiao);
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-
-    try {
-
-      await api.post('/produtos', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
-      setMessage('Produto criado com sucesso!');
-      setNome('');
-      setDescricao('');
-      setPreco('');
-      setImagens([]);
-      setQuantidade('');
-      setTamanho('');
-      setCor('');
-      setCategoria('');
-      setOcasiao('');
-    } catch (error) {
-      console.error('Erro ao criar produto:', error);
-      setMessage(error.response?.data?.message || 'Erro ao criar produto');
-    } finally {
-      setIsSubmitting(false);
-    }
-
-    */
-
     setMessage('Enviando imagens...');
 
     try {
-      // --- CORREÇÃO AQUI ---
-    // ETAPA 1: Upload de todas as imagens em UMA ÚNICA requisição.
-    
-    // 1. Cria um único FormData.
-    const formData = new FormData();
-    
-    // 2. Adiciona cada arquivo de imagem ao mesmo campo 'images'.
-    imagens.forEach(imageFile => {
-      formData.append('images', imageFile);
-    });
+      const formData = new FormData();
 
-    // 3. Faz uma única chamada para a API de upload.
-    const uploadResponse = await api.post('/api/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    
-    // 4. O resultado (uploadResults) já é o array de objetos que precisamos.
-    const uploadResults = uploadResponse.data;
+      imagens.forEach(imageFile => {
+        formData.append('images', imageFile);
+      });
 
-    setMessage('Imagens enviadas! Criando produto...');
+      const uploadResponse = await api.post('/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-    // ETAPA 2: Criação do produto (esta parte agora receberá os dados corretos)
-    const produtoData = {
-      nome,
-      descricao,
-      preco: parseFloat(preco),
-      quantidade: parseInt(quantidade, 10),
-      tamanho,
-      cor,
-      categoria,
-      ocasiao: ocasiao || null,
-      uploadResults, // Envia o array de resultados correto para o backend
-    };
+      const uploadResults = uploadResponse.data;
 
-    await api.post('/produtos', produtoData);
+      setMessage('Imagens enviadas! Criando produto...');
+
+      const produtoData = {
+        nome,
+        descricao,
+        preco: parseFloat(preco),
+        quantidade: parseInt(quantidade, 10),
+        tamanho,
+        cor,
+        categoria,
+        ocasiao: ocasiao || null,
+        uploadResults,
+      };
+
+      await api.post('/produtos', produtoData);
 
       setMessage('Produto criado com sucesso!');
-      // Reset dos campos após o sucesso
       setNome('');
       setDescricao('');
       setPreco('');
@@ -184,24 +151,6 @@ const CadastroProdutos = () => {
     }
   };
 
-  // const handleImageChangeCadastro = (e) => {
-  //   const files = Array.from(e.target.files);
-  //   if (files.length + imagens.length > 5) {
-  //     alert('Máximo de 5 imagens permitidas');
-  //     return;
-  //   }
-  //   const readers = files.map(file => {
-  //     return new Promise(resolve => {
-  //       const reader = new FileReader();
-  //       reader.onloadend = () => resolve(reader.result);
-  //       reader.readAsDataURL(file);
-  //     });
-  //   });
-  //   Promise.all(readers).then(results => {
-  //     setImagens(prev => [...prev, ...results]);
-  //   });
-  // };
-
   const handleImageChangeCadastro = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + imagens.length > 5) {
@@ -216,149 +165,229 @@ const CadastroProdutos = () => {
   };
 
   return (
-    <div className={stylesCadastro.formContainer}>
-      <h2>Cadastro de Produtos</h2>
-      <form onSubmit={handleSubmit} className={stylesCadastro.form}>
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Nome<span className={stylesCadastro.required}>*</span>:</label>
-          <input
-            className={stylesCadastro.input}
-            type="text"
-            value={nome}
-            onChange={e => setNome(e.target.value)}
-          />
-        </div>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" component="h2" gutterBottom align="center">
+          Cadastro de Produtos
+        </Typography>
 
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Descrição:</label>
-          <textarea
-            className={stylesCadastro.inputDescricao}
-            type="text"
-            value={descricao}
-            onChange={e => setDescricao(e.target.value)}
-          />
-        </div>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Grid container spacing={3}>
+            {/* LINHA 1: Nome, Preço, Quantidade */}
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                required
+                fullWidth
+                label="Nome"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                variant="outlined"
+              />
+            </Grid>
 
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Preço<span className={stylesCadastro.required}>*</span>:</label>
-          <input
-            className={stylesCadastro.input}
-            type="number"
-            step="0.01"
-            value={preco}
-            onChange={e => setPreco(e.target.value)}
-          />
-        </div>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                required
+                fullWidth
+                label="Preço"
+                type="number"
+                inputProps={{ step: "0.01" }}
+                value={preco}
+                onChange={(e) => setPreco(e.target.value)}
+                variant="outlined"
+              />
+            </Grid>
 
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Quantidade<span className={stylesCadastro.required}>*</span>:</label>
-          <input
-            className={stylesCadastro.input}
-            type="number"
-            value={quantidade}
-            onChange={e => setQuantidade(e.target.value)}
-          />
-        </div>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                required
+                fullWidth
+                label="Quantidade"
+                type="number"
+                value={quantidade}
+                onChange={(e) => setQuantidade(e.target.value)}
+                variant="outlined"
+              />
+            </Grid>
 
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Tamanho<span className={stylesCadastro.required}>*</span>:</label>
-          <select
-            className={stylesCadastro.select}
-            value={tamanho}
-            onChange={e => setTamanho(e.target.value)}
-          >
-            <option value="">Selecione</option>
-            {tamanhosValidos.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </div>
+            {/* LINHA 2: Tamanho, Cor, Categoria, Ocasião */}
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <FormControl required fullWidth>
+                <InputLabel>Tamanho</InputLabel>
+                <Select
+                  value={tamanho}
+                  label="Tamanho"
+                  onChange={(e) => setTamanho(e.target.value)}
+                >
+                  {tamanhosValidos.map((t) => (
+                    <MenuItem key={t} value={t}>
+                      {t}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Cor<span className={stylesCadastro.required}>*</span>:</label>
-          <select
-            className={stylesCadastro.select}
-            value={cor}
-            onChange={e => setCor(e.target.value)}
-          >
-            <option value="">Selecione</option>
-            {coresValidas.map(c => <option key={c} value={c}>{c.charAt(0) + c.slice(1).toLowerCase()}</option>)}
-          </select>
-        </div>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <FormControl required fullWidth>
+                <InputLabel>Cor</InputLabel>
+                <Select
+                  value={cor}
+                  label="Cor"
+                  onChange={(e) => setCor(e.target.value)}
+                >
+                  {coresValidas.map((c) => (
+                    <MenuItem key={c} value={c}>
+                      {c.charAt(0) + c.slice(1).toLowerCase()}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Categoria<span className={stylesCadastro.required}>*</span>:</label>
-          <select
-            className={stylesCadastro.select}
-            value={categoria}
-            onChange={e => setCategoria(e.target.value)}
-          >
-            <option value="">Selecione</option>
-            {categorias.map(cat => <option key={cat} value={cat}>{cat.charAt(0) + cat.slice(1).toLowerCase()}</option>)}
-          </select>
-        </div>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <FormControl required fullWidth>
+                <InputLabel>Categoria</InputLabel>
+                <Select
+                  value={categoria}
+                  label="Categoria"
+                  onChange={(e) => setCategoria(e.target.value)}
+                >
+                  {categorias.map((cat) => (
+                    <MenuItem key={cat} value={cat}>
+                      {cat.charAt(0) + cat.slice(1).toLowerCase()}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Ocasião</label>
-          <select
-            className={stylesCadastro.select}
-            value={ocasiao}
-            onChange={e => setOcasiao(e.target.value)}
-          >
-            <option value="">Selecione</option>
-            {ocasioes.map(o => (
-              <option key={o} value={o}>{getOcasiaoLabel(o)}</option>
-            ))}
-          </select>
-        </div>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <FormControl fullWidth>
+                <InputLabel>Ocasião</InputLabel>
+                <Select
+                  value={ocasiao}
+                  label="Ocasião"
+                  onChange={(e) => setOcasiao(e.target.value)}
+                >
+                  <MenuItem value="">Selecione</MenuItem>
+                  {ocasioes.map((o) => (
+                    <MenuItem key={o} value={o}>
+                      {getOcasiaoLabel(o)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-        <div className={stylesCadastro.formGroup}>
-          <label className={stylesCadastro.label}>Imagens (máx. 5)<span className={stylesCadastro.required}>*</span>:</label>
-          <input
-            className={stylesCadastro.fileInput}
-            type="file"
-            accept="image/*"
-            multiple
-            disabled={imagens.length >= 5}
-            onChange={handleImageChangeCadastro}
-          />
-          <div className={stylesCadastro.imageGallery}>
+            {/* LINHA 3: Descrição */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                fullWidth
+                label="Descrição"
+                multiline
+                rows={4}
+                value={descricao}
+                onChange={(e) => {
+                  if (e.target.value.length <= 500) {
+                    setDescricao(e.target.value);
+                  }
+                }}
+                variant="outlined"
+                inputProps={{ maxLength: 500 }}
+                helperText={`${descricao.length}/500 caracteres`}
+              />
+            </Grid>
 
-            {/* {imagens.map((img, idx) => (
-              <div key={idx} className={stylesCadastro.imageItem}>
-                <img src={img} alt={`Preview ${idx}`} className={stylesCadastro.thumb} />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(idx)}
-                  className={stylesCadastro.removeButton}
-                  aria-label="Remover imagem"
-                >×</button>
-              </div>
-            ))} */}
+            {/* LINHA 4: Upload de Imagens */}
+            <Grid size={{ xs: 12 }}>
+              <Box>
+                <Typography variant="h6" gutterBottom>
+                  Imagens (máx. 5) *
+                </Typography>
+                <Button
+                  variant="outlined"
+                  component="label"
+                  startIcon={<PhotoCamera />}
+                  disabled={imagens.length >= 5}
+                  sx={{ mb: 2 }}
+                >
+                  Adicionar Imagens
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChangeCadastro}
+                  />
+                </Button>
+                <FormHelperText>
+                  {imagens.length}/5 imagens selecionadas
+                </FormHelperText>
 
-            {imagens.map((img, idx) => (
-              <div key={idx} className={stylesCadastro.imageItem}>
-                <img
-                  src={URL.createObjectURL(img)} // cria URL temporária
-                  alt={`Preview ${idx}`}
-                  className={stylesCadastro.thumb}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(idx)}
-                  className={stylesCadastro.removeButton}
-                >×</button>
-              </div>
-            ))}
+                {imagens.length > 0 && (
+                  <ImageList sx={{ width: '100%', height: 200 }} cols={5} rowHeight={160}>
+                    {imagens.map((img, idx) => (
+                      <ImageListItem key={idx} sx={{ position: 'relative' }}>
+                        <img
+                          src={URL.createObjectURL(img)}
+                          alt={`Preview ${idx}`}
+                          loading="lazy"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                        <IconButton
+                          size="small"
+                          onClick={() => handleRemoveImage(idx)}
+                          sx={{
+                            position: 'absolute',
+                            top: 4,
+                            right: 4,
+                            backgroundColor: 'rgba(0,0,0,0.6)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,0,0,0.8)',
+                            },
+                          }}
+                        >
+                          <Close fontSize="small" />
+                        </IconButton>
+                      </ImageListItem>
+                    ))}
+                  </ImageList>
+                )}
+              </Box>
+            </Grid>
 
+            {/* Botão Submit */}
+            <Grid size={{ xs: 12 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  disabled={isSubmitting}
+                  sx={{ px: 6, py: 1.5 }}
+                >
+                  {isSubmitting ? 'Enviando...' : 'Criar Produto'}
+                </Button>
+              </Box>
+            </Grid>
 
-          </div>
-        </div>
-
-        <button type="submit" className={stylesCadastro.submitButton} disabled={isSubmitting}>
-          {isSubmitting ? 'Enviando...' : 'Criar Produto'}
-        </button>
-        {message && <p className={stylesCadastro.message}>{message}</p>}
-      </form>
-    </div>
+            {/* Mensagem */}
+            {message && (
+              <Grid size={{ xs: 12 }}>
+                <Alert
+                  severity={message.includes('sucesso') ? 'success' : 'error'}
+                  sx={{ mt: 2 }}
+                >
+                  {message}
+                </Alert>
+              </Grid>
+            )}
+          </Grid>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 

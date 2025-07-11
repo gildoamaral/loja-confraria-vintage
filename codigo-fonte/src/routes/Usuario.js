@@ -13,32 +13,6 @@ require("dotenv").config();
 const prisma = new PrismaClient();
 const router = express.Router();
 
-// LOGIN
-router.post('/login', async (req, res) => {
-  const { email, senha } = req.body;
-
-  try {
-    const usuario = await prisma.usuarios.findUnique({ where: { email } });
-
-    if (!usuario) return res.status(400).json({ message: "Usuário não encontrado" });
-
-    const isMatch = await bcrypt.compare(senha, usuario.senha);
-    if (!isMatch) return res.status(400).json({ message: "Senha inválida" });
-
-    const token = jwt.sign(
-      { id: usuario.id, nome: usuario.nome },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-
-    res.json({ message: 'Login bem-sucedido', usuario });
-  } catch (error) {
-    console.error('Erro ao realizar login:', error);
-    res.status(500).send('Erro no servidor');
-  }
-});
 
 // GET USUARIOS
 router.get('/', async (req, res) => {

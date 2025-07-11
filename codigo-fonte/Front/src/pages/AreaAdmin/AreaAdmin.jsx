@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./Pedidos.module.css";
+import styles from "./ListaPedidos.module.css";
 import PageContainer from '../../components/PageContainer';
 import CadastroProdutos from './CadastroProdutos';
 import EstoqueProdutos from './EstoqueProdutos';

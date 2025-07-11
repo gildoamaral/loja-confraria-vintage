@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
-import styles from './Pedidos.module.css';
+import styles from './ListaPedidos.module.css';
 
 const ListaPedidos = () => {
   const [pedidos, setPedidos] = useState([]);

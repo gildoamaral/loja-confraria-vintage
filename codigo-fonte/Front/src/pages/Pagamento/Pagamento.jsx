@@ -270,8 +270,9 @@ const Pagamento = () => {
 
   const handleContinuarParaPagamento = () => {
     const frete = opcoesFrete.find(
-      (opcao) => String(opcao.id || opcao.nome) === String(freteSelecionado)
+      (opcao) => String(opcao.id || opcao.nome) === String(freteSelecionado.id || freteSelecionado.nome)
     );
+    console.log('Frete selecionado:', frete);
     if (!frete) {
       alert('Selecione uma opção de frete!');
       return;
@@ -318,7 +319,7 @@ const Pagamento = () => {
           <Grid container spacing={4} >
 
             {/* RESUMOS */}
-            <Grid xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: { xs: "100%", sm: 270 } }}>
+            <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: { xs: "100%", sm: 270 } }}>
 
 
               {/* Resumo do Pedido */}
@@ -371,7 +372,7 @@ const Pagamento = () => {
             </Grid>
 
             {/* CONTEUDOS */}
-            <Grid xs={12} md={8} sx={{ ml: { xs: 0, md: 8 } }}>
+            <Grid size={{ xs: 12, md: 8 }} sx={{ ml: { xs: 0, md: 8 } }}>
               <Box>
 
 
@@ -475,7 +476,7 @@ const Pagamento = () => {
                 {etapa === 1 && !usarEnderecoCadastrado && (
                   <>
                     <Grid sx={{ display: 'grid', gap: 2, mt: 2 }}>
-                      <Grid xs={12} sm={6}>
+                      <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                           label="Rua"
                           name="rua"
@@ -486,7 +487,7 @@ const Pagamento = () => {
                           disabled={usarEnderecoCadastrado}
                         />
                       </Grid>
-                      <Grid xs={12} sm={6}>
+                      <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                           label="Número"
                           name="numero"
@@ -497,7 +498,7 @@ const Pagamento = () => {
                           disabled={usarEnderecoCadastrado}
                         />
                       </Grid>
-                      <Grid xs={12} sm={6}>
+                      <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                           label="Complemento"
                           name="complemento"
@@ -507,7 +508,7 @@ const Pagamento = () => {
                           disabled={usarEnderecoCadastrado}
                         />
                       </Grid>
-                      <Grid xs={12} sm={6}>
+                      <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                           label="Bairro"
                           name="bairro"
@@ -518,7 +519,7 @@ const Pagamento = () => {
                           disabled={usarEnderecoCadastrado}
                         />
                       </Grid>
-                      <Grid xs={12} sm={6}>
+                      <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
                           label="Cidade"
                           name="cidade"
@@ -529,7 +530,7 @@ const Pagamento = () => {
                           disabled={usarEnderecoCadastrado}
                         />
                       </Grid>
-                      <Grid xs={6} sm={3}>
+                      <Grid size={{ xs: 6, sm: 3 }}>
                         <TextField
                           label="UF"
                           name="estado"
@@ -541,7 +542,7 @@ const Pagamento = () => {
                           disabled={usarEnderecoCadastrado}
                         />
                       </Grid>
-                      <Grid xs={6} sm={3}>
+                      <Grid size={{ xs: 6, sm: 3 }}>
                         <TextField
                           label="CEP"
                           name="cep"
@@ -555,7 +556,7 @@ const Pagamento = () => {
                       </Grid>
                     </Grid>
 
-                    <Grid xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                    <Grid size={12} sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
                       <Button
                         variant="contained"
                         color="primary"
@@ -569,7 +570,7 @@ const Pagamento = () => {
                 )}
                 {etapa === 1 && usarEnderecoCadastrado && (
 
-                  <Grid xs={12} >
+                  <Grid size={12} >
                     <Button
                       variant="contained"
                       color="primary"
@@ -628,25 +629,65 @@ const Pagamento = () => {
                     {carregandoFrete ? (
                       <Loading />
                     ) : (
-                      <RadioGroup
-                        value={freteSelecionado}
-                        onChange={e => setFreteSelecionado(e.target.value)}
-                      >
-                        {Array.isArray(opcoesFrete) && opcoesFrete.length > 0 ? (
-                          opcoesFrete.map((opcao, idx) => (
-                            <FormControlLabel
-                              key={idx}
-                              value={opcao.id || opcao.nome}
-                              control={<Radio />}
-                              label={`${opcao.nome || opcao.company?.name} - R$ ${Number(opcao.preco || opcao.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} - ${opcao.prazo_entrega || opcao.delivery_time} dias`}
-                            />
-                          ))
-                        ) : (
-                          <Typography variant="body2" color="error">
-                            Nenhuma opção de frete disponível.
-                          </Typography>
-                        )}
-                      </RadioGroup>
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="subtitle2" >
+                          Opções de Entrega:
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                          {Array.isArray(opcoesFrete) && opcoesFrete.length > 0 ? (
+                            opcoesFrete.map((opcao, idx) => (
+                              // <FormControlLabel
+                              //   key={idx}
+                              //   value={opcao.id || opcao.nome}
+                              //   control={<Radio />}
+                              //   label={`${opcao.nome || opcao.company?.name} - R$ ${Number(opcao.preco || opcao.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} - ${opcao.prazo_entrega || opcao.delivery_time} dias`}
+                              // />
+                              <Paper
+                                key={idx}
+                                sx={{
+                                  p: 1,
+                                  cursor: 'pointer',
+                                  border: freteSelecionado === opcao ? '2px solid' : '1px solid',
+                                  borderColor: freteSelecionado === opcao ? 'primary.main' : 'divider',
+                                  '&:hover': { borderColor: 'primary.light' }
+                                }}
+                                onClick={() => {
+                                  setFreteSelecionado(opcao)
+                                  console.log('Frete selecionado:', opcao);
+                                }}
+                              >
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    {opcao.company?.picture && (
+                                      <img
+                                        src={opcao.company.picture}
+                                        alt={opcao.company.name}
+                                        style={{ width: 30, height: 30, objectFit: 'contain' }}
+                                      />
+                                    )}
+                                    <Typography variant="body2" fontWeight="medium">
+                                      {opcao.name || opcao.codigo}
+                                    </Typography>
+                                  </Box>
+                                  <Box sx={{ textAlign: 'right' }}>
+                                    <Typography variant="body1" fontWeight="bold" color="primary">
+                                      R$ {parseFloat(opcao.price || opcao.valor).toFixed(2).replace('.', ',')}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      {opcao.delivery_time || opcao.prazoEntrega} dias úteis
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                              </Paper>
+
+                            ))
+                          ) : (
+                            <Typography variant="body2" color="error">
+                              Nenhuma opção de frete disponível.
+                            </Typography>
+                          )}
+                        </Box>
+                      </Box>
                     )}
                     <Button
                       variant="contained"

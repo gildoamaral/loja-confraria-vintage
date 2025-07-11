@@ -3,11 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Allison&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Allison&family=Tangerine:wght@400;700&display=swap');
-
-/*
-"Courier New" fonte para o fundo
-"Courier " fonte para o texto
-*/
+@import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400..700;1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
 
 * {
   margin: 0;
@@ -15,48 +12,18 @@
   box-sizing: border-box;
 }
 
-/* :root {
-  --cor-principal: #ffa3a3;
-  --cor-principal2: #ffc4c4;
-
-  --cor-secundaria: #ff8282;
-  --cor-fonte: #202215;
-
-  --cor-fonte-claro: #202215;
-
-
-
-  font-family:'Courier New', Courier, monospace;
-  line-height: 1.5;
-  font-weight: 600;
-
-  color-scheme: light dark;
-  color: #202215;
-
-    background: radial-gradient(
-    var(--cor-principal) 50%,
-    var(--cor-principal2) 180%
-  );
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-} */
-
 :root {
   --primary-color-theme: #FDF7F2;
 
   --cor-principal: #fcddbf;
-  --cor-principal2: #ec7148;
+  --cor-secundaria: #ec7148;
+  --cor-detalhes: #000;
+
   --cor-gradiente: radial-gradient(circle at 50% 50%, var(--cor-principal) 30%, var(--cor-principal2) 200%);
   --cor-gradiente2: linear-gradient(135deg, #fbeee6 0%, #ec7148 100%);
-  --cor-secundaria: #ec7148;
+
   --cor-fonte: #202215;
-
   --cor-fonte-claro: #202215;
-
-
 
   font-family:'Courier New', Courier, monospace;
   line-height: 1.5;
@@ -64,13 +31,6 @@
 
   color-scheme: light dark;
   color: #202215;
-  /* background: linear-gradient(
-    135deg,
-    var(--cor-principal) 10%,
-    var(--cor-principal2) 90%
-  ); */
-
-    /* background: radial-gradient(circle at 50% 50%, var(--cor-principal) 30%, var(--cor-principal2) 200%); */
 
   background: var(--cor-principal);
 

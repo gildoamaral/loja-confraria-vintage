@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
-import stylesEstoque from '../Estoque/Estoque.module.css';
+import stylesEstoque from './EstoqueProdutos.module.css';
 import Compressor from 'compressorjs';
 
 const EstoqueProdutos = () => {

@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-// 1. Importa os componentes e estilos do Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
-
 import { Box, CircularProgress, IconButton } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import api from '../services/api';
 
-// 2. Estilos para as setas de navegação (customizadas)
 const arrowStyles = {
   position: 'absolute',
   top: '50%',
@@ -29,7 +25,16 @@ const Carrossel = () => {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 3. Busca as imagens da API
+    useEffect(() => {
+      const originalOverflowX = document.body.style.overflowX
+      
+      document.body.style.overflowX = 'hidden'
+      
+      return () => {
+        document.body.style.overflowX = originalOverflowX
+      }
+    }, [])
+
   useEffect(() => {
     const fetchCarrosselImagens = async () => {
       try {
@@ -58,7 +63,7 @@ const Carrossel = () => {
   }
 
   return (
-    <Box sx={{ height: '100vh', width: '100vw', position: 'relative' }}>
+    <Box sx={{ height: '100vh', width: '100vw', position: 'relative'}}>
       <Swiper
         // 4. Instala os módulos que vamos usar
         modules={[Navigation, Pagination, Autoplay, EffectFade]}
@@ -103,7 +108,7 @@ const Carrossel = () => {
       <IconButton className="swiper-button-prev-custom" sx={{ ...arrowStyles, left: 16 }}>
         <ArrowBackIosNewIcon />
       </IconButton>
-      <IconButton className="swiper-button-next-custom" sx={{ ...arrowStyles, right: 16 }}>
+      <IconButton className="swiper-button-next-custom" sx={{ ...arrowStyles, right: {sm: 26, xs: 16} }}>
         <ArrowForwardIosIcon />
       </IconButton>
     </Box>

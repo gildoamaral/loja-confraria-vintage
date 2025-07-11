@@ -128,7 +128,7 @@ const GerenciarCarrossel = () => {
         <Typography variant="body1" color="text.secondary" gutterBottom>Você pode ter no máximo 3 imagens.</Typography>
         <Grid container spacing={3} sx={{ mt: 2 }}>
             {imagens.map((imagem) => (
-              <Grid item xs={12} sm={6} md={4} key={imagem.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={imagem.id}>
                 <Card>
                   <CardMedia component="img" height="200" image={imagem.urls.medium} alt={`Slide ${imagem.posicao + 1}`} />
                   <CardActions sx={{ justifyContent: 'center' }}>
@@ -138,7 +138,7 @@ const GerenciarCarrossel = () => {
               </Grid>
             ))}
             {imagens.length < 3 && (
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                 <Card onClick={handleAddClick} sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 248, border: '2px dashed #ccc', cursor: 'pointer', '&:hover': { backgroundColor: '#f9f9f9' } }}>
                   <Box sx={{ textAlign: 'center' }}><AddPhotoAlternateIcon sx={{ fontSize: 50, color: '#ccc' }} /><Typography>Adicionar Nova Imagem</Typography></Box>
                 </Card>

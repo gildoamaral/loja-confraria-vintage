@@ -38,7 +38,7 @@ model Usuarios {
 }
 
 model produtos {
-  id               String    @id @default(uuid())
+  id               String    @id @default(cuid())
   nome             String
   descricao        String    @db.VarChar(500)
   preco            Float

@@ -14,8 +14,6 @@ const ProdutoCard = ({ produto }) => {
   return (
     <Card 
       sx={{ 
-        height: 350, 
-        width: 250,
         display: 'flex', 
         flexDirection: 'column',
         justifyContent: 'center',
@@ -38,7 +36,7 @@ const ProdutoCard = ({ produto }) => {
           alt={produto.nome}
         />
         <CardContent sx={{ textAlign: 'center' }}>
-          <Typography variant="h6" component="h3" sx={{ fontSize: '1rem', fontWeight: '600' }}>
+          <Typography variant="h6" component="h3" sx={{ fontSize: '1rem', fontWeight: 'bol' }}>
             {produto.nome}
           </Typography>
           <Box>
@@ -51,7 +49,7 @@ const ProdutoCard = ({ produto }) => {
                 R$ {produto.preco.toFixed(2).replace('.', ',')}
               </Typography>
             )}
-            <Typography variant="h6" color="primary" sx={{ display: 'inline', fontWeight: '700' }}>
+            <Typography variant="h6" color="erro" sx={{ display: 'inline', fontWeight: '700' }}>
               R$ {precoFinal.toFixed(2).replace('.', ',')}
             </Typography>
           </Box>

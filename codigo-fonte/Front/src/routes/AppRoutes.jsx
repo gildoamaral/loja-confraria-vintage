@@ -1,7 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "../pages/Login/Login.jsx";
-import CadastroUsuario from "../pages/Cadastro/CadastroUsuario.jsx";
+import NewLogin from "../pages/Login/NewLogin.jsx";
+import CadastroUsuario from "../pages/Cadastro/NewCadastroUsuario.jsx";
 import InformProduto from "../pages/InformProdutos/InformProduto.jsx";
+import NewInformProduto from "../pages/InformProdutos/NewInformProduto.jsx";
 import Conta from "../pages/Conta/Conta.jsx";
 import Carrinho from '../pages/Carrinho/Carrinho.jsx';
 import Pagamento from '../pages/Pagamento/Pagamento.jsx';
@@ -20,8 +22,8 @@ function AppRoutes() {
       <Route element={<MainLayout />}>
         {/* PUBLICAS */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/produto/:id" element={<InformProduto />} />
+        <Route path="/login" element={<NewLogin />} />
+        <Route path="/produto/:id" element={<NewInformProduto />} />
         <Route path='/sobre' element={<Sobre />} />
         <Route path="/cadastro-usuario" element={<CadastroUsuario />} />
 

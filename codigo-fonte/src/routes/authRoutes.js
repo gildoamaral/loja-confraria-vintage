@@ -10,6 +10,7 @@ const { protect } = require('../middlewares/authMiddleware');
 router.get('/status', protect, (req, res) => {
   if (req.user) {
     // Se o middleware `protect` encontrou e verificou o usuário
+    console.log('authRoutes: ', req.user);
     res.status(200).json(req.user);
   } else {
     // Se não há usuário logado (sem token ou token inválido)

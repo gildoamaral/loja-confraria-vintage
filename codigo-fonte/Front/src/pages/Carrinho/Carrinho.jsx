@@ -92,10 +92,7 @@ function Carrinho() {
   return (
     <>
       {/* <Header invisivel /> */}
-      <Box
-        sx={{
-          backgroundColor: 'var(--primary-color-theme)',
-        }}>
+      <Box>
         <Box
           sx={{
             p: { xs: 1, sm: 3 },
@@ -104,6 +101,7 @@ function Carrinho() {
             minHeight: 500,
             position: 'relative',
             width: { xs: '100%', sm: 730 },
+            backgroundColor: 'var(--primary-color-theme)',
             // borderRadius: { xs: 0, sm: 3 },
             // marginTop: { xs: '1rem', sm: '2rem' },
             // mx: 'auto',
@@ -134,7 +132,7 @@ function Carrinho() {
 
               <Grid container spacing={2} direction="column">
                 {carrinho.map((item) => (
-                  <Grid item xs={12} key={item.id}>
+                  <Grid size={12} key={item.id}>
                     <CarrinhoItemCard
                       item={item}
                       atualizarQuantidade={atualizarQuantidade}

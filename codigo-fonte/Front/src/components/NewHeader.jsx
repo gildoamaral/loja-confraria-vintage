@@ -7,67 +7,75 @@ import {
   IconButton,
   Box,
   Badge,
-  Menu,      // --- 1. IMPORTAÇÕES ADICIONAIS ---
+  Menu,
   MenuItem,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   PersonOutline,
   Person,
   ShoppingCartOutlined,
   AdminPanelSettings,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import api from '../services/api';
+import { useAuth } from '../contexts';
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
+  const { usuario, isAuthenticated, loading, logout } = useAuth();
   const [cartItemCount, setCartItemCount] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-
   const location = useLocation();
-
-  // --- 2. ESTADO PARA O MENU ---
   const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMenuOpen = Boolean(anchorEl);
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  useEffect(() => {
-    const fetchNavbarData = async () => {
-      try {
-        const userStatusResponse = await api.get('/api/auth/status');
-        if (userStatusResponse.status === 200) {
-          const userData = userStatusResponse.data;
-          setUser(userData);
-          const cartCountResponse = await api.get('/api/cart/count');
-          setCartItemCount(cartCountResponse.data.count);
-        }
-      } catch (error) {
-        console.log('Usuário não autenticado ou erro ao buscar dados: ', error);
-        setUser(null);
-        setCartItemCount(0);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchNavbarData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchNavbarData = async () => {
+  //     try {
+  //       const userStatusResponse = await api.get('/api/auth/status');
+  //       if (userStatusResponse.status === 200) {
+  //         const userData = userStatusResponse.data;
+  //         setUser(userData);
+  //         const cartCountResponse = await api.get('/api/cart/count');
+  //         setCartItemCount(cartCountResponse.data.count);
+  //       }
+  //     } catch (error) {
+  //       console.log('Usuário não autenticado ou erro ao buscar dados: ', error);
+  //       setUser(null);
+  //       setCartItemCount(0);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchNavbarData();
+  // }, []);
 
-  // useEffect para controlar o scroll
   useEffect(() => {
     const controlNavbar = () => {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY > lastScrollY && currentScrollY > 200) {
-        // Descendo e passou de 50px
         setVisible(false);
-        // Fecha o menu se estiver aberto
+        window.dispatchEvent(new CustomEvent('navbarHidden'));
         if (isMenuOpen) {
           handleMenuClose();
         }
       } else if (currentScrollY < lastScrollY) {
-        // Subindo
         setVisible(true);
+        window.dispatchEvent(new CustomEvent('navbarVisible'));
       }
 
       setLastScrollY(currentScrollY);
@@ -78,7 +86,6 @@ const Navbar = () => {
   }, [lastScrollY, isMenuOpen]);
 
   useEffect(() => {
-    // Função para ser chamada quando o evento 'cartUpdated' for disparado
     const updateCartCount = async () => {
       console.log("Evento 'cartUpdated' recebido, atualizando contagem do carrinho...");
       try {
@@ -96,25 +103,35 @@ const Navbar = () => {
     };
   }, []);
 
-  // --- 3. FUNÇÕES PARA O MENU E LOGOUT ---
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      // Só busca a contagem se o usuário estiver autenticado.
+      if (isAuthenticated) {
+        try {
+          const cartCountResponse = await api.get('/api/cart/count');
+          setCartItemCount(cartCountResponse.data.count);
+        } catch (error) {
+          console.error("Erro ao buscar contagem do carrinho:", error);
+          setCartItemCount(0);
+        }
+      } else {
+        // Se não há usuário, zera a contagem.
+        setCartItemCount(0);
+      }
+    };
+    fetchCartCount();
+  }, [isAuthenticated]); // Roda sempre que o status de login muda.
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+  
+  const handleMobileMenuOpen = () => setMobileMenuOpen(true);
+  const handleMobileMenuClose = () => setMobileMenuOpen(false);
 
-  const handleLogout = async () => {
-    handleMenuClose(); // Garante que o menu feche
-    try {
-      // Usa sua instância 'api' para chamar a rota de logout
-      await api.post('/usuarios/logout');
-      // Redireciona para a home, forçando a atualização do estado da aplicação
-      window.location.href = '/';
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
-    }
+  const handleLogout = () => {
+    handleMenuClose();
+    handleMobileMenuClose();
+    logout();
   };
 
 
@@ -122,14 +139,7 @@ const Navbar = () => {
     return (
       <>
         <Box height={63} />
-        <AppBar
-          position="fixed"
-          sx={{
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-            zIndex: 1100,
-          }}
-        >
+        <AppBar position="fixed" sx={{ backgroundColor: 'transparent', boxShadow: 'none', zIndex: 1100 }}>
           <Toolbar />
         </AppBar>
       </>
@@ -138,8 +148,7 @@ const Navbar = () => {
 
   return (
     <>
-      <Box height={63} backgroundColor={"var(--primary-color-theme)"} />
-
+      <Box height={isMobile ? 57 : 63} backgroundColor={"var(--primary-color-theme)"} />
       <AppBar
         position="fixed"
         sx={{
@@ -152,77 +161,75 @@ const Navbar = () => {
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between', position: 'relative' }}>
-          {/* Links da Esquerda (sem alterações) */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button color="inherit" component={RouterLink} to="/">Home</Button>
-            <Button color="inherit" component={RouterLink} to="/sobre">Sobre</Button>
-            {user?.posicao === 'ADMIN' && (
-              <Button
-                color="inherit"
-                component={RouterLink}
-                to="/admin"
-                startIcon={<AdminPanelSettings />}
-              >
-                Administração
-              </Button>
-            )}
-          </Box>
+          {/* Menu Hambúrguer - Apenas Mobile */}
+          {isMobile && (
+            <IconButton color="inherit" onClick={handleMobileMenuOpen}>
+              <MenuIcon />
+            </IconButton>
+          )}
 
-          {/* Nome da Marca no Centro (sem alterações) */}
-          <Typography
-            variant="h6"
-            component={RouterLink}
-            to="/"
-            sx={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              fontFamily: '"Cinzel", serif',
-              fontWeight: 'bold',
-              textDecoration: 'none',
-              color: 'inherit',
-              zIndex: 1
+          {/* Navegação Desktop - Escondida no Mobile */}
+          {!isMobile && (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Button color="inherit" component={RouterLink} to="/">Home</Button>
+              <Button color="inherit" component={RouterLink} to="/sobre">Sobre</Button>
+              {isAuthenticated && usuario?.posicao === 'ADMIN' && (
+                <Button color="inherit" component={RouterLink} to="/admin" startIcon={<AdminPanelSettings />}>
+                  Administração
+                </Button>
+              )}
+            </Box>
+          )}
+
+          {/* Logo Central - Sempre Visível */}
+          <Typography 
+            variant={isMobile ? "body1" : "h6"} 
+            component={RouterLink} 
+            to="/" 
+            sx={{ 
+              position: 'absolute', 
+              left: '50%', 
+              transform: 'translateX(-50%)', 
+              fontFamily: '"Cinzel", serif', 
+              fontWeight: 'bold', 
+              textDecoration: 'none', 
+              color: 'inherit', 
+              zIndex: 1 
             }}
           >
             CONFRARIA VINTAGE
           </Typography>
 
-          {/* --- 4. JSX ATUALIZADO PARA OS ÍCONES DA DIREITA --- */}
+          {/* Ações do usuário - Desktop e Mobile */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {user ? (
-              // Se o usuário existe, renderiza o ícone que abre o menu
+            {/* Ícone do usuário - Apenas Desktop */}
+            {!isMobile && isAuthenticated && (
               <>
                 <IconButton color="inherit" onClick={handleMenuOpen}>
                   <Person />
                 </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={isMenuOpen}
-                  onClose={handleMenuClose}
-                  // disableScrollLock={true}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
+                <Menu 
+                  anchorEl={anchorEl} 
+                  open={isMenuOpen} 
+                  onClose={handleMenuClose} 
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} 
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 >
-                  <Typography sx={{ p: 1 }}>Olá Usuário!</Typography>
-                  <MenuItem component={RouterLink} to="/conta" onClick={handleMenuClose}>
-                    Minha Conta
-                  </MenuItem>
+                  <Typography sx={{ p: 1, fontWeight: 'bold' }}>Olá, {usuario.nome}!</Typography>
+                  <MenuItem component={RouterLink} to="/conta" onClick={handleMenuClose}>Minha Conta</MenuItem>
                   <MenuItem onClick={handleLogout}>Sair</MenuItem>
                 </Menu>
               </>
-            ) : (
-              // Se não existe, renderiza o ícone que leva para a página de login
+            )}
+
+            {/* Login - Apenas Desktop */}
+            {!isMobile && !isAuthenticated && (
               <IconButton color="inherit" component={RouterLink} to="/login" state={{ from: location }}>
                 <PersonOutline />
               </IconButton>
             )}
 
+            {/* Carrinho - Sempre Visível */}
             <IconButton color="inherit" component={RouterLink} to="/carrinho">
               <Badge badgeContent={cartItemCount} color="error">
                 <ShoppingCartOutlined />
@@ -231,6 +238,69 @@ const Navbar = () => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Drawer do Menu Mobile */}
+      <Drawer
+        anchor="left"
+        open={mobileMenuOpen}
+        onClose={handleMobileMenuClose}
+        sx={{ display: { xs: 'block', md: 'none' } }}
+      >
+        <Box sx={{ width: 250, pt: 2 }}>
+          <List>
+            {/* Navegação */}
+            <ListItem button component={RouterLink} to="/" onClick={handleMobileMenuClose}>
+              <ListItemText primary="Home" />
+            </ListItem>
+            
+            <ListItem button component={RouterLink} to="/sobre" onClick={handleMobileMenuClose}>
+              <ListItemText primary="Sobre" />
+            </ListItem>
+
+            {/* Admin - Só se for admin */}
+            {isAuthenticated && usuario?.posicao === 'ADMIN' && (
+              <ListItem button component={RouterLink} to="/admin" onClick={handleMobileMenuClose}>
+                <ListItemIcon>
+                  <AdminPanelSettings />
+                </ListItemIcon>
+                <ListItemText primary="Administração" />
+              </ListItem>
+            )}
+
+            <Divider sx={{ my: 1 }} />
+
+            {/* Opções do usuário */}
+            {isAuthenticated ? (
+              <>
+                <ListItem>
+                  <ListItemText 
+                    primary={`Olá, ${usuario.nome}!`} 
+                    sx={{ fontWeight: 'bold' }}
+                  />
+                </ListItem>
+                
+                <ListItem button component={RouterLink} to="/conta" onClick={handleMobileMenuClose}>
+                  <ListItemIcon>
+                    <Person />
+                  </ListItemIcon>
+                  <ListItemText primary="Minha Conta" />
+                </ListItem>
+                
+                <ListItem button onClick={handleLogout}>
+                  <ListItemText primary="Sair" />
+                </ListItem>
+              </>
+            ) : (
+              <ListItem button component={RouterLink} to="/login" onClick={handleMobileMenuClose}>
+                <ListItemIcon>
+                  <PersonOutline />
+                </ListItemIcon>
+                <ListItemText primary="Entrar" />
+              </ListItem>
+            )}
+          </List>
+        </Box>
+      </Drawer>
     </>
   );
 };

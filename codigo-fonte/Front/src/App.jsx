@@ -1,19 +1,26 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes.jsx";
 import WhatsAppButton from "./components/WhatsAppButton";  // Importando o botão do WhatsApp
+import { AuthProvider, ProductProvider } from './contexts';
 
 
 function App() {
   return (
-      <BrowserRouter>
+    <BrowserRouter>
+    
+      <AuthProvider>
+        <ProductProvider>
 
 
-        <AppRoutes />
+          <AppRoutes />
+
+          <WhatsAppButton />
 
 
+        </ProductProvider>
+      </AuthProvider>
 
-        <WhatsAppButton /> {/* Adicionando o botão flutuante do WhatsApp */}
-      </BrowserRouter>
+    </BrowserRouter>
   );
 }
 
