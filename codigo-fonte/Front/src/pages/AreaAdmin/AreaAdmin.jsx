@@ -5,6 +5,7 @@ import CadastroProdutos from './CadastroProdutos';
 import EstoqueProdutos from './EstoqueProdutos';
 import ListaPedidos from './ListaPedidos';
 import GerenciarCarrossel from './GerenciarCarrossel';
+import NewEstoqueProdutos from './NewEstoqueProdutos';
 
 const AreaAdmin = () => {
   const [abaAtiva, setAbaAtiva] = useState("estoque");
@@ -12,9 +13,7 @@ const AreaAdmin = () => {
   return (
     <div>
       <PageContainer className={styles.container}>
-        <div className={styles.header}>
-          <h2>Área do Administrador</h2>
-        </div>
+
         <div className={styles.tabs}>
           <button
             className={`${styles.tab} ${abaAtiva === "estoque" ? styles.activeTab : ""}`}
@@ -43,7 +42,7 @@ const AreaAdmin = () => {
         </div>
 
         {abaAtiva === "pedidos" && <ListaPedidos />}
-        {abaAtiva === "estoque" && <EstoqueProdutos />}
+        {abaAtiva === "estoque" && <NewEstoqueProdutos />}
         {abaAtiva === "cadastro" && <CadastroProdutos />}
         {abaAtiva === "carrossel" && <GerenciarCarrossel />}
       </PageContainer>

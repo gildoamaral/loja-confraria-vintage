@@ -1,6 +1,6 @@
 .container {
-  max-width: 900px; /* um pouco maior */
-  margin: 2.5rem auto;
+  max-width: 100%; /* um pouco maior */
+  margin: 0rem auto;
   padding: 2rem;
   background-color: #fff;
   border-radius: 12px;
@@ -32,9 +32,9 @@
 
 .tabs {
   display: flex;
-  justify-content: center;
+  justify-content: start;
   gap: 1.25rem;
-  margin-top: 2.5rem;
+  /* margin-top: 2.5rem; */
   border-bottom: 2px solid #ddd;
   flex-wrap: wrap;
 }
@@ -55,14 +55,14 @@
 }
 
 .tab:hover {
-  color: #440e0b;
-  background-color: #fce9f3;
+  color: #000000;
+  background-color: #00000015;
 }
 
 .activeTab {
-  color: #440e0b;
+  color: #ffffff;
   border-color: #440e0b;
-  background-color: #fde9f4;
+  background-color: #000000;
 }
 
 .formContainer {

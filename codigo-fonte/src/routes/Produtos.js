@@ -29,6 +29,42 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET - Produtos paginados
+router.get('/estoque/paginated', AuthAdmin, async (req, res) => {
+  // Pega os parâmetros da URL, com valores padrão de página 1 e limite 10
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    // Busca os produtos e o total de produtos em duas chamadas paralelas
+    const [produtos, totalProdutos] = await prisma.$transaction([
+      prisma.produtos.findMany({
+        skip: skip,
+        take: limit,
+        orderBy: { nome: 'asc' },
+        include: {
+          imagens: {
+            orderBy: { posicao: 'asc' },
+            take: 1, // Pega apenas a imagem principal para a tabela
+          },
+        },
+      }),
+      prisma.produtos.count(),
+    ]);
+
+    res.json({
+      produtos,
+      totalPages: Math.ceil(totalProdutos / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Erro ao buscar produtos paginados:", error);
+    res.status(500).json({ error: "Erro ao buscar produtos." });
+  }
+});
+
+// GET - Obter produto por ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -52,7 +88,6 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar o produto', details: error.message });
   }
 });
-
 
 // POST 
 router.post('/', AuthAdmin, async (req, res) => {
@@ -95,7 +130,7 @@ router.post('/', AuthAdmin, async (req, res) => {
         categoria,
         ocasiao: ocasiao || null,
         precoPromocional: precoPromocional ? parseFloat(precoPromocional) : null,
-        
+
         // Mágica do Prisma com o campo JSON
         imagens: {
           create: uploadResults.map((result, index) => ({

@@ -175,7 +175,7 @@ const InformProduto = () => {
 
               <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <Typography variant="overline" color="text.secondary">{produto.categoria.toLowerCase()}</Typography>
-                
+
                 <Typography variant="h4" component={'h1'} fontWeight={700} >{produto.nome}</Typography>
                 <Divider sx={{ mt: 1, mb: 3 }} />
 
@@ -207,9 +207,36 @@ const InformProduto = () => {
                     <Typography variant="body2" fontWeight="bold">
                       Preço:
                     </Typography>
-                    <Typography variant="h6" color="error" fontWeight="bold" >
-                      R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}
-                    </Typography>
+                    {produto.precoPromocional ? (
+                      <>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              textDecoration: 'line-through',
+                              color: 'text.secondary',
+                              fontSize: '0.8rem'
+                            }}
+                          >
+                            R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}
+                          </Typography>
+                          <Typography variant="h6" color="error" fontWeight="bold">
+                            R$ {parseFloat(produto.precoPromocional).toFixed(2).replace('.', ',')}
+                          </Typography>
+                        </Box>
+                        <Chip
+                          label={`- ${Math.round(((produto.preco - produto.precoPromocional) / produto.preco) * 100)}%`}
+                          color="error"
+                          size="small"
+                          variant='outlined'
+                          sx={{ fontSize: '0.7rem', height: '20px' }}
+                        />
+                      </>
+                    ) : (
+                      <Typography variant="h6" color="error" fontWeight="bold">
+                        R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}
+                      </Typography>
+                    )}
                   </Grid>
                 </Grid>
 
@@ -227,7 +254,7 @@ const InformProduto = () => {
                 </Box>
 
                 <Box mt={4} width={'50%'} sx={{ display: 'flex', justifyContent: 'center', width: '100%', pb: 5 }}>
-                  <Button variant="contained" size="large" sx={{bgcolor: 'black', color: 'white'}} fullWidth startIcon={<AddShoppingCartIcon />} onClick={handleAddToCart} disabled={loading}>
+                  <Button variant="contained" size="large" sx={{ bgcolor: 'black', color: 'white' }} fullWidth startIcon={<AddShoppingCartIcon />} onClick={handleAddToCart} disabled={loading}>
                     {loading ? 'Adicionando...' : 'Adicionar ao Carrinho'}
                   </Button>
                 </Box>
@@ -301,7 +328,7 @@ const InformProduto = () => {
           <Button onClick={() => { setSuccessModalOpen(false); navigate('/'); }} variant="outlined" sx={{ color: 'black', borderColor: 'black' }}>
             Continuar Comprando
           </Button>
-          <Button onClick={() => navigate('/carrinho')} variant="contained" autoFocus sx={{ bgcolor: 'black', color: 'white'}}>
+          <Button onClick={() => navigate('/carrinho')} variant="contained" autoFocus sx={{ bgcolor: 'black', color: 'white' }}>
             Ir para o Carrinho
           </Button>
         </DialogActions>
