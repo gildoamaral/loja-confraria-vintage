@@ -60,6 +60,7 @@ const HomePage = () => {
     }));
   };
 
+  
   const dadosDaPagina = useMemo(() => {
     // Filtro especial para CONFRARIA: produtos com ocasiao null
     const produtosDaOcasiao = selectedOcasiao === 'CONFRARIA' 
