@@ -40,6 +40,7 @@ const Pagamento = () => {
   const [valorFrete, setValorFrete] = useState(0);
   const [subtotal, setSubtotal] = useState(valorTotal);
 
+  
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
