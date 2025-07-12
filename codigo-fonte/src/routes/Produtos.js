@@ -2,6 +2,7 @@
 const express = require('express');
 const { PrismaClient, Ocasiao } = require('@prisma/client');
 const AuthAdmin = require('../middlewares/AuthAdmin'); // Importa o middleware AuthAdmin
+const { deleteImageVersionsFromS3 } = require('../services/s3Service.js');
 
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -157,12 +158,12 @@ router.post('/', AuthAdmin, async (req, res) => {
 // PUT - Atualizar produto
 router.put('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
+  // Removemos 'imagem' da desestruturação, pois ela não é mais um campo editável aqui
   const {
     nome,
     descricao,
     preco,
     precoPromocional,
-    imagem,
     quantidade,
     tamanho,
     cor,
@@ -176,18 +177,19 @@ router.put('/:id', AuthAdmin, async (req, res) => {
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
 
-    const dataToUpdate = {};
-
-    if (nome !== undefined) dataToUpdate.nome = nome;
-    if (descricao !== undefined) dataToUpdate.descricao = descricao;
-    if (preco !== undefined) dataToUpdate.preco = parseFloat(preco);
-    if (precoPromocional !== undefined) dataToUpdate.precoPromocional = parseFloat(precoPromocional);
-    if (imagem !== undefined) dataToUpdate.imagem = imagem;
-    if (quantidade !== undefined) dataToUpdate.quantidade = parseInt(quantidade, 10);
-    if (tamanho !== undefined) dataToUpdate.tamanho = tamanho;
-    if (cor !== undefined) dataToUpdate.cor = cor;
-    if (categoria !== undefined) dataToUpdate.categoria = categoria;
-    if (ocasiao !== undefined) dataToUpdate.ocasiao = ocasiao;
+    // A lógica para atualizar as imagens é mais complexa (deletar as antigas, fazer novo upload, etc.)
+    // e deve ser tratada em uma rota separada. Por enquanto, esta rota atualizará apenas os dados de texto.
+    const dataToUpdate = {
+      nome,
+      descricao,
+      preco: preco ? parseFloat(preco) : undefined,
+      precoPromocional: precoPromocional !== undefined ? (precoPromocional ? parseFloat(precoPromocional) : null) : undefined,
+      quantidade: quantidade ? parseInt(quantidade, 10) : undefined,
+      tamanho,
+      cor,
+      categoria,
+      ocasiao,
+    };
 
     const atualizado = await prisma.produtos.update({
       where: { id },
@@ -205,26 +207,43 @@ router.put('/:id', AuthAdmin, async (req, res) => {
 // DELETE - Excluir produto
 router.delete('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
-  console.log(`Requisição DELETE recebida para o ID: ${id}`);
-
+  
   try {
-    const produtoExistente = await prisma.produtos.findUnique({
+    // 1. Primeiro, buscamos o produto E as imagens relacionadas que precisam ser deletadas.
+    const produtoParaDeletar = await prisma.produtos.findUnique({
       where: { id },
+      include: {
+        imagens: true, // Crucial: precisamos das informações das imagens
+      },
     });
 
-    if (!produtoExistente) {
-      console.log('Produto não encontrado no banco de dados.');
+    if (!produtoParaDeletar) {
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
 
-    console.log('Produto encontrado:', produtoExistente);
+    // 2. Se o produto tiver imagens, deletamos cada uma do S3.
+    if (produtoParaDeletar.imagens && produtoParaDeletar.imagens.length > 0) {
+      // Importe o seu s3Service no topo do arquivo se ainda não o fez
+      // const { deleteImageVersionsFromS3 } = require('../services/s3Service.js');
+      
+      console.log(`Deletando ${produtoParaDeletar.imagens.length} imagem(ns) do S3...`);
+      // Criamos uma promessa para cada deleção de imagem
+      const deletePromises = produtoParaDeletar.imagens.map(imagem => 
+        deleteImageVersionsFromS3(imagem.urls)
+      );
+      // Esperamos que todas as imagens sejam deletadas do S3
+      await Promise.all(deletePromises);
+    }
 
+    // 3. Finalmente, após limpar o S3, deletamos o produto do banco de dados.
+    // A deleção em cascata do Prisma já cuidará de remover os registros da tabela 'produto_imagens'.
     await prisma.produtos.delete({
       where: { id },
     });
 
-    console.log('Produto excluído com sucesso.');
-    res.status(204).send();
+    console.log('Produto e imagens associadas foram excluídos com sucesso.');
+    res.status(204).send(); // Resposta de sucesso sem conteúdo
+
   } catch (error) {
     console.error('Erro ao excluir produto:', error);
     res.status(500).json({ error: 'Erro ao excluir produto' });
