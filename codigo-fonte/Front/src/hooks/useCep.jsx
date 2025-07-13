@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 
-// API base para a consulta
 const VIA_CEP_URL = 'https://viacep.com.br/ws/';
 
 /**
@@ -8,48 +7,66 @@ const VIA_CEP_URL = 'https://viacep.com.br/ws/';
  * @returns {object} Contendo os dados do endereço, estado de loading, erro e a função de busca.
  */
 export const useCep = () => {
-  const [data, setData] = useState(null);
+  const [addressData, setAddressData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchAddress = useCallback(async (cep) => {
-    // Limpa apenas os caracteres não numéricos do CEP
     const cleanedCep = cep.replace(/\D/g, '');
 
-    // Verifica se o CEP tem o tamanho correto (8 dígitos)
     if (cleanedCep.length !== 8) {
-      setError('CEP inválido. Por favor, digite 8 números.');
+      setError('CEP deve conter exatamente 8 dígitos');
       return;
     }
 
     setLoading(true);
     setError(null);
-    setData(null);
+    setAddressData(null);
 
     try {
       const response = await fetch(`${VIA_CEP_URL}${cleanedCep}/json/`);
+      
+      if (!response.ok) {
+        throw new Error(`Erro na consulta: ${response.status}`);
+      }
+      
       const result = await response.json();
 
       if (result.erro) {
-        throw new Error('CEP não encontrado.');
+        throw new Error('CEP não encontrado. Verifique o número digitado.');
       }
-      
+
+      // Validação adicional para campos obrigatórios
+      if (!result.logradouro && !result.bairro && !result.localidade) {
+        throw new Error('CEP válido, mas sem informações de endereço disponíveis.');
+      }
+
       // Mapeia os campos da API para os nomes que usamos no nosso formulário
-      const addressData = {
-        rua: result.logradouro,
-        bairro: result.bairro,
-        cidade: result.localidade,
-        estado: result.uf,
+      const mappedData = {
+        rua: result.logradouro || '',
+        bairro: result.bairro || '',
+        cidade: result.localidade || '',
+        estado: result.uf || '',
       };
 
-      setData(addressData);
+      setAddressData(mappedData);
 
     } catch (err) {
-      setError(err.message || 'Não foi possível buscar o CEP.');
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        setError('Erro de conexão. Verifique sua internet e tente novamente.');
+      } else {
+        setError(err.message || 'Não foi possível buscar o CEP.');
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
-  return { data, loading, error, fetchAddress };
+  const clearData = useCallback(() => {
+    setAddressData(null);
+    setError(null);
+    setLoading(false);
+  }, []);
+
+  return { addressData, loading, error, fetchAddress, clearData };
 };

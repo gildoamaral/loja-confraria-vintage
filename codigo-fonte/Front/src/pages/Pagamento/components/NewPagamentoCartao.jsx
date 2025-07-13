@@ -1,175 +1,124 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from './PagamentoCartao.module.css'
 import imagem from './image.png'
 import { Box, Typography, FormLabel, FormControl } from '@mui/material'
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api';
+import api from '../../../services/api';
 
+// A chave pública do Mercado Pago
 const mp = new window.MercadoPago(import.meta.env.VITE_MERCADO_PAGO_KEY);
 
 const PagamentoCartao = (props) => {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    let cardFormInstance; // Usa uma variável local para a instância
 
-    if (mp.cardFormInstance) {
-      console.warn("CardForm já instanciado. Usando a instância existente.");
-      return;
-    }
+    const renderCardForm = async () => {
+      const valorSeguro = Number(props.valor);
+      const amount = (!isNaN(valorSeguro) && valorSeguro > 0)
+        ? valorSeguro.toFixed(2)
+        : "0.01";
+      const amountPlusFrete = props.valorFrete ? (Number(props.valorFrete) + Number(amount)).toFixed(2) : amount;
 
-    const valorSeguro = Number(props.valor);
-    const amount = (!isNaN(valorSeguro) && valorSeguro > 0)
-      ? valorSeguro.toFixed(2)
-      : "0.01";
-    const amountPlusFrete = props.valorFrete ? (Number(props.valorFrete) + Number(amount)).toFixed(2) : amount;
+      // Inicializa o formulário de cartão
+      cardFormInstance = mp.cardForm({
+        amount: amountPlusFrete,
+        iframe: true,
+        form: {
+          id: "form-checkout",
+          cardNumber: { id: "form-checkout__cardNumber", placeholder: "0000 0000 0000 0000" },
+          expirationDate: { id: "form-checkout__expirationDate", placeholder: "MM/AA" },
+          securityCode: { id: "form-checkout__securityCode", placeholder: "123" },
+          cardholderName: { id: "form-checkout__cardholderName", placeholder: "Titular do cartão" },
+          issuer: { id: "form-checkout__issuer", placeholder: "Banco emissor" },
+          installments: { id: "form-checkout__installments", placeholder: "Parcelas" },
+          identificationType: { id: "form-checkout__identificationType", placeholder: "Tipo de documento" },
+          identificationNumber: { id: "form-checkout__identificationNumber", placeholder: "Número do documento" },
+          cardholderEmail: { id: "form-checkout__cardholderEmail", placeholder: "E-mail" },
+        },
+        callbacks: {
+          onFormMounted: error => {
+            if (error) return console.warn("Form Mounted handling error: ", error);
+            console.log("Formulário de cartão montado.");
+          },
+          onSubmit: event => {
+            event.preventDefault();
+            setIsSubmitting(true);
 
-    const cardForm = mp.cardForm({
-      amount: amountPlusFrete,
-      iframe: true,
-      form: {
-        id: "form-checkout",
-        cardNumber: {
-          id: "form-checkout__cardNumber",
-          placeholder: "0000 0000 0000 0000",
-        },
-        expirationDate: {
-          id: "form-checkout__expirationDate",
-          placeholder: "MM/AA",
-        },
-        securityCode: {
-          id: "form-checkout__securityCode",
-          placeholder: "123",
-        },
-        cardholderName: {
-          id: "form-checkout__cardholderName",
-          placeholder: "Titular do cartão",
-        },
-        issuer: {
-          id: "form-checkout__issuer",
-          placeholder: "Banco emissor",
-        },
-        installments: {
-          id: "form-checkout__installments",
-          placeholder: "Parcelas",
-        },
-        identificationType: {
-          id: "form-checkout__identificationType",
-          placeholder: "Tipo de documento",
-        },
-        identificationNumber: {
-          id: "form-checkout__identificationNumber",
-          placeholder: "Número do documento",
-        },
-        cardholderEmail: {
-          id: "form-checkout__cardholderEmail",
-          placeholder: "E-mail",
-        },
-      },
-      callbacks: {
-        onFormMounted: error => {
-          if (error) return console.warn("Form Mounted handling error: ", error);
-          console.log("Form mounted");
-        },
-        onSubmit: event => {
-          event.preventDefault();
-          setIsSubmitting(true);
+            const cardFormData = cardFormInstance.getCardFormData();
 
-          const {
-            paymentMethodId: payment_method_id,
-            issuerId: issuer_id,
-            cardholderEmail: email,
-            amount,
-            token,
-            installments,
-            identificationNumber,
-            identificationType,
-          } = cardForm.getCardFormData();
-
-          console.log(cardForm.getCardFormData());
-
-          api.post('/pagamentos/criar-cartao', {
-            transaction_amount: Number(amount),
-            token,
-            description: "Descrição do produto",
-            installments: Number(installments),
-            payment_method_id,
-            issuer_id,
-            payer: {
-              email,
-              identification: {
-                type: identificationType,
-                number: identificationNumber,
+            api.post('/pagamentos/criar-cartao', {
+              transaction_amount: Number(cardFormData.amount),
+              token: cardFormData.token,
+              description: "Descrição do produto",
+              installments: Number(cardFormData.installments),
+              payment_method_id: cardFormData.paymentMethodId,
+              issuer_id: cardFormData.issuerId,
+              payer: {
+                email: cardFormData.cardholderEmail,
+                identification: {
+                  type: cardFormData.identificationType,
+                  number: cardFormData.identificationNumber,
+                },
               },
-            },
-            pedidoId: props.pedidoId,
-            valorFrete: props.valorFrete ?? 0,
-          })
-            .then(async response => {
-              console.log("log da response data: ", response.data)
+              pedidoId: props.pedidoId,
+              valorFrete: props.valorFrete ?? 0,
+            })
+            .then(response => {
               if (response.data.status === 'pending') {
                 alert("Pagamento em processamento. Aguardando confirmação.");
                 navigate('/conta');
               }
               if (response.data.status === 'success') {
-                console.log("response: ", response.data);
                 alert("Pagamento realizado com sucesso!");
                 navigate('/conta');
               }
             })
             .catch(error => {
-              // TESTANDO se o usuario consegue realizar o pagamento logo que dá erro
               setIsSubmitting(false);
-              console.log("log do erro.data :", error.response.data);
-              console.log("log do erro: ", error)
               if (error.response && error.response.status === 402) {
                 alert("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.");
-
               } else {
                 alert("Erro ao processar pagamento.");
-                navigate('/carrinho')
+                navigate('/carrinho');
               }
             })
-
             .finally(() => {
-              setIsSubmitting(false);
-
+              // Não desativa o isSubmitting aqui para evitar duplo clique
             });
+          },
+          onFetching: (resource) => {
+            console.log("Buscando recurso: ", resource);
+            const progressBar = document.querySelector(".progress-bar");
+            if(progressBar) progressBar.removeAttribute("value");
+            return () => {
+              if(progressBar) progressBar.setAttribute("value", "0");
+            };
+          }
         },
-        onFetching: (resource) => {
-          console.log("Fetching resource: ", resource);
+      });
+    };
 
-          // Animate progress bar
-          const progressBar = document.querySelector(".progress-bar");
-          progressBar.removeAttribute("value");
+    renderCardForm();
 
-          return () => {
-            progressBar.setAttribute("value", "0");
-          };
-        }
-      },
-    })
-
-    // Salva a instância do cardForm para evitar recriações
-    mp.cardFormInstance = cardForm;
-
-    // Limpa a instância ao desmontar o componente
+    // --- A CORREÇÃO ESTÁ AQUI ---
+    // Função de limpeza que será executada quando o componente for desmontado
     return () => {
-      console.log("Desmontando o cardForm.");
-      if (mp.cardFormInstance) {
-        mp.cardFormInstance = null;
+      if (cardFormInstance) {
+        console.log("Desmontando a instância do CardForm.");
+        // Chama o método .unmount() para destruir o formulário corretamente
+        cardFormInstance.unmount();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.valor, props.valorFrete, props.pedidoId, navigate]); // Adiciona dependências para recriar o form se o valor mudar
 
   return (
     <>
-
       <form id="form-checkout" className={styles.formCheckout}>
-
+        {/* ... seu JSX do formulário continua exatamente igual ... */}
         <Box
           sx={{
             display: 'flex',
@@ -193,7 +142,6 @@ const PagamentoCartao = (props) => {
               borderColor: 'divider',
               boxShadow: 4,
             }}
-          // maxWidth='460px'
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: {xs: "1rem", sm: 0} }}>
               <Typography sx={{ color: 'black' }} variant="subtitle2"> Cartão de Crédito </Typography>
@@ -218,7 +166,6 @@ const PagamentoCartao = (props) => {
                 justifyContent: 'space-between',
                 width: '100%',
                 gap: 2,
-
               }}
             >
               <FormControl sx={{ flexGrow: 1 }} >
@@ -226,20 +173,15 @@ const PagamentoCartao = (props) => {
                   Número do cartão
                 </FormLabel>
                 <div id="form-checkout__cardNumber" className={styles.container}></div>
-
               </FormControl>
-
               <FormControl sx={{ maxWidth: "20%" }} >
                 <FormLabel sx={{ color: 'black' }} htmlFor="cvv">
                   CVV
                 </FormLabel>
                 <div id="form-checkout__securityCode" className={styles.container}></div>
-
               </FormControl>
             </Box>
-
-            <Box
-              sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2 }}>
               <FormControl sx={{ flexGrow: 1 }} >
                 <FormLabel sx={{ color: 'black' }} htmlFor="card-name">
                   Nome
@@ -251,7 +193,6 @@ const PagamentoCartao = (props) => {
                   Validade
                 </FormLabel>
                 <div id="form-checkout__expirationDate" className={styles.container}></div>
-
               </FormControl>
             </Box>
           </Box >
@@ -263,26 +204,10 @@ const PagamentoCartao = (props) => {
         <input type="text" id="form-checkout__identificationNumber" className={styles.input} required />
         <input type="email" id="form-checkout__cardholderEmail" className={styles.input} required />
 
-        <button
-          type="submit"
-          id="form-checkout__submit"
-          className={styles.button}
-          disabled={isSubmitting}
-        >
+        <button type="submit" id="form-checkout__submit" className={styles.button} disabled={isSubmitting}>
           {isSubmitting ? "Processando..." : "Pagar"}
         </button>
-        <progress value="0" className="progress-bar"
-        // style={{
-        //   width: '100%',
-        //   height: "8px",
-        //   borderRadius: "5px",
-        //   backgroundColor: "#e0e0e0",
-        //   overflow: "hidden"
-        // }}
-        >
-          Carregando...
-        </progress>
-
+        <progress value="0" className="progress-bar">Carregando...</progress>
       </form>
     </>
   );

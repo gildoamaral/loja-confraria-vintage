@@ -9,7 +9,7 @@ import {
   Divider,
   Typography
 } from '@mui/material';
-import PagamentoCartao from './PagamentoCartao';
+import NewPagamentoCartao from './NewPagamentoCartao';
 
 const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFrete }) => {
   return (
@@ -33,7 +33,7 @@ const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFre
       </FormControl>
       <Divider sx={{ my: 3 }} />
       {metodo === 'cartao' ? (
-        <PagamentoCartao
+        <NewPagamentoCartao
           pedidoId={pedidoId}
           valor={valorTotal}
           valorFrete={valorFrete}

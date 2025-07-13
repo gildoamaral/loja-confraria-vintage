@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // 1. Importa o useCallback
 import {
   Box,
   Grid,
@@ -9,17 +9,28 @@ import {
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import PagamentoCartao from './PagamentoCartao';
 import Loading from '../../components/Loading';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { useCep } from '../../hooks/useCep'; // Importa o hook useCep
 import {
   ResumoCarrinho,
-  DadosUsuario,
   SeletorEndereco,
   FormularioEndereco,
   SeletorFrete,
   FormularioPagamento
 } from './components';
+
+// Função auxiliar fora do componente para ser estável
+function formatarCep(valor) {
+  if (!valor) return '';
+  valor = valor.replace(/\D/g, '');
+  if (valor.length > 5) {
+    valor = valor.replace(/^(\d{2})(\d{3})(\d{3})/, '$1.$2-$3');
+  } else if (valor.length > 2) {
+    valor = valor.replace(/^(\d{2})(\d{0,3})/, '$1.$2');
+  }
+  return valor.slice(0, 10);
+}
 
 const Pagamento = () => {
   const location = useLocation();
@@ -27,8 +38,7 @@ const Pagamento = () => {
   const valorTotal = location.state?.valorTotal;
   const quantidadeTotal = location.state?.quantidadeTotal;
   const [pedidoId, setPedidoId] = useState(null);
-  const [metodo, setMetodo] = useState('');
-  const [usuario, setUsuario] = useState(null); // Novo estado
+  const [usuario, setUsuario] = useState(null);
   const [usarEnderecoCadastrado, setUsarEnderecoCadastrado] = useState(true);
   const [enderecoLinha, setEnderecoLinha] = useState("");
   const [endereco, setEndereco] = useState({});
@@ -39,8 +49,61 @@ const Pagamento = () => {
   const [enderecoSelecionado, setEnderecoSelecionado] = useState(null);
   const [valorFrete, setValorFrete] = useState(0);
   const [subtotal, setSubtotal] = useState(valorTotal);
+  const [metodo, setMetodo] = useState('');
 
-  
+  // Estados e lógica do CEP movidos do FormularioEndereco
+  const { addressData, loading: cepLoading, error: cepError, fetchAddress, clearData } = useCep();
+  const [mostrarCamposEndereco, setMostrarCamposEndereco] = useState(false);
+
+  const handleEnderecoChange = useCallback((e) => {
+    let { name, value } = e.target;
+    if (name === 'cep') {
+      value = formatarCep(value);
+    }
+    setEndereco(prev => ({ ...prev, [name]: value }));
+  }, []);
+
+  // useEffect para quando o addressData do CEP chegar
+  useEffect(() => {
+    if (addressData) {
+      const updates = {
+        rua: addressData.rua || '',
+        bairro: addressData.bairro || '',
+        cidade: addressData.cidade || '',
+        estado: addressData.estado || '',
+      };
+      Object.entries(updates).forEach(([name, value]) => {
+        handleEnderecoChange({ target: { name, value } });
+      });
+      setMostrarCamposEndereco(true);
+    }
+  }, [addressData, handleEnderecoChange]);
+
+  // Reset campos quando CEP for limpo
+  useEffect(() => {
+    const cepLimpo = endereco.cep?.replace(/\D/g, '') || '';
+    if (cepLimpo.length === 0) {
+      setMostrarCamposEndereco(false);
+    }
+  }, [endereco.cep]);
+
+  // Funções para gerenciar CEP - otimizadas com useCallback
+  const handleBuscarCep = useCallback(() => {
+    const cepLimpo = endereco.cep?.replace(/\D/g, '') || '';
+    
+    if (cepLimpo.length !== 8) {
+      // Não mostra alert aqui pois o useCep já trata o erro
+      return;
+    }
+    
+    fetchAddress(endereco.cep);
+  }, [endereco.cep, fetchAddress]);
+
+  const validarCepCompleto = useCallback(() => {
+    const cepLimpo = endereco.cep?.replace(/\D/g, '') || '';
+    return cepLimpo.length === 8;
+  }, [endereco.cep]);
+
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
@@ -132,27 +195,9 @@ const Pagamento = () => {
       cidade: '',
       estado: '',
     });
+    setMostrarCamposEndereco(false); // Reset também o estado de mostrar campos
+    clearData(); // Limpa dados do CEP anterior
     setUsarEnderecoCadastrado(false);
-  };
-
-  function formatarCep(valor) {
-    // Remove tudo que não for número
-    valor = valor.replace(/\D/g, '');
-    // Aplica a máscara
-    if (valor.length > 5) {
-      valor = valor.replace(/^(\d{2})(\d{3})(\d{3})/, '$1.$2-$3');
-    } else if (valor.length > 2) {
-      valor = valor.replace(/^(\d{2})(\d{0,3})/, '$1.$2');
-    }
-    return valor.slice(0, 10); // Limita ao tamanho máximo
-  }
-
-  const handleEnderecoChange = (e) => {
-    let { name, value } = e.target;
-    if (name === 'cep') {
-      value = formatarCep(value);
-    }
-    setEndereco({ ...endereco, [name]: value });
   };
 
   const handleContinuarParaFrete = async () => {
@@ -231,34 +276,6 @@ const Pagamento = () => {
       return;
     }
     setEtapa(2);
-
-    //   setCarregandoFrete(true);
-    //   const res = await api.post('/frete', {
-    //     cepDestino: cep,
-    //     altura: 4,
-    //     largura: 12,
-    //     comprimento: 17,
-    //     peso: 0.3,
-    //   });
-    //   console.log('cheguei aqui 3');
-    //   console.log('Opções de frete:', res.data);
-    //   setOpcoesFrete(res.data);
-    //   setCarregandoFrete(false);
-    //   setEtapa(2);
-    // } catch (error) {
-    //   setCarregandoFrete(false);
-    //   console.error('Erro ao continuar para a próxima etapa:', error);
-    // }
-    // } else if (etapa === 2) {
-
-    // if (!freteSelecionado) {
-    //   alert('Selecione uma opção de frete!');
-    //   return;
-    // }
-
-    // Aqui você pode salvar o frete selecionado no pedido, se desejar
-    // setEtapa(3);
-    // }
   };
 
   const handleContinuarParaPagamento = () => {
@@ -282,7 +299,6 @@ const Pagamento = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // backgroundColor: 'var(--cor-principal)',
       }}>
       <Box
         sx={{
@@ -290,8 +306,13 @@ const Pagamento = () => {
           minHeight: '80vh',
         }}
       >
-        {/* <Header invisivel /> */}
-        <Paper elevation={3} sx={{ mx: 'auto', p: 3, borderRadius: 3, maxWidth: 1000 }}>
+        <Paper elevation={3} sx={{ 
+          mx: 'auto', 
+          p: { xs: 2, sm: 3 }, 
+          borderRadius: 3, 
+          width: { sm: 1000, xs: '100%' },
+          maxWidth: '100%'
+        }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <Button
               onClick={() => navigate(-1)}
@@ -310,13 +331,11 @@ const Pagamento = () => {
 
             {/* RESUMOS */}
             <Grid size={{ xs: 12, md: 4 }}>
-              <ResumoCarrinho 
+              <ResumoCarrinho
                 quantidadeTotal={quantidadeTotal}
                 valorTotal={valorTotal}
                 valorFrete={valorFrete}
                 subtotal={subtotal}
-              />
-              <DadosUsuario 
                 usuario={usuario}
                 enderecoLinha={enderecoLinha}
               />
@@ -339,16 +358,21 @@ const Pagamento = () => {
                       setEnderecoSelecionado={setEnderecoSelecionado}
                       endereco={endereco}
                     />
-                    
+
                     {!usarEnderecoCadastrado && (
                       <FormularioEndereco
                         endereco={endereco}
                         handleEnderecoChange={handleEnderecoChange}
                         usarEnderecoCadastrado={usarEnderecoCadastrado}
                         handleContinuarParaFrete={handleContinuarParaFrete}
+                        mostrarCamposEndereco={mostrarCamposEndereco}
+                        cepLoading={cepLoading}
+                        cepError={cepError}
+                        handleBuscarCep={handleBuscarCep}
+                        validarCepCompleto={validarCepCompleto}
                       />
                     )}
-                    
+
                     {usarEnderecoCadastrado && (
                       <Grid size={12}>
                         <Button
@@ -384,7 +408,6 @@ const Pagamento = () => {
                   <FormularioPagamento
                     metodo={metodo}
                     setMetodo={setMetodo}
-                    PagamentoCartao={PagamentoCartao}
                     pedidoId={pedidoId}
                     valorTotal={valorTotal}
                     valorFrete={valorFrete}
