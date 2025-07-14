@@ -13,6 +13,12 @@ import {
   Container,
   Button,
   Drawer,
+  useTheme,
+  useMediaQuery,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import Carrossel from '../../components/Carrossel';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -24,6 +30,8 @@ const HomePage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [selectedOcasiao, setSelectedOcasiao] = useState(OCASIOES_PRINCIPAIS[0]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [filtros, setFiltros] = useState({
     categoria: [],
     tamanho: [],
@@ -123,22 +131,59 @@ const HomePage = () => {
           mb: 5,
           p: '1rem 0',
         }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 1, width: '100%', borderBottom: '1px solid var(--cor-detalhes)' }}>
-            {OCASIOES_PRINCIPAIS.map(ocasiao => (
-              <Button
-                key={ocasiao}
-                variant="text"
-                onClick={() => setSelectedOcasiao(ocasiao)}
-                sx={{ 
-                  color: "var(--cor-detalhes)",
-                  fontSize: '1rem',
-                  fontWeight: selectedOcasiao === ocasiao ? '800' : 'normal', 
-                }}
+          {isMobile ? (
+            <FormControl fullWidth variant="outlined" sx={{ 
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'var(--cor-detalhes)',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'var(--cor-detalhes)',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'var(--cor-detalhes)',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'var(--cor-detalhes)',
+              },
+              '& .MuiSelect-icon': {
+                color: 'var(--cor-detalhes)',
+              }
+            }}>
+              <InputLabel id="ocasiao-select-label">Ocasião</InputLabel>
+              <Select
+                labelId="ocasiao-select-label"
+                id="ocasiao-select"
+                value={selectedOcasiao}
+                label="Ocasião"
+                onChange={(e) => setSelectedOcasiao(e.target.value)}
               >
-                {ocasiao.replace(/_/g, ' ')}
-              </Button>
-            ))}
-          </Box>
+                {OCASIOES_PRINCIPAIS.map(ocasiao => (
+                  <MenuItem key={ocasiao} value={ocasiao}>
+                    {ocasiao.replace(/_/g, ' ')}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          ) : (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 1, width: '100%', borderBottom: '1px solid var(--cor-detalhes)' }}>
+              {OCASIOES_PRINCIPAIS.map(ocasiao => (
+                <Button
+                  key={ocasiao}
+                  variant="text"
+                  onClick={() => setSelectedOcasiao(ocasiao)}
+                  sx={{ 
+                    color: "var(--cor-detalhes)",
+                    fontSize: '1rem',
+                    fontWeight: selectedOcasiao === ocasiao ? '800' : 'normal', 
+                  }}
+                >
+                  {ocasiao.replace(/_/g, ' ')}
+                </Button>
+              ))}
+            </Box>
+          )}
         </Box>
 
         {/* FILTROS */}
