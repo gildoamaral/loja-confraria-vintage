@@ -124,11 +124,11 @@ const HomePage = () => {
   return (
     <>
       <Carrossel />
-      <Container maxWidth="xl" sx={{ pt: 5, pb: 10 }}>
+      <Container maxWidth="xl" sx={{ pt: 3, pb: 10 }}>
 
         {/* OCASIOES */}
         <Box sx={{
-          mb: 5,
+          mb: 7,
           p: '1rem 0',
         }}>
           {isMobile ? (
