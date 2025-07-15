@@ -55,10 +55,11 @@ CREATE TABLE `produto_imagens` (
 
 -- CreateTable
 CREATE TABLE `Pedidos` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` VARCHAR(191) NOT NULL,
     `criadoEm` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `status` ENUM('CARRINHO', 'AGUARDANDO_PAGAMENTO', 'PAGO', 'ENVIADO', 'ENTREGUE', 'CANCELADO') NOT NULL DEFAULT 'CARRINHO',
     `usuarioId` INTEGER NOT NULL,
+    `dataFinalizado` DATETIME(3) NULL,
     `enderecoEntrega` VARCHAR(191) NULL,
     `cep` VARCHAR(191) NULL,
     `rua` VARCHAR(191) NULL,
@@ -74,7 +75,7 @@ CREATE TABLE `Pedidos` (
 -- CreateTable
 CREATE TABLE `ItemPedido` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `pedidoId` INTEGER NOT NULL,
+    `pedidoId` VARCHAR(191) NOT NULL,
     `produtoId` VARCHAR(191) NOT NULL,
     `quantidade` INTEGER NOT NULL,
 
@@ -83,8 +84,8 @@ CREATE TABLE `ItemPedido` (
 
 -- CreateTable
 CREATE TABLE `Pagamentos` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `pedidoId` INTEGER NOT NULL,
+    `id` VARCHAR(191) NOT NULL,
+    `pedidoId` VARCHAR(191) NOT NULL,
     `status` ENUM('PENDENTE', 'APROVADO', 'FALHOU') NOT NULL,
     `metodo` ENUM('CARTAO', 'BOLETO', 'PIX') NOT NULL,
     `valor` DOUBLE NOT NULL,

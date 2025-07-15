@@ -5,7 +5,7 @@ import NewInformProduto from "../pages/InformProdutos/NewInformProduto.jsx";
 import Carrinho from '../pages/Carrinho/Carrinho.jsx';
 import Pagamento from '../pages/Pagamento/Pagamento.jsx';
 import ProtectedLayout from '../components/ProtectedLayout';
-import NotFound from "../pages/NotFound/NotFound"; 
+import NotFound from "../pages/NotFound/NotFound";
 import EsqueciSenha from '../pages/ResetSenha/EsqueciSenha.jsx';
 import ResetarSenha from '../pages/ResetSenha/ResetSenha.jsx';
 import AreaAdmin from '../pages/AreaAdmin/AreaAdmin.jsx';
@@ -33,12 +33,12 @@ function AppRoutes() {
         {/* USUÁRIO */}
         <Route element={<ProtectedLayout />}>
           <Route path="/minha-conta" element={<MinhaContaLayout />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path="configuracoes" element={<Configuracoes />} />
-                    <Route path="pedidos" element={<MeusPedidos />} />
-                    <Route path="pedidos/:id" element={<DetalhePedido />} />
-                    <Route path="seguranca" element={<Seguranca />} /> 
-                </Route>
+            <Route index element={<Dashboard />} />
+            <Route path="configuracoes" element={<Configuracoes />} />
+            <Route path="pedidos" element={<MeusPedidos />} />
+            <Route path="pedidos/:id" element={<DetalhePedido />} />
+            <Route path="seguranca" element={<Seguranca />} />
+          </Route>
         </Route>
 
         {/* ADMIN */}

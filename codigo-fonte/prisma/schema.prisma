@@ -74,6 +74,7 @@ model Pedidos {
   usuarioId Int
   pagamento Pagamentos? 
   dataFinalizado  DateTime?
+  codigoRastreio  String?
 
   enderecoEntrega String?
   cep             String?

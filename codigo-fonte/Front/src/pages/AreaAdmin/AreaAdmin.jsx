@@ -5,6 +5,7 @@ import CadastroProdutos from './CadastroProdutos';
 import ListaPedidos from './ListaPedidos';
 import GerenciarCarrossel from './GerenciarCarrossel';
 import NewEstoqueProdutos from './NewEstoqueProdutos';
+import AdminPedidos from './AdminPedidos';
 
 const AreaAdmin = () => {
   const [abaAtiva, setAbaAtiva] = useState("estoque");
@@ -40,7 +41,7 @@ const AreaAdmin = () => {
           </button>
         </div>
 
-        {abaAtiva === "pedidos" && <ListaPedidos />}
+        {abaAtiva === "pedidos" && <AdminPedidos />}
         {abaAtiva === "estoque" && <NewEstoqueProdutos />}
         {abaAtiva === "cadastro" && <CadastroProdutos />}
         {abaAtiva === "carrossel" && <GerenciarCarrossel />}
