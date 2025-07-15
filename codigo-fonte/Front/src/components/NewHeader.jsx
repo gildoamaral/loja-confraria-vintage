@@ -42,26 +42,6 @@ const Navbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // useEffect(() => {
-  //   const fetchNavbarData = async () => {
-  //     try {
-  //       const userStatusResponse = await api.get('/api/auth/status');
-  //       if (userStatusResponse.status === 200) {
-  //         const userData = userStatusResponse.data;
-  //         setUser(userData);
-  //         const cartCountResponse = await api.get('/api/cart/count');
-  //         setCartItemCount(cartCountResponse.data.count);
-  //       }
-  //     } catch (error) {
-  //       console.log('Usuário não autenticado ou erro ao buscar dados: ', error);
-  //       setUser(null);
-  //       setCartItemCount(0);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchNavbarData();
-  // }, []);
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -216,7 +196,7 @@ const Navbar = () => {
                   transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 >
                   <Typography sx={{ p: 1, fontWeight: 'bold' }}>Olá, {usuario.nome}!</Typography>
-                  <MenuItem component={RouterLink} to="/conta" onClick={handleMenuClose}>Minha Conta</MenuItem>
+                  <MenuItem component={RouterLink} to="/minha-conta" onClick={handleMenuClose}>Minha Conta</MenuItem>
                   <MenuItem onClick={handleLogout}>Sair</MenuItem>
                 </Menu>
               </>

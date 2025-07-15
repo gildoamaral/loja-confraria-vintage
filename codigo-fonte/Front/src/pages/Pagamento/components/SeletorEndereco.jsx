@@ -15,7 +15,8 @@ const SeletorEndereco = ({
   enderecoLinha, 
   enderecoSelecionado, 
   setEnderecoSelecionado,
-  endereco 
+  endereco,
+  enderecoUsuario
 }) => {
   
   const handleAlignment = (event, newAlignment) => {
@@ -37,7 +38,7 @@ const SeletorEndereco = ({
         aria-label="Opção de endereço"
         fullWidth
       >
-        <ToggleButton value="cadastrado" disabled={!usuario?.endereco && !enderecoLinha}>
+        <ToggleButton value="cadastrado" disabled={enderecoUsuario.linha && !enderecoLinha}>
           Usar endereço cadastrado
         </ToggleButton>
         <ToggleButton value="novo">
@@ -46,24 +47,24 @@ const SeletorEndereco = ({
       </ToggleButtonGroup>
 
       {/* Opções de endereço só aparecem se usarEnderecoCadastrado for true */}
-      {usarEnderecoCadastrado && (usuario?.endereco || enderecoLinha) && (
+      {usarEnderecoCadastrado && (enderecoUsuario.linha || enderecoLinha) && (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, my: 2, flexWrap: 'wrap' }}>
           {/* Endereço do Usuário */}
-          {usuario?.endereco && (
+          {enderecoUsuario.linha && (
             <Paper
-              elevation={enderecoSelecionado?.linha === usuario.endereco ? 6 : 1}
+              elevation={enderecoSelecionado?.linha === enderecoUsuario.linha ? 6 : 1}
               sx={{
                 p: 2,
                 cursor: 'pointer',
-                border: enderecoSelecionado?.linha === usuario.endereco ? '2px solid #1976d2' : '1px solid #ccc',
-                background: enderecoSelecionado?.linha === usuario.endereco ? '#e3f2fd' : '#fff',
+                border: enderecoSelecionado?.linha === enderecoUsuario.linha ? '2px solid #1976d2' : '1px solid #ccc',
+                background: enderecoSelecionado?.linha === enderecoUsuario.linha ? '#e3f2fd' : '#fff',
                 '&:hover': {
                   background: '#e3f2fd',
                 },
               }}
               onClick={() => {
                 setEnderecoSelecionado({
-                  linha: usuario.endereco,
+                  linha: enderecoUsuario.linha,
                   dados: {
                     rua: usuario.rua || '',
                     numero: usuario.numero || '',
@@ -77,14 +78,14 @@ const SeletorEndereco = ({
               }}
             >
               <Typography variant="body2" fontWeight={700}>Endereço do Cadastro</Typography>
-              <Typography variant="body2">{usuario.endereco}</Typography>
+              <Typography variant="body2">{enderecoUsuario.linha}</Typography>
             </Paper>
           )}
 
           {/* Endereço do Pedido */}
-          {enderecoLinha && (!usuario?.endereco || enderecoLinha !== usuario.endereco) && (
+          {enderecoLinha && (!enderecoUsuario.linha || enderecoLinha !== enderecoUsuario.linha) && (
             <Paper
-              elevation={enderecoSelecionado?.linha !== usuario.endereco ? 6 : 1}
+              elevation={enderecoSelecionado?.linha !== enderecoUsuario.linha ? 6 : 1}
               sx={{
                 p: 2,
                 cursor: 'pointer',
@@ -109,7 +110,7 @@ const SeletorEndereco = ({
       )}
 
       {/* Mensagem se nenhum endereço */}
-      {usarEnderecoCadastrado && !usuario?.endereco && !enderecoLinha && (
+      {usarEnderecoCadastrado && !enderecoUsuario.linha && !enderecoLinha && (
         <Typography variant="caption" color="error">
           Nenhum endereço cadastrado.
         </Typography>

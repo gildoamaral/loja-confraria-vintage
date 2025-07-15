@@ -15,6 +15,12 @@ import AreaAdmin from '../pages/AreaAdmin/AreaAdmin.jsx';
 import Sobre from '../pages/Sobre/Sobre.jsx';
 import MainLayout from '../components/MainLayout.jsx';
 import HomePage from '../pages/Home/HomePage.jsx';
+import MinhaContaLayout from '../pages/Conta/MinhaContaLayout.jsx';
+import Dashboard from '../pages/Conta/Dashboard.jsx';
+import Configuracoes from '../pages/Conta/Configuracoes.jsx';
+import DetalhePedido from '../pages/Conta/DetalhePedidos.jsx';
+import MeusPedidos from '../pages/Conta/MeusPedidos.jsx';
+import Seguranca from '../pages/Conta/Seguranca.jsx';
 
 function AppRoutes() {
   return (
@@ -30,6 +36,14 @@ function AppRoutes() {
         {/* USUÁRIO */}
         <Route element={<ProtectedLayout />}>
           <Route path="/conta" element={<Conta />} />
+          <Route path="/minha-conta" element={<MinhaContaLayout />}>
+                    <Route index element={<Dashboard />} />
+                    {/* Futuras rotas entrarão aqui */}
+                    <Route path="configuracoes" element={<Configuracoes />} />
+                    <Route path="pedidos" element={<MeusPedidos />} />
+                    <Route path="pedidos/:id" element={<DetalhePedido />} />
+                    <Route path="seguranca" element={<Seguranca />} /> 
+                </Route>
         </Route>
 
         {/* ADMIN */}

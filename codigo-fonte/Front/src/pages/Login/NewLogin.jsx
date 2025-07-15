@@ -49,7 +49,7 @@ const Login = () => {
               </Link>
             </Grid>
             <Grid>
-              <Link to="/cadastro" style={{ textDecoration: 'none' }}>
+              <Link to="/cadastro-usuario" style={{ textDecoration: 'none' }}>
                 <Typography variant="body2" color="primary">{"Não tem uma conta? Cadastre-se"}</Typography>
               </Link>
             </Grid>

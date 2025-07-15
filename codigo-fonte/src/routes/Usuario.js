@@ -251,4 +251,94 @@ router.post('/resetar-senha', async (req, res) => {
   res.json({ message: 'Senha redefinida com sucesso' });
 });
 
+// ROTA: /api/usuarios/dashboard
+router.get("/dashboard", auth, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const [usuario, ultimoPedido] = await prisma.$transaction([
+      prisma.usuarios.findUnique({
+        where: { id: userId },
+        select: { nome: true },
+      }),
+      prisma.pedidos.findFirst({
+        where: {
+          usuarioId: userId,
+          // ADICIONE ESTE FILTRO
+          NOT: {
+            status: 'CARRINHO',
+          },
+        },
+        orderBy: {
+          dataFinalizado: "desc",
+        },
+        select: {
+          id: true,
+          status: true,
+        },
+      }),
+    ]);
+
+    if (!usuario) {
+      return res.status(404).json({ msg: "Usuário não encontrado." });
+    }
+
+    res.status(200).json({
+      nomeUsuario: usuario.nome,
+      ultimoPedido: ultimoPedido || null,
+    });
+  } catch (error) {
+    console.error("Erro ao buscar dados do dashboard:", error);
+    res.status(500).json({ msg: "Erro no servidor." });
+  }
+});
+
+
+// DESC: Altera a senha do usuário autenticado
+router.post('/alterar-senha', auth, async (req, res) => {
+  const { senhaAtual, novaSenha } = req.body;
+  const usuarioId = req.user.userId; // Usando a convenção que definimos
+
+  if (!senhaAtual || !novaSenha) {
+    return res.status(400).json({ message: 'Por favor, preencha todos os campos.' });
+  }
+
+  try {
+    // 1. Buscar o usuário no banco para pegar a senha hasheada
+    const usuario = await prisma.usuarios.findUnique({
+      where: { id: usuarioId },
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+
+    // 2. Comparar a senha atual fornecida com a senha armazenada
+    const senhaCorreta = await bcrypt.compare(senhaAtual, usuario.senha);
+
+    if (!senhaCorreta) {
+      return res.status(401).json({ message: 'A senha atual está incorreta.' });
+    }
+
+    // 3. Hashear a nova senha
+    const salt = await bcrypt.genSalt(12);
+    const novaSenhaHash = await bcrypt.hash(novaSenha, salt);
+
+    // 4. Atualizar o usuário com a nova senha hasheada
+    await prisma.usuarios.update({
+      where: { id: usuarioId },
+      data: {
+        senha: novaSenhaHash,
+      },
+    });
+
+    res.status(200).json({ message: 'Senha alterada com sucesso!' });
+
+  } catch (error) {
+    console.error('Erro ao alterar senha:', error);
+    res.status(500).json({ message: 'Erro no servidor ao tentar alterar a senha.' });
+  }
+});
+
 module.exports = router;
+

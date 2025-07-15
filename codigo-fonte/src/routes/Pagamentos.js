@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 // Nova rota para buscar pagamento por pedidoId
 router.get('/por-pedido/:pedidoId', async (req, res) => {
   const pedidoId = Number(req.params.pedidoId);
-  
+
   if (!pedidoId) {
     return res.status(400).json({ error: "Pedido ID inválido" });
   }
@@ -171,7 +171,10 @@ router.post('/criar-cartao', async (req, res) => {
 
           const novoPedido = await prisma.pedidos.update({
             where: { id: req.body.pedidoId },
-            data: { status: 'PAGO' }
+            data: {
+              status: 'PAGO',
+              dataFinalizado: new Date() // <-- ADICIONADO AQUI
+            }
           });
           console.log('PAGAMENTO APROVADO! ', novoPedido);
           res.status(201).json({ status: 'success', message: 'Pagamento aprovado!', pagamento });
@@ -182,7 +185,10 @@ router.post('/criar-cartao', async (req, res) => {
 
           await prisma.pedidos.update({
             where: { id: req.body.pedidoId },
-            data: { status: 'AGUARDANDO_PAGAMENTO' }
+            data: { 
+              status: 'AGUARDANDO_PAGAMENTO',
+              dataFinalizado: new Date() // <-- ADICIONADO AQUI
+             }
           });
 
           res.status(201).json({ status: 'pending', message: 'Pagamento em processamento.', pagamento });

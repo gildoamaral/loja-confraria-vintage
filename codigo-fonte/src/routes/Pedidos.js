@@ -87,7 +87,7 @@ router.put('/finalizar/:pedidoId', async (req, res) => {
 
   try {
     const pedido = await prisma.pedidos.update({
-      where: { id: parseInt(pedidoId) },
+      where: { id: pedidoId },
       data: { status: 'AGUARDANDO_PAGAMENTO' },
     });
 
@@ -174,7 +174,7 @@ router.put('/endereco/:pedidoId', async (req, res) => {
   try {
     // Atualiza o endereço do pedido
     const pedido = await prisma.pedidos.update({
-      where: { id: parseInt(pedidoId) },
+      where: { id: pedidoId },
       data: enderecoFields,
     });
 
@@ -246,23 +246,71 @@ router.put('/item/:id', async (req, res) => {
 
 // Buscar todos os pedidos do usuário autenticado
 router.get('/', auth, async (req, res) => {
-  const usuarioId = req.user.userId;
+  const usuarioId = req.user.userId; // Corrigido para req.user.id
   try {
     const pedidos = await prisma.pedidos.findMany({
-      where: { usuarioId },
-      include: {
-        itens: {
-          include: {
-            produto: true, // inclui todos os campos do produto, incluindo preco e imagem
+      where: {
+        usuarioId,
+        NOT: {
+          status: 'CARRINHO' // Exclui os carrinhos
+        }
+      },
+      select: { // Seleciona apenas o necessário para a lista
+        id: true,
+        status: true,
+        dataFinalizado: true,
+        pagamento: {
+          select: {
+            valor: true
           }
         }
       },
-      orderBy: { criadoEm: 'desc' }
+      orderBy: { dataFinalizado: 'desc' } // Ordena pela data de finalização
     });
     res.json(pedidos);
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: 'Erro ao buscar pedidos do usuário' });
+  }
+});
+
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const usuarioId = req.user.userId; // Corrigido para req.user.id
+    const pedidoId = req.params.id;
+
+    const pedido = await prisma.pedidos.findUnique({
+      where: {
+        id: pedidoId,
+        usuarioId: usuarioId, // Garante que o usuário só pode ver seus próprios pedidos
+      },
+      include: {
+        pagamento: true,
+        itens: {
+          include: {
+            produto: {
+              include: {
+                imagens: {
+                  take: 1,
+                  orderBy: { posicao: 'asc' },
+                  select: { urls: true }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!pedido || pedido.status === 'CARRINHO') {
+      return res.status(404).json({ msg: 'Pedido não encontrado ou não pertence a este usuário.' });
+    }
+
+    res.status(200).json(pedido);
+
+  } catch (error) {
+    console.error('Erro ao buscar detalhes do pedido:', error);
+    res.status(500).json({ msg: 'Erro no servidor.' });
   }
 });
 

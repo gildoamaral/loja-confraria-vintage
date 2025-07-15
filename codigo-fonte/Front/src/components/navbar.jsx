@@ -72,15 +72,12 @@ function Navbar({ invisivel }) {
   const menuLinks = [
     { to: "/", label: "Home" },
     ...(logado && usuario?.posicao === 'ADMIN'
-      ? [
-        { to: "/estoque", label: "Estoque" },
-        { to: "/cadastro-produto", label: "Cadastro" },
-        { to: "/pedidos", label: "Pedidos" },
-      ]
+      ? 
+        { to: "/admin", label: "administração" }
       : []),
     ...(logado
       ? [
-        { to: "/conta", label: "Conta" },
+        { to: "/minha-conta", label: "Conta" },
         { to: "/login", label: "Logout", onClick: handleLogout },
       ]
       : [{ to: "/login", label: "Login" }]),

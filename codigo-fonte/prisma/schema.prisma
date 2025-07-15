@@ -54,6 +54,8 @@ model produtos {
   itensPedido ItemPedido[]
 }
 
+
+
 model ProdutoImagem {
   id        String   @id @default(uuid())
   urls      Json     // large, medium, thumbnail
@@ -66,11 +68,12 @@ model ProdutoImagem {
 }
 
 model Pedidos {
-  id        Int          @id @default(autoincrement())
+  id        String          @id @default(uuid())
   criadoEm  DateTime     @default(now())
   status    StatusPedido @default(CARRINHO)
   usuarioId Int
   pagamento Pagamentos? 
+  dataFinalizado  DateTime?
 
   enderecoEntrega String?
   cep             String?
@@ -87,7 +90,7 @@ model Pedidos {
 
 model ItemPedido {
   id         Int    @id @default(autoincrement())
-  pedidoId   Int
+  pedidoId   String
   produtoId  String
   quantidade Int
 
@@ -96,8 +99,8 @@ model ItemPedido {
 }
 
 model Pagamentos {
-  id       Int             @id @default(autoincrement())
-  pedidoId Int             @unique
+  id       String             @id @default(uuid())
+  pedidoId String          @unique
   status   StatusPagamento
   metodo   MetodoPagamento
   valor    Float

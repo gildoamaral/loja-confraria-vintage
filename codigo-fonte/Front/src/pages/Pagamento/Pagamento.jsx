@@ -39,6 +39,7 @@ const Pagamento = () => {
   const quantidadeTotal = location.state?.quantidadeTotal;
   const [pedidoId, setPedidoId] = useState(null);
   const [usuario, setUsuario] = useState(null);
+  const [enderecoUsuario, setEnderecoUsuario] = useState(null);
   const [usarEnderecoCadastrado, setUsarEnderecoCadastrado] = useState(true);
   const [enderecoLinha, setEnderecoLinha] = useState("");
   const [endereco, setEndereco] = useState({});
@@ -109,6 +110,16 @@ const Pagamento = () => {
       try {
         const res = await api.get('/usuarios/conta');
         setUsuario(res.data);
+        setEnderecoUsuario({
+          rua: res.data.rua || '',
+          numero: res.data.numero || '',
+          complemento: res.data.complemento || '',
+          bairro: res.data.bairro || '',
+          cidade: res.data.cidade || '',
+          estado: res.data.estado || '',
+          cep: res.data.cep || '',
+          linha: `${res.data.rua || ''}, ${res.data.numero || ''}${res.data.complemento ? `, ${res.data.complemento}` : ''}, ${res.data.bairro || ''}, ${res.data.cidade || ''} - ${res.data.estado || ''}, CEP: ${res.data.cep || ''}`
+        });
 
 
       } catch (err) {
@@ -143,7 +154,7 @@ const Pagamento = () => {
     fetchPedidoCarrinho();
 
   }, []);
-
+  
   useEffect(() => {
     if (valorTotal === undefined || quantidadeTotal === undefined) {
       navigate('/carrinho', { replace: true });
@@ -357,6 +368,7 @@ const Pagamento = () => {
                       enderecoSelecionado={enderecoSelecionado}
                       setEnderecoSelecionado={setEnderecoSelecionado}
                       endereco={endereco}
+                      enderecoUsuario={enderecoUsuario}
                     />
 
                     {!usarEnderecoCadastrado && (
