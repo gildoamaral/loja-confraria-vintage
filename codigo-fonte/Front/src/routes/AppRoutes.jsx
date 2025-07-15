@@ -1,10 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import Login from "../pages/Login/Login.jsx";
 import NewLogin from "../pages/Login/NewLogin.jsx";
 import CadastroUsuario from "../pages/Cadastro/NewCadastroUsuario.jsx";
-import InformProduto from "../pages/InformProdutos/InformProduto.jsx";
 import NewInformProduto from "../pages/InformProdutos/NewInformProduto.jsx";
-import Conta from "../pages/Conta/Conta.jsx";
 import Carrinho from '../pages/Carrinho/Carrinho.jsx';
 import Pagamento from '../pages/Pagamento/Pagamento.jsx';
 import ProtectedLayout from '../components/ProtectedLayout';
@@ -35,10 +32,8 @@ function AppRoutes() {
 
         {/* USUÁRIO */}
         <Route element={<ProtectedLayout />}>
-          <Route path="/conta" element={<Conta />} />
           <Route path="/minha-conta" element={<MinhaContaLayout />}>
                     <Route index element={<Dashboard />} />
-                    {/* Futuras rotas entrarão aqui */}
                     <Route path="configuracoes" element={<Configuracoes />} />
                     <Route path="pedidos" element={<MeusPedidos />} />
                     <Route path="pedidos/:id" element={<DetalhePedido />} />

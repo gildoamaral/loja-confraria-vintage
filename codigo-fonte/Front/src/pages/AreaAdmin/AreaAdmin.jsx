@@ -2,7 +2,6 @@ import { useState } from "react";
 import styles from "./ListaPedidos.module.css";
 import PageContainer from '../../components/PageContainer';
 import CadastroProdutos from './CadastroProdutos';
-import EstoqueProdutos from './EstoqueProdutos';
 import ListaPedidos from './ListaPedidos';
 import GerenciarCarrossel from './GerenciarCarrossel';
 import NewEstoqueProdutos from './NewEstoqueProdutos';
