@@ -159,7 +159,7 @@ const MeusPedidos = () => {
                         size="small"
                       />
                       <Typography variant="h6" color="success.main">
-                        {pedido.pagamento?.valor.toLocaleString('pt-BR', { 
+                        {pedido.pagamento?.valorTotal.toLocaleString('pt-BR', { 
                           style: 'currency', 
                           currency: 'BRL' 
                         })}

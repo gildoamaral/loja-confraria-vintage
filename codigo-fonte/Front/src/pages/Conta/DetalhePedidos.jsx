@@ -139,7 +139,7 @@ const DetalhePedido = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography color="text.secondary">Total Pago:</Typography>
                   <Typography variant="h6" color="success.main">
-                    {pagamento?.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    {pagamento?.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

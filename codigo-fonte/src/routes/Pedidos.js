@@ -99,13 +99,13 @@ router.put('/finalizar/:pedidoId', async (req, res) => {
 
 // Criar Pagamento
 router.post('/pagamento', async (req, res) => {
-  const { pedidoId, valor, metodo } = req.body;
+  const { pedidoId, valorTotal, metodo } = req.body;
 
   try {
     const pagamento = await prisma.pagamentos.create({
       data: {
         pedidoId,
-        valor,
+        valorTotal,
         metodo,
         status: 'PENDENTE',
       },
@@ -261,7 +261,7 @@ router.get('/', auth, async (req, res) => {
         dataFinalizado: true,
         pagamento: {
           select: {
-            valor: true
+            valorTotal: true
           }
         }
       },
