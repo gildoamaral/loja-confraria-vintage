@@ -325,6 +325,8 @@ router.post('/criar-cartao', async (req, res) => {
       })
       .catch((error) => {
         console.log('ERRO na criação do pagamento: ', error);
+        console.log('ERRO na criação do pagamento: ', error.cause);
+        console.log('ERRO na criação do pagamento: ', error.cause[0]);
         res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error });
       });
 
