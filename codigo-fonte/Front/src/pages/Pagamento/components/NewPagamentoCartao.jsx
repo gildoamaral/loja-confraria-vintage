@@ -70,11 +70,11 @@ const PagamentoCartao = (props) => {
             .then(response => {
               if (response.data.status === 'pending') {
                 alert("Pagamento em processamento. Aguardando confirmação.");
-                navigate('/conta');
+                navigate('/minha-conta');
               }
               if (response.data.status === 'success') {
                 alert("Pagamento realizado com sucesso!");
-                navigate('/conta');
+                navigate('/minha-conta');
               }
             })
             .catch(error => {

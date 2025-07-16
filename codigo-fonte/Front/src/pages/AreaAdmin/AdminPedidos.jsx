@@ -140,7 +140,7 @@ const AdminPedidos = () => {
                 <TableCell>{new Date(pedido.dataFinalizado).toLocaleDateString('pt-BR')}</TableCell>
                 <TableCell>{`${pedido.usuario.nome} ${pedido.usuario.sobrenome}`}</TableCell>
                 <TableCell align="right">
-                  {pedido.pagamento?.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  {pedido.pagamento?.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </TableCell>
                 <TableCell align="center">
                   <Chip

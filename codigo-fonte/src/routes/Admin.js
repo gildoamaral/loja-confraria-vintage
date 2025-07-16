@@ -27,7 +27,7 @@ router.get('/pedidos', authAdmin, async (req, res) => {
             select: { nome: true, sobrenome: true },
           },
           pagamento: {
-            select: { valor: true },
+            select: { valorTotal: true },
           },
         },
         orderBy: {
@@ -44,7 +44,7 @@ router.get('/pedidos', authAdmin, async (req, res) => {
       totalPages: Math.ceil(total / limit),
       currentPage: page,
     });
-
+ 
   } catch (error) {
     console.error('Erro ao buscar pedidos para o painel de admin:', error);
     res.status(500).json({ msg: 'Erro no servidor.' });

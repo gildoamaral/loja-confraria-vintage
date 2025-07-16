@@ -88,10 +88,11 @@ model Pedidos {
 }
 
 model ItemPedido {
-  id         Int    @id @default(autoincrement())
-  pedidoId   String
-  produtoId  String
-  quantidade Int
+  id            Int    @id @default(autoincrement())
+  pedidoId      String
+  produtoId     String
+  quantidade    Int
+  precoUnitario Float?
 
   pedido  Pedidos  @relation(fields: [pedidoId], references: [id])
   produto produtos @relation(fields: [produtoId], references: [id], onDelete: Cascade)
@@ -102,9 +103,17 @@ model Pagamentos {
   pedidoId String          @unique
   status   StatusPagamento
   metodo   MetodoPagamento
-  valor    Float
+
+  valorProdutos         Float // Subtotal de todos os itens (soma de ItemPedido.precoUnitario * quantidade)
+  valorFrete            Float
+  valorTaxaCartao       Float? // Taxa base cobrada pelo gateway (ex: 1.99%)
+  valorTaxaParcelamento Float? // Custo adicional das parcelas
+  descontos             Float? // Valor de cupons, se houver
+  valorTotal            Float // A soma final que o cliente pagou (valorProdutos + frete + taxas - descontos)
+
   parcelas Int?
-  criadoEm DateTime        @default(now())
+  gatewayTransactionId    String?  // ID da transação no Mercado Pago, para reconciliação
+  criadoEm DateTime @default(now())
 
   pedido Pedidos @relation(fields: [pedidoId], references: [id])
 }
