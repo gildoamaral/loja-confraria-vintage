@@ -1,32 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Paper, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Chip, CircularProgress, Alert, IconButton, Menu, MenuItem, ListItemIcon, ListItemText
+  TableHead, TableRow, Chip, CircularProgress, Alert, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Pagination
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { getAdminPedidos, updatePedidoStatus } from '../../services/adminService';
+import { getAdminPedidos, updatePedidoStatus, getAdminPedidoDetalhes } from '../../services/adminService';
 import AtualizarStatusDialog from './components/AtualizarStatusDialog';
-// Supondo que você também terá um dialog de detalhes
-// import DetalhesPedidoDialog from './components/DetalhesPedidoDialog'; 
+import DetalhesPedidoDialog from './components/DetalhesPedidoDialog';
 
 const AdminPedidos = () => {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
+  // Novos estados para paginação
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const [detalhesDialogOpen, setDetalhesDialogOpen] = useState(false);
+  const [pedidoDetalhado, setPedidoDetalhado] = useState(null);
+  const [loadingDetalhes, setLoadingDetalhes] = useState(false);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  // const [detalhesDialogOpen, setDetalhesDialogOpen] = useState(false); // Para o futuro modal de detalhes
 
-  const fetchPedidos = async () => {
+  // A função fetch agora depende da página
+  const fetchPedidos = async (currentPage) => {
     setLoading(true);
     try {
-      const data = await getAdminPedidos();
-      setPedidos(data);
+      const data = await getAdminPedidos(currentPage);
+      setPedidos(data.pedidos);
+      setTotalPages(data.totalPages);
     } catch (err) {
       setError(err.toString());
     } finally {
@@ -34,49 +42,43 @@ const AdminPedidos = () => {
     }
   };
 
+  // useEffect agora observa a variável 'page'
   useEffect(() => {
-    fetchPedidos();
-  }, []);
+    fetchPedidos(page);
+  }, [page]);
 
-  const handleMenuClick = (event, pedido) => {
-    setAnchorEl(event.currentTarget);
-    setPedidoSelecionado(pedido);
+  // Função para lidar com a mudança de página
+  const handlePageChange = (event, value) => {
+    setPage(value);
   };
 
-  // CORREÇÃO 1: Apenas fecha o menu, não limpa o pedido
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleOpenDialog = () => {
+  const handleOpenDetalhesDialog = async (pedido) => {
     handleMenuClose();
-    setDialogOpen(true);
-  };
-
-  // CORREÇÃO 2: Limpa o pedido selecionado APÓS fechar o diálogo
-  const handleCloseDialog = () => {
-    setDialogOpen(false);
-    setPedidoSelecionado(null);
-  };
-
-  const handleUpdate = async (dados) => {
-    if (!pedidoSelecionado) return;
+    setLoadingDetalhes(true);
+    setDetalhesDialogOpen(true);
     try {
-      await updatePedidoStatus(pedidoSelecionado.id, dados);
-      fetchPedidos(); // Recarrega a lista
-    } catch (updateError) {
-      console.error(updateError);
-      setError('Falha ao atualizar o pedido.');
+      // Busca os detalhes mais recentes do pedido na API
+      const data = await getAdminPedidoDetalhes(pedido.id);
+      setPedidoDetalhado(data);
+    } catch {
+      setError("Falha ao carregar detalhes do pedido.");
     } finally {
-        handleMenuClose(); // Fecha o menu de ações
-        setPedidoSelecionado(null); // Limpa a seleção
+      setLoadingDetalhes(false);
     }
   };
-  
-  const handleConfirmUpdateEnviado = async (dados) => {
-    await handleUpdate(dados);
-    handleCloseDialog();
+
+  const handleCloseDetalhesDialog = () => {
+    setDetalhesDialogOpen(false);
+    setPedidoDetalhado(null); // Limpa os dados ao fechar
   };
+
+  const handleMenuClick = (event, pedido) => { setAnchorEl(event.currentTarget); setPedidoSelecionado(pedido); };
+  const handleMenuClose = () => { setAnchorEl(null); };
+  const handleOpenDialog = () => { handleMenuClose(); setDialogOpen(true); };
+  const handleCloseDialog = () => { setDialogOpen(false); setPedidoSelecionado(null); };
+  const handleUpdate = async (dados) => { if (!pedidoSelecionado) return; try { await updatePedidoStatus(pedidoSelecionado.id, dados); fetchPedidos(page); } catch (updateError) { console.error(updateError); setError('Falha ao atualizar o pedido.'); } finally { handleMenuClose(); setPedidoSelecionado(null); } };
+  const handleConfirmUpdateEnviado = async (dados) => { await handleUpdate(dados); handleCloseDialog(); };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'PAGO':
@@ -86,7 +88,7 @@ const AdminPedidos = () => {
       case 'ENVIADO':
         return 'info';
       case 'ENTREGUE':
-          return 'primary'
+        return 'primary'
       case 'CANCELADO':
         return 'error';
       default:
@@ -94,7 +96,7 @@ const AdminPedidos = () => {
     }
   };
 
- if (loading && pedidos.length === 0) {
+  if (loading && pedidos.length === 0) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
@@ -113,9 +115,11 @@ const AdminPedidos = () => {
       </Typography>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="tabela de pedidos">
+
           <TableHead>
             <TableRow>
               <TableCell>Pedido ID</TableCell>
+              <TableCell>Rastreio</TableCell>
               <TableCell>Data</TableCell>
               <TableCell>Cliente</TableCell>
               <TableCell align="right">Valor Total</TableCell>
@@ -123,11 +127,15 @@ const AdminPedidos = () => {
               <TableCell align="center">Ações</TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
             {pedidos.map((pedido) => (
               <TableRow key={pedido.id}>
                 <TableCell component="th" scope="row">
                   #{pedido.id}
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  {pedido.codigoRastreio}
                 </TableCell>
                 <TableCell>{new Date(pedido.dataFinalizado).toLocaleDateString('pt-BR')}</TableCell>
                 <TableCell>{`${pedido.usuario.nome} ${pedido.usuario.sobrenome}`}</TableCell>
@@ -135,14 +143,13 @@ const AdminPedidos = () => {
                   {pedido.pagamento?.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </TableCell>
                 <TableCell align="center">
-                  <Chip 
-                    label={pedido.status.replace('_', ' ')} 
+                  <Chip
+                    label={pedido.status.replace('_', ' ')}
                     color={getStatusColor(pedido.status)}
                     size="small"
                   />
                 </TableCell>
                 <TableCell align="center">
-                  {/* CORREÇÃO 3: Desabilita o botão para status finais */}
                   <IconButton
                     aria-label="ações"
                     onClick={(event) => handleMenuClick(event, pedido)}
@@ -154,22 +161,33 @@ const AdminPedidos = () => {
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </TableContainer>
+
+      {/* COMPONENTE DE PAGINAÇÃO */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, p: 2 }}>
+        {totalPages > 0 && (
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+          />
+        )}
+      </Box>
 
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        {/* CORREÇÃO 4: LÓGICA DE MENU EXPANDIDA */}
-        
+
         {/* Ação: Ver Detalhes (sempre disponível se o menu estiver aberto) */}
-{/*         
-        <MenuItem onClick={() => {  handleMenuClose(); }}>
-            <ListItemIcon><VisibilityIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Ver Detalhes</ListItemText>
-        </MenuItem> */}
+        <MenuItem onClick={() => handleOpenDetalhesDialog(pedidoSelecionado)}>
+          <ListItemIcon><VisibilityIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>Ver Detalhes</ListItemText>
+        </MenuItem>
 
         {/* Ação: Marcar como Enviado */}
         {pedidoSelecionado?.status === 'PAGO' && (
@@ -178,7 +196,7 @@ const AdminPedidos = () => {
             <ListItemText>Marcar como Enviado</ListItemText>
           </MenuItem>
         )}
-        
+
         {/* Ação: Marcar como Entregue */}
         {pedidoSelecionado?.status === 'ENVIADO' && (
           <MenuItem onClick={() => handleUpdate({ status: 'ENTREGUE' })}>
@@ -193,6 +211,11 @@ const AdminPedidos = () => {
         onClose={handleCloseDialog}
         pedido={pedidoSelecionado}
         onConfirm={handleConfirmUpdateEnviado}
+      />
+      <DetalhesPedidoDialog
+        open={detalhesDialogOpen}
+        onClose={handleCloseDetalhesDialog}
+        pedido={loadingDetalhes ? null : pedidoDetalhado} // Mostra o diálogo apenas com os dados prontos
       />
     </Box>
   );

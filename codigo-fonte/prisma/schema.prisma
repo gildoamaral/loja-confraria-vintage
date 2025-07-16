@@ -38,9 +38,9 @@ model Usuarios {
 }
 
 model produtos {
-  id               String    @id @default(cuid())
+  id               String          @id @default(cuid())
   nome             String
-  descricao        String    @db.VarChar(500)
+  descricao        String          @db.VarChar(500)
   preco            Float
   quantidade       Int
   cor              Cor
@@ -48,19 +48,17 @@ model produtos {
   categoria        Categoria
   ocasiao          Ocasiao?
   precoPromocional Float?
-  ativo            Boolean   @default(true)
-  imagens          ProdutoImagem[] 
+  ativo            Boolean         @default(true)
+  imagens          ProdutoImagem[]
 
   itensPedido ItemPedido[]
 }
 
-
-
 model ProdutoImagem {
-  id        String   @id @default(uuid())
-  urls      Json     // large, medium, thumbnail
-  posicao   Int      @default(0) 
-  
+  id      String @id @default(uuid())
+  urls    Json // large, medium, thumbnail
+  posicao Int    @default(0)
+
   produtoId String
   produto   produtos @relation(fields: [produtoId], references: [id], onDelete: Cascade)
 
@@ -68,13 +66,13 @@ model ProdutoImagem {
 }
 
 model Pedidos {
-  id        String          @id @default(uuid())
-  criadoEm  DateTime     @default(now())
-  status    StatusPedido @default(CARRINHO)
-  usuarioId Int
-  pagamento Pagamentos? 
-  dataFinalizado  DateTime?
-  codigoRastreio  String?
+  id             String       @id @default(uuid())
+  criadoEm       DateTime     @default(now())
+  status         StatusPedido @default(CARRINHO)
+  usuarioId      Int
+  pagamento      Pagamentos?
+  dataFinalizado DateTime?
+  codigoRastreio String?
 
   enderecoEntrega String?
   cep             String?
@@ -100,7 +98,7 @@ model ItemPedido {
 }
 
 model Pagamentos {
-  id       String             @id @default(uuid())
+  id       String          @id @default(uuid())
   pedidoId String          @unique
   status   StatusPagamento
   metodo   MetodoPagamento
@@ -112,13 +110,13 @@ model Pagamentos {
 }
 
 model CarrosselImagem {
-  id        String   @id @default(uuid())
-  urls      Json     
-  posicao   Int      @default(0) 
-  ativo     Boolean  @default(true) 
-  link      String? 
-  
-  createdAt DateTime @default(now()) 
+  id      String  @id @default(uuid())
+  urls    Json
+  posicao Int     @default(0)
+  ativo   Boolean @default(true)
+  link    String?
+
+  createdAt DateTime @default(now())
 
   @@map("carrossel_imagens")
 }

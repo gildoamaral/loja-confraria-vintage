@@ -6,38 +6,45 @@ const prisma = new PrismaClient();
 const router = express.Router();
 
 // ROTA: GET /api/admin/pedidos
-// DESC: Retorna uma lista de todos os pedidos que necessitam de ação (não são carrinhos)
-// ACESSO: Restrito a Administradores
 router.get('/pedidos', authAdmin, async (req, res) => {
   try {
-    const pedidos = await prisma.pedidos.findMany({
-      where: {
-        // Filtra para mostrar apenas pedidos que já saíram da fase de carrinho
-        NOT: {
-          status: 'CARRINHO',
-        },
+    const page = parseInt(req.query.page || '1', 10);
+    const limit = 10; // Itens por página
+    const skip = (page - 1) * limit;
+
+    const whereClause = {
+      NOT: {
+        status: 'CARRINHO',
       },
-      include: {
-        // Inclui o nome do usuário em cada pedido para fácil identificação
-        usuario: {
-          select: {
-            nome: true,
-            sobrenome: true,
+    };
+
+    // Usamos uma transação para pegar os pedidos da página E o número total de pedidos
+    const [pedidos, total] = await prisma.$transaction([
+      prisma.pedidos.findMany({
+        where: whereClause,
+        include: {
+          usuario: {
+            select: { nome: true, sobrenome: true },
+          },
+          pagamento: {
+            select: { valor: true },
           },
         },
-        pagamento: {
-            select: {
-                valor: true
-            }
-        }
-      },
-      orderBy: {
-        // Ordena para que os pedidos mais recentes apareçam primeiro
-        dataFinalizado: 'desc',
-      },
+        orderBy: {
+          dataFinalizado: 'desc',
+        },
+        take: limit, // Pega apenas 10
+        skip: skip,  // Pula os itens das páginas anteriores
+      }),
+      prisma.pedidos.count({ where: whereClause }),
+    ]);
+
+    res.status(200).json({
+      pedidos,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
     });
 
-    res.status(200).json(pedidos);
   } catch (error) {
     console.error('Erro ao buscar pedidos para o painel de admin:', error);
     res.status(500).json({ msg: 'Erro no servidor.' });
@@ -76,6 +83,53 @@ router.patch('/pedidos/:id/status', authAdmin, async (req, res) => {
     if (error.code === 'P2025') {
         return res.status(404).json({ msg: `Pedido com ID ${id} não encontrado.` });
     }
+    res.status(500).json({ msg: 'Erro no servidor.' });
+  }
+});
+
+// ROTA: GET /api/admin/pedidos/:id
+// DESC: Retorna todos os detalhes de um pedido específico para o admin
+// ACESSO: Restrito a Administradores
+router.get('/pedidos/:id', authAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pedido = await prisma.pedidos.findUnique({
+      where: { id: id },
+      include: {
+        // Inclui todas as informações do cliente
+        usuario: true,
+        // Inclui os detalhes do pagamento
+        pagamento: true,
+        // Inclui a lista de itens do pedido
+        itens: {
+          include: {
+            // Para cada item, inclui os detalhes completos do produto
+            produto: {
+              include: {
+                imagens: {
+                  take: 1, // Pega apenas a primeira imagem para exibição
+                  orderBy: { posicao: 'asc' },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!pedido) {
+      return res.status(404).json({ msg: `Pedido com ID ${id} não encontrado.` });
+    }
+
+    // Remove a senha do objeto do usuário antes de enviar a resposta
+    if (pedido.usuario) {
+      delete pedido.usuario.senha;
+    }
+
+    res.status(200).json(pedido);
+  } catch (error) {
+    console.error(`Erro ao buscar detalhes do pedido ${id}:`, error);
     res.status(500).json({ msg: 'Erro no servidor.' });
   }
 });
