@@ -61,11 +61,11 @@ const NewFooter = () => {
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <PlaceOutlinedIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
-              <Typography variant="body2">Rua das Flores, 123 - Centro, Rio de Janeiro - RJ</Typography>
+              <Typography variant="body2">Av Paulino Mendes Lima, 214, Eunápolis 45820-440</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <PhoneOutlinedIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
-              <Typography variant="body2">(21) 99999-8888</Typography>
+              <Typography variant="body2">(73) 98107-1533</Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <EmailOutlinedIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
