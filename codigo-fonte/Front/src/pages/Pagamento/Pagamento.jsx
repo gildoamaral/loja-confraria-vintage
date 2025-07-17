@@ -118,7 +118,16 @@ const Pagamento = () => {
           cidade: res.data.cidade || '',
           estado: res.data.estado || '',
           cep: res.data.cep || '',
-          linha: `${res.data.rua || ''}, ${res.data.numero || ''}${res.data.complemento ? `, ${res.data.complemento}` : ''}, ${res.data.bairro || ''}, ${res.data.cidade || ''} - ${res.data.estado || ''}, CEP: ${res.data.cep || ''}`
+
+          linha: res.data.rua !== '' && 
+          res.data.numero !== '' && 
+          res.data.bairro !== '' && 
+          res.data.cidade !== '' && 
+          res.data.estado !== '' && 
+          res.data.cep !== ''  
+          ? 
+          `${res.data.rua}, ${res.data.numero}${res.data.complemento ? `, ${res.data.complemento}` : ''}, ${res.data.bairro}, ${res.data.cidade} - ${res.data.estado}, CEP: ${res.data.cep}` 
+          : null
         });
 
 
@@ -310,6 +319,7 @@ const Pagamento = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        mt: 5
       }}>
       <Box
         sx={{

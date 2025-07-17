@@ -250,11 +250,11 @@ const Navbar = () => {
           <List>
             {/* Navegação */}
             <ListItem button component={RouterLink} to="/" onClick={handleMobileMenuClose}>
-              <ListItemText primary="Home" />
+              <ListItemText sx={{color: "black"}} primary="Home" />
             </ListItem>
             
             <ListItem button component={RouterLink} to="/sobre" onClick={handleMobileMenuClose}>
-              <ListItemText primary="Sobre" />
+              <ListItemText sx={{color: "black"}} primary="Sobre" />
             </ListItem>
 
             {/* Admin - Só se for admin */}
@@ -263,7 +263,7 @@ const Navbar = () => {
                 <ListItemIcon>
                   <AdminPanelSettings />
                 </ListItemIcon>
-                <ListItemText primary="Administração" />
+                <ListItemText sx={{color: "black"}} primary="Administração" />
               </ListItem>
             )}
 
@@ -279,11 +279,11 @@ const Navbar = () => {
                   />
                 </ListItem>
                 
-                <ListItem button component={RouterLink} to="/conta" onClick={handleMobileMenuClose}>
+                <ListItem button component={RouterLink} to="/minha-conta" onClick={handleMobileMenuClose}>
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
-                  <ListItemText primary="Minha Conta" />
+                  <ListItemText sx={{color: "black"}} primary="Minha Conta" />
                 </ListItem>
                 
                 <ListItem button onClick={handleLogout}>
@@ -295,7 +295,7 @@ const Navbar = () => {
                 <ListItemIcon>
                   <PersonOutline />
                 </ListItemIcon>
-                <ListItemText primary="Entrar" />
+                <ListItemText sx={{color: "black"}} primary="Entrar" />
               </ListItem>
             )}
           </List>
