@@ -105,7 +105,7 @@ function Carrinho() {
             // borderRadius: { xs: 0, sm: 3 },
             // marginTop: { xs: '1rem', sm: '2rem' },
             // mx: 'auto',
-            // mt: { xs: 2, sm: 4 },
+            mt: 4,
           }}
         >
           {loading ? (

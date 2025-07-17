@@ -14,9 +14,11 @@
 
 :root {
   --primary-color-theme: #FDF7F2;
+  --secondary-color-theme: #feeee1;
 
-  --cor-principal: #fcddbf;
+  --cor-principal: #ffe9d2;
   --cor-secundaria: #ec7148;
+  --cor-secundaria-fonte: #b02c00;
   --cor-detalhes: #000;
 
   --cor-gradiente: radial-gradient(circle at 50% 50%, var(--cor-principal) 30%, var(--cor-principal2) 200%);

@@ -63,7 +63,7 @@ const Carrossel = () => {
   }
 
   return (
-    <Box sx={{ height: '100vh', width: '100vw', position: 'relative'}}>
+    <Box sx={{ height: '70vh', width: '100vw', position: 'relative'}}>
       <Swiper
         // 4. Instala os módulos que vamos usar
         modules={[Navigation, Pagination, Autoplay, EffectFade]}
