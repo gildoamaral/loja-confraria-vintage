@@ -160,6 +160,7 @@ router.put('/:id', AuthAdmin, async (req, res) => {
   const { id } = req.params;
   // Removemos 'imagem' da desestruturação, pois ela não é mais um campo editável aqui
   const {
+    ativo,
     nome,
     descricao,
     preco,
@@ -180,6 +181,7 @@ router.put('/:id', AuthAdmin, async (req, res) => {
     // A lógica para atualizar as imagens é mais complexa (deletar as antigas, fazer novo upload, etc.)
     // e deve ser tratada em uma rota separada. Por enquanto, esta rota atualizará apenas os dados de texto.
     const dataToUpdate = {
+      ativo,
       nome,
       descricao,
       preco: preco ? parseFloat(preco) : undefined,

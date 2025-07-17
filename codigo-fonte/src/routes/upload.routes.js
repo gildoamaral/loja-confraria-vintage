@@ -18,7 +18,7 @@ const handleMulterError = (req, res, next) => {
       // Se o erro for de limite de tamanho de arquivo
       if (err.code === 'LIMIT_FILE_SIZE') {
         // Retornamos uma resposta JSON clara com status 400
-        return res.status(400).json({ error: 'Um ou mais arquivos excedem o limite de 5MB.' });
+        return res.status(400).json({ error: 'Um ou mais arquivos excedem o limite de 7MB.' });
       }
       // Para outros erros do Multer, retornamos a mensagem padrão do erro
       return res.status(400).json({ error: err.message });

@@ -130,7 +130,13 @@ const CadastroProdutos = () => {
 
     } catch (error) {
       console.error('Erro no processo de criação:', error);
-      setMessage(error.response?.data?.message || 'Ocorreu um erro. Verifique o console.');
+      
+      // Verificação específica para erro 400 (arquivos muito grandes)
+      if (error.response?.status === 400) {
+        setMessage('Um ou mais arquivos possuem mais do que 7MB');
+      } else {
+        setMessage(error.response?.data?.message || 'Ocorreu um erro.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -286,6 +292,7 @@ const CadastroProdutos = () => {
                 fullWidth
                 label="Descrição"
                 multiline
+                required
                 rows={4}
                 value={descricao}
                 onChange={(e) => {
