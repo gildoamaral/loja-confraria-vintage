@@ -51,11 +51,11 @@ const FormularioEndereco = ({
                         disabled={!validarCepCompleto() || usarEnderecoCadastrado}
                         size="small"
                         aria-label="Buscar CEP"
-                        color={validarCepCompleto() ? "primary" : "default"}
+                        color={validarCepCompleto() ? "error" : "default"}
                         sx={{ 
                           transition: 'color 0.2s ease',
                           '&:hover': {
-                            backgroundColor: validarCepCompleto() ? 'primary.light' : 'action.hover'
+                            backgroundColor: validarCepCompleto() ? 'error.light' : 'action.hover'
                           }
                         }}
                       >
@@ -165,9 +165,8 @@ const FormularioEndereco = ({
         <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
           <Button
             variant="contained"
-            color="primary"
             size="large"
-            sx={{ fontWeight: 700, px: 5 }}
+            sx={{ fontWeight: 700, px: 5, bgcolor: 'var(--cor-secundaria)' }}
             onClick={handleContinuarParaFrete}
             disabled={usarEnderecoCadastrado}
           >

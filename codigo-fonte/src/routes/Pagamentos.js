@@ -214,7 +214,7 @@ router.post('/criar-pix', (req, res, next) => {
 // });
 
 router.post('/criar-cartao', async (req, res) => {
-  const { pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete } = req.body;
+  const { pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete, nomeFrete } = req.body;
 
   try {
     const pedido = await prisma.pedidos.findUnique({
@@ -304,7 +304,8 @@ router.post('/criar-cartao', async (req, res) => {
               where: { id: req.body.pedidoId },
               data: {
                 status: novoStatus,
-                dataFinalizado: new Date()
+                dataFinalizado: new Date(),
+                empresaFrete: nomeFrete || null, // Se tiver nome de frete, salva
               }
             });
 

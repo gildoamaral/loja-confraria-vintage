@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import NewPagamentoCartao from './NewPagamentoCartao';
 
-const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFrete }) => {
+const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFrete, nomeFrete }) => {
   return (
     <Box>
       {/* Método de Pagamento */}
@@ -37,6 +37,7 @@ const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFre
           pedidoId={pedidoId}
           valor={valorTotal}
           valorFrete={valorFrete}
+          nomeFrete={nomeFrete}
         />
       ) : (
         <Typography variant="body1" color="text.secondary" sx={{ mt: 8 }}>

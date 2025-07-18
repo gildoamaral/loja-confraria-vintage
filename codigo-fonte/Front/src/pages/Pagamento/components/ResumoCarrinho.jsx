@@ -54,7 +54,7 @@ const ResumoCarrinho = ({ quantidadeTotal, valorTotal, valorFrete, subtotal, usu
         {/* Seção: Total Final */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="body1">Subtotal:</Typography>
-          <Typography variant="h5" fontWeight={700} color="primary">
+          <Typography variant="h5" fontWeight={700} color="error.light">
             R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </Typography>
         </Box>

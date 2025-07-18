@@ -167,6 +167,48 @@ const DetalhePedido = () => {
                 <Typography>{bairro}</Typography>
                 <Typography>{cidade} - {estado}</Typography>
                 <Typography>CEP: {cep}</Typography>
+                
+                {/* Informações de Frete */}
+                {(pedido.empresaFrete || pedido.codigoRastreio || pedido.status === 'PAGO' || pedido.status === 'ENVIADO') && (
+                  <>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                      Informações de Entrega:
+                    </Typography>
+                    {pedido.empresaFrete && (
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography color="text.secondary">Transportadora:</Typography>
+                        <Typography fontWeight={600}>{pedido.empresaFrete}</Typography>
+                      </Box>
+                    )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography color="text.secondary">Status de Envio:</Typography>
+                      {pedido.codigoRastreio ? (
+                        <Chip 
+                          label={pedido.codigoRastreio}
+                          variant="outlined"
+                          size="small"
+                          color="success"
+                          sx={{ 
+                            fontFamily: 'monospace',
+                            fontSize: '0.75rem',
+                            letterSpacing: 1
+                          }}
+                        />
+                      ) : (
+                        <Chip 
+                          label="Aguardando postagem"
+                          variant="outlined"
+                          size="small"
+                          color="warning"
+                          sx={{ 
+                            fontSize: '0.75rem'
+                          }}
+                        />
+                      )}
+                    </Box>
+                  </>
+                )}
               </Box>
             </CardContent>
           </Card>

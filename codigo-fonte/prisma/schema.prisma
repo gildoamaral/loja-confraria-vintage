@@ -73,6 +73,7 @@ model Pedidos {
   pagamento      Pagamentos?
   dataFinalizado DateTime?
   codigoRastreio String?
+  empresaFrete   String? // Nome da empresa de frete, se aplicável
 
   enderecoEntrega String?
   cep             String?

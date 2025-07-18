@@ -10,7 +10,10 @@ const router = express.Router();
 // GET - Obter todos os produtos
 router.get('/', async (req, res) => {
   try {
+    const { includeInactive } = req.query; // Permite incluir produtos inativos se especificado
+    
     const produtos = await prisma.produtos.findMany({
+      where: includeInactive === 'true' ? {} : { ativo: true }, // Só produtos ativos por padrão
       // "Inclua" os dados da relação 'imagens' na busca
       include: {
         imagens: {

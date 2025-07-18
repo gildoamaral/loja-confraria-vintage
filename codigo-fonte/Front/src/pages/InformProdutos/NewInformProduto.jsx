@@ -99,6 +99,12 @@ const InformProduto = () => {
   }
 
   const handleAddToCart = async () => {
+    // Verifica se o produto está ativo
+    if (!produto.ativo) {
+      alert('Este produto está inativo e não pode ser adicionado ao carrinho.');
+      return;
+    }
+
     // Verifica se cor e tamanho foram selecionados
     if (!selectedTamanho || !selectedCor) {
       alert('Por favor selecione o tamanho e a cor');
@@ -145,7 +151,7 @@ const InformProduto = () => {
                 <img
                   src={imagemPrincipal}
                   alt={produto.nome}
-                  style={{ display: 'block', objectFit: 'cover', width: '100%', height: 500, objectPosition: 'center' }}
+                  style={{ display: 'block', objectFit: 'cover', width: '100%', height: 500, objectPosition: 'top' }}
                 />
               </Box>
               <Grid container spacing={1} justifyContent="start">
@@ -176,7 +182,17 @@ const InformProduto = () => {
               <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <Typography variant="overline" color="text.secondary">{produto.categoria.toLowerCase()}</Typography>
 
-                <Typography variant="h4" component={'h1'} fontWeight={700} >{produto.nome}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                  <Typography variant="h4" component={'h1'} fontWeight={700}>{produto.nome}</Typography>
+                  {!produto.ativo && (
+                    <Chip 
+                      label="Inativo" 
+                      color="error" 
+                      size="small" 
+                      variant="outlined"
+                    />
+                  )}
+                </Box>
                 <Divider sx={{ mt: 1, mb: 3 }} />
 
 
@@ -254,8 +270,16 @@ const InformProduto = () => {
                 </Box>
 
                 <Box mt={4} width={'50%'} sx={{ display: 'flex', justifyContent: 'center', width: '100%', pb: 5 }}>
-                  <Button variant="contained" size="large" sx={{ bgcolor: 'black', color: 'white' }} fullWidth startIcon={<AddShoppingCartIcon />} onClick={handleAddToCart} disabled={loading}>
-                    {loading ? 'Adicionando...' : 'Adicionar ao Carrinho'}
+                  <Button 
+                    variant="contained" 
+                    size="large" 
+                    sx={{ bgcolor: produto.ativo ? 'black' : 'grey.400', color: 'white' }} 
+                    fullWidth 
+                    startIcon={<AddShoppingCartIcon />} 
+                    onClick={handleAddToCart} 
+                    disabled={loading || !produto.ativo}
+                  >
+                    {loading ? 'Adicionando...' : produto.ativo ? 'Adicionar ao Carrinho' : 'Produto Inativo'}
                   </Button>
                 </Box>
 

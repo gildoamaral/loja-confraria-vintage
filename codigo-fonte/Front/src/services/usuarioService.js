@@ -45,6 +45,7 @@ export const getPedidos = async () => {
 export const getDetalhePedido = async (id) => {
   try {
     const response = await api.get(`/pedidos/${id}`);
+    console.log("Detalhes do pedido:", response.data);
     return response.data;
   } catch (error) {
     throw error.response?.data?.msg || "Erro ao buscar detalhes do pedido";

@@ -29,6 +29,8 @@ function AppRoutes() {
         <Route path="/produto/:id" element={<NewInformProduto />} />
         <Route path='/sobre' element={<Sobre />} />
         <Route path="/cadastro-usuario" element={<CadastroUsuario />} />
+      <Route path='/carrinho' element={<Carrinho />} />
+
 
         {/* USUÁRIO */}
         <Route element={<ProtectedLayout />}>
@@ -54,7 +56,6 @@ function AppRoutes() {
 
       {/* <Route element={<MinimalLayout />}> */}
       {/* PUBLICAS */}
-      <Route path='/carrinho' element={<Carrinho />} />
       <Route path="/esqueci-senha" element={<EsqueciSenha />} />
       <Route path="/resetar-senha/:token" element={<ResetarSenha />} />
 

@@ -92,20 +92,15 @@ function Carrinho() {
   return (
     <>
       {/* <Header invisivel /> */}
-      <Box>
         <Box
           sx={{
-            p: { xs: 1, sm: 3 },
+            p: { xs: "1rem", sm: "3rem" },
             justifySelf: 'center',
-            boxShadow: 4,
-            minHeight: 500,
+            minHeight: 600,
             position: 'relative',
-            width: { xs: '100%', sm: 730 },
+            width: { xs: '100%', sm: '100%' },
+            mx: 'auto',
             backgroundColor: 'var(--primary-color-theme)',
-            // borderRadius: { xs: 0, sm: 3 },
-            // marginTop: { xs: '1rem', sm: '2rem' },
-            // mx: 'auto',
-            mt: 4,
           }}
         >
           {loading ? (
@@ -114,75 +109,84 @@ function Carrinho() {
             </Box>
           ) : (
             <>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-                <Button
-                  onClick={() => navigate(-1)}
-                  sx={{ minWidth: 0, mr: 2, color: 'primary.main', position: 'absolute', left: 16 }}
-                  aria-label="Voltar"
-                >
-                  <ArrowBackIosNewIcon />
-                </Button>
-                <ShoppingCartIcon sx={{ fontSize: 38, color: '#FF967E', mr: 1 }} />
-                <Typography variant="h4" fontWeight={700}>
-                  Seu Carrinho
-                </Typography>
-              </Box>
 
-              <Divider sx={{ mb: 3 }} />
-
-              <Grid container spacing={2} direction="column">
-                {carrinho.map((item) => (
-                  <Grid size={12} key={item.id}>
-                    <CarrinhoItemCard
-                      item={item}
-                      atualizarQuantidade={atualizarQuantidade}
-                      removerDoCarrinho={removerDoCarrinho}
-                    />
+              {carrinho.length > 0 ? (
+                <Grid container spacing={3}>
+                  {/* Lista de produtos do carrinho */}
+                  <Grid size={{ xs: 12, md: 8 }}>
+                    <Grid container spacing={2} direction="column">
+                      {carrinho.map((item) => (
+                        <Grid size={12} key={item.id}>
+                          <CarrinhoItemCard
+                            item={item}
+                            atualizarQuantidade={atualizarQuantidade}
+                            removerDoCarrinho={removerDoCarrinho}
+                          />
+                        </Grid>
+                      ))}
+                    </Grid>
                   </Grid>
-                ))}
-              </Grid>
 
-              {carrinho.length > 0 && (
-                <Box
-                  sx={{
-                    mt: 4,
-                    p: 3,
-                    maxWidth: 400,
-                    ml: 'auto',
-                  }}
-                >
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h6" fontWeight={700}>
-                      Total:
-                    </Typography>
-                    <Typography variant="h5" fontWeight={700} color="primary">
-                      R$ {valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </Typography>
-                  </Box>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    fullWidth
-                    onClick={handleContinuar}
-                    sx={{
-                      fontWeight: 700,
-                      fontSize: '1rem',
-                      boxShadow: 2,
-                      background: 'linear-gradient(90deg, #FF967E 0%, #FFB89C 100%)',
-                      color: '#4B2626',
-                      '&:hover': {
-                        background: 'linear-gradient(90deg, #FFB89C 0%, #FF967E 100%)',
-                      },
-                      mt: 2,
-                    }}
-                  >
-                    Continuar
-                  </Button>
-                </Box>
-              )}
+                  {/* Resumo do pedido */}
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Box
+                      sx={{
+                        p: 3,
+                        borderLeft: { md: '1px solid', xs: 'none' },
+                        borderColor: { md: 'divider' },
+                        ml: { md: 2 },
+                        position: { md: 'sticky' },
+                        top: { md: 20 },
+                      }}
+                    >
+                      <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>
+                        Resumo do Pedido
+                      </Typography>
+                      
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="body1">
+                          Quantidade de itens:
+                        </Typography>
+                        <Typography variant="body1" fontWeight={600}>
+                          {quantidadeTotal}
+                        </Typography>
+                      </Box>
 
-              {carrinho.length === 0 && (
+                      <Divider sx={{ my: 2 }} />
+
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                        <Typography variant="h6" fontWeight={700}>
+                          Total:
+                        </Typography>
+                        <Typography variant="h5" fontWeight={700} sx={{ color: 'var(--cor-secundaria)' }}>
+                          R$ {valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </Typography>
+                      </Box>
+
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        fullWidth
+                        onClick={handleContinuar}
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: '1rem',
+                          boxShadow: 2,
+                          background: 'var(--cor-secundaria)',
+                          color: '#4B2626',
+                          '&:hover': {
+                            background: 'var(--cor-secundaria-fonte)',
+                          },
+                          py: 1.5,
+                        }}
+                      >
+                        Continuar
+                      </Button>
+                    </Box>
+                  </Grid>
+                </Grid>
+              ) : (
                 <Box sx={{ textAlign: 'center', mt: 8, mb: 8 }}>
                   <ShoppingCartIcon sx={{ fontSize: 80, color: '#FFE5D2', mb: 2 }} />
                   <Typography variant="h6" color="text.secondary">
@@ -193,7 +197,6 @@ function Carrinho() {
             </>
           )}
         </Box>
-      </Box>
     </>
   );
 }

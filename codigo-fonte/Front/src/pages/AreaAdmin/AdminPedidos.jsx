@@ -113,13 +113,14 @@ const AdminPedidos = () => {
       <Typography variant="h4" gutterBottom>
         Painel de Gerenciamento de Pedidos
       </Typography>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="tabela de pedidos">
+      <TableContainer component={Paper} >
+        <Table sx={{ minWidth: 650 }} size={'small'} aria-label="tabela de pedidos">
 
           <TableHead>
             <TableRow>
               <TableCell>Pedido ID</TableCell>
               <TableCell>Rastreio</TableCell>
+              <TableCell>Empresa Frete</TableCell>
               <TableCell>Data</TableCell>
               <TableCell>Cliente</TableCell>
               <TableCell align="right">Valor Total</TableCell>
@@ -135,7 +136,10 @@ const AdminPedidos = () => {
                   #{pedido.id}
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {pedido.codigoRastreio}
+                  {pedido.codigoRastreio || '-'}
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  {pedido.empresaFrete || '-'}
                 </TableCell>
                 <TableCell>{new Date(pedido.dataFinalizado).toLocaleDateString('pt-BR')}</TableCell>
                 <TableCell>{`${pedido.usuario.nome} ${pedido.usuario.sobrenome}`}</TableCell>

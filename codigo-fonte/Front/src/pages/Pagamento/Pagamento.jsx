@@ -49,6 +49,7 @@ const Pagamento = () => {
   const [carregandoFrete, setCarregandoFrete] = useState(false);
   const [enderecoSelecionado, setEnderecoSelecionado] = useState(null);
   const [valorFrete, setValorFrete] = useState(0);
+  const [nomeFrete, setNomeFrete] = useState('');
   const [subtotal, setSubtotal] = useState(valorTotal);
   const [metodo, setMetodo] = useState('');
 
@@ -110,6 +111,12 @@ const Pagamento = () => {
       try {
         const res = await api.get('/usuarios/conta');
         setUsuario(res.data);
+        
+        // Função auxiliar para validar se um campo tem conteúdo válido
+        const temConteudoValido = (valor) => {
+          return valor != null && valor !== undefined && String(valor).trim() !== '';
+        };
+        
         setEnderecoUsuario({
           rua: res.data.rua || '',
           numero: res.data.numero || '',
@@ -119,12 +126,12 @@ const Pagamento = () => {
           estado: res.data.estado || '',
           cep: res.data.cep || '',
 
-          linha: res.data.rua !== '' && 
-          res.data.numero !== '' && 
-          res.data.bairro !== '' && 
-          res.data.cidade !== '' && 
-          res.data.estado !== '' && 
-          res.data.cep !== ''  
+          linha: temConteudoValido(res.data.rua) && 
+          temConteudoValido(res.data.numero) && 
+          temConteudoValido(res.data.bairro) && 
+          temConteudoValido(res.data.cidade) && 
+          temConteudoValido(res.data.estado) && 
+          temConteudoValido(res.data.cep)  
           ? 
           `${res.data.rua}, ${res.data.numero}${res.data.complemento ? `, ${res.data.complemento}` : ''}, ${res.data.bairro}, ${res.data.cidade} - ${res.data.estado}, CEP: ${res.data.cep}` 
           : null
@@ -302,11 +309,13 @@ const Pagamento = () => {
     const frete = opcoesFrete.find(
       (opcao) => String(opcao.id || opcao.nome) === String(freteSelecionado.id || freteSelecionado.nome)
     );
-    console.log('Frete selecionado:', frete);
+    console.log('Frete selecionado:', frete.company.name);
     if (!frete) {
       alert('Selecione uma opção de frete!');
       return;
     }
+    const nome = frete.company.name;
+    setNomeFrete(nome);
     const valor = Number(frete.preco || frete.price || 0);
     setValorFrete(valor);
     setSubtotal(valorTotal + valor);
@@ -316,99 +325,190 @@ const Pagamento = () => {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        mt: 5
+        minHeight: '100vh',
+        backgroundColor: '#f8f9fa',
+        py: { xs: 2, md: 4 }
       }}>
       <Box
         sx={{
-          flexGrow: 1,
-          minHeight: '80vh',
+          maxWidth: 1400,
+          mx: 'auto',
+          px: { xs: 0, sm: 2, md: 3 }
         }}
       >
-        <Paper elevation={3} sx={{ 
-          mx: 'auto', 
-          p: { xs: 2, sm: 3 }, 
-          borderRadius: 3, 
-          width: { sm: 1000, xs: '100%' },
-          maxWidth: '100%'
+        <Paper elevation={0} sx={{ 
+          borderRadius: 4,
+          overflow: 'hidden',
+          backgroundColor: 'white',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
         }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          
+          {/* Header da página */}
+          <Box sx={{ 
+            background: 'linear-gradient(135deg, var(--cor-secundaria) 50%, #764ba2 150%)',
+            color: 'white',
+            p: { xs: 3, md: 4 },
+            position: 'relative'
+          }}>
             <Button
               onClick={() => navigate(-1)}
-              sx={{ minWidth: 0, mr: 1, color: 'primary.main' }}
+              sx={{ 
+                position: 'absolute',
+                left: { xs: 16, md: 24 },
+                top: '50%',
+                transform: 'translateY(-50%)',
+                minWidth: 0, 
+                color: 'white',
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                borderRadius: '50%',
+                width: 40,
+                height: 40,
+                '&:hover': {
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                }
+              }}
               aria-label="Voltar"
             >
-              <ArrowBackIosNewIcon />
+              <ArrowBackIosNewIcon fontSize="small" />
             </Button>
-            <Typography variant="h5" fontWeight={700} sx={{ textAlign: 'center', flex: 1 }}>
-              {etapa === 1 ? 'Endereço de Entrega' : etapa === 2 ? 'Frete' : 'Pagamento'}
-            </Typography>
+            
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>
+                {etapa === 1 ? 'Endereço de Entrega' : etapa === 2 ? 'Opções de Frete' : 'Finalizar Pagamento'}
+              </Typography>
+              <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                {etapa === 1 ? 'Confirme ou cadastre seu endereço' : 
+                 etapa === 2 ? 'Escolha a melhor opção de entrega' : 
+                 'Complete sua compra'}
+              </Typography>
+            </Box>
+
+            {/* Indicador de progresso */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              mt: 3,
+              gap: 1
+            }}>
+              {[1, 2, 3].map((step) => (
+                <Box
+                  key={step}
+                  sx={{
+                    width: { xs: 8, md: 12 },
+                    height: { xs: 8, md: 12 },
+                    borderRadius: '50%',
+                    backgroundColor: step <= etapa ? 'white' : 'rgba(255,255,255,0.3)',
+                    transition: 'all 0.3s ease'
+                  }}
+                />
+              ))}
+            </Box>
           </Box>
-          <Divider sx={{ mb: 3 }} />
 
-          <Grid container spacing={4}>
+          <Grid container spacing={0}>
 
-            {/* RESUMOS */}
+            {/* RESUMO - Sidebar fixo */}
             <Grid size={{ xs: 12, md: 4 }}>
-              <ResumoCarrinho
-                quantidadeTotal={quantidadeTotal}
-                valorTotal={valorTotal}
-                valorFrete={valorFrete}
-                subtotal={subtotal}
-                usuario={usuario}
-                enderecoLinha={enderecoLinha}
-              />
+              <Box sx={{ 
+                backgroundColor: '#f8f9fa',
+                minHeight: { md: '600px' },
+                p: { xs: 3, md: 4 },
+                borderRight: { md: '1px solid #e9ecef', xs: 'none' },
+                position: { md: 'sticky' },
+                top: 0,
+                zIndex: 1
+              }}>
+                <ResumoCarrinho
+                  quantidadeTotal={quantidadeTotal}
+                  valorTotal={valorTotal}
+                  valorFrete={valorFrete}
+                  subtotal={subtotal}
+                  usuario={usuario}
+                  enderecoLinha={enderecoLinha}
+                />
+              </Box>
             </Grid>
 
-            {/* CONTEUDOS */}
+            {/* CONTEÚDO PRINCIPAL */}
             <Grid size={{ xs: 12, md: 8 }}>
-              <Box>
+              <Box sx={{ 
+                p: { xs: 0, md: 6 },
+                minHeight: { md: '600px' }
+              }}>
 
                 {/* ETAPA 1: ENDEREÇO */}
                 {etapa === 1 && (
-                  <>
-                    <SeletorEndereco
-                      usarEnderecoCadastrado={usarEnderecoCadastrado}
-                      setUsarEnderecoCadastrado={setUsarEnderecoCadastrado}
-                      handleNovoEndereco={handleNovoEndereco}
-                      usuario={usuario}
-                      enderecoLinha={enderecoLinha}
-                      enderecoSelecionado={enderecoSelecionado}
-                      setEnderecoSelecionado={setEnderecoSelecionado}
-                      endereco={endereco}
-                      enderecoUsuario={enderecoUsuario}
-                    />
+                  <Box>
+                    <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#2c3e50', px: 3}}>
+                      Confirme seu endereço de entrega
+                    </Typography>
+                    
+                    <Paper elevation={0} sx={{ 
+                      border: '1px solid #e9ecef', 
+                      borderRadius: 3, 
+                      p: 4, 
+                      mb: 3,
+                      backgroundColor: 'white'
+                    }}>
+                      <SeletorEndereco
+                        usarEnderecoCadastrado={usarEnderecoCadastrado}
+                        setUsarEnderecoCadastrado={setUsarEnderecoCadastrado}
+                        handleNovoEndereco={handleNovoEndereco}
+                        usuario={usuario}
+                        enderecoLinha={enderecoLinha}
+                        enderecoSelecionado={enderecoSelecionado}
+                        setEnderecoSelecionado={setEnderecoSelecionado}
+                        endereco={endereco}
+                        enderecoUsuario={enderecoUsuario}
+                      />
+                    </Paper>
 
                     {!usarEnderecoCadastrado && (
-                      <FormularioEndereco
-                        endereco={endereco}
-                        handleEnderecoChange={handleEnderecoChange}
-                        usarEnderecoCadastrado={usarEnderecoCadastrado}
-                        handleContinuarParaFrete={handleContinuarParaFrete}
-                        mostrarCamposEndereco={mostrarCamposEndereco}
-                        cepLoading={cepLoading}
-                        cepError={cepError}
-                        handleBuscarCep={handleBuscarCep}
-                        validarCepCompleto={validarCepCompleto}
-                      />
+                      <Paper elevation={0} sx={{ 
+                        border: '1px solid #e9ecef', 
+                        borderRadius: 3, 
+                        p: 4,
+                        backgroundColor: 'white'
+                      }}>
+                        <FormularioEndereco
+                          endereco={endereco}
+                          handleEnderecoChange={handleEnderecoChange}
+                          usarEnderecoCadastrado={usarEnderecoCadastrado}
+                          handleContinuarParaFrete={handleContinuarParaFrete}
+                          mostrarCamposEndereco={mostrarCamposEndereco}
+                          cepLoading={cepLoading}
+                          cepError={cepError}
+                          handleBuscarCep={handleBuscarCep}
+                          validarCepCompleto={validarCepCompleto}
+                        />
+                      </Paper>
                     )}
 
                     {usarEnderecoCadastrado && (
-                      <Grid size={12}>
+                      <Box sx={{ mt: 4, width: '100%', display: 'flex', justifyContent: 'center' }}>
                         <Button
                           variant="contained"
-                          color="primary"
-                          sx={{ mt: 2, fontWeight: 700 }}
-                          fullWidth
+                          size="large"
+                          sx={{ 
+                            py: 2,
+                            px: 6,
+                            width: '95%',
+                            fontWeight: 700,
+                            borderRadius: 3,
+                            background: 'var(--cor-secundaria)',
+                            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+                            '&:hover': {
+                              boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',
+                            }
+                          }}
+                          
                           onClick={handleContinuarParaFrete}
                         >
-                          Continuar para Pagamento
+                          Continuar para Frete
                         </Button>
-                      </Grid>
+                      </Box>
                     )}
-                  </>
+                  </Box>
                 )}
 
 
@@ -416,24 +516,52 @@ const Pagamento = () => {
 
                 {/* ETAPA 2: FRETE */}
                 {etapa === 2 && (
-                  <SeletorFrete
-                    carregandoFrete={carregandoFrete}
-                    opcoesFrete={opcoesFrete}
-                    freteSelecionado={freteSelecionado}
-                    setFreteSelecionado={setFreteSelecionado}
-                    handleContinuarParaPagamento={handleContinuarParaPagamento}
-                  />
+                  <Box>
+                    <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#2c3e50', pl: 3 }}>
+                      Escolha a opção de frete
+                    </Typography>
+                    
+                    <Paper elevation={0} sx={{ 
+                      border: '1px solid #e9ecef', 
+                      borderRadius: 3, 
+                      p: 4,
+                      backgroundColor: 'white'
+                    }}>
+                      <SeletorFrete
+                        carregandoFrete={carregandoFrete}
+                        opcoesFrete={opcoesFrete}
+                        freteSelecionado={freteSelecionado}
+                        setFreteSelecionado={setFreteSelecionado}
+                        handleContinuarParaPagamento={handleContinuarParaPagamento}
+                      />
+                    </Paper>
+                  </Box>
                 )}
 
                 {/* ETAPA 3: PAGAMENTO */}
                 {etapa === 3 && (
-                  <FormularioPagamento
-                    metodo={metodo}
-                    setMetodo={setMetodo}
-                    pedidoId={pedidoId}
-                    valorTotal={valorTotal}
-                    valorFrete={valorFrete}
-                  />
+                  <Box>
+                    <Typography variant="h5" fontWeight={600} sx={{ mb: 3, color: '#2c3e50', pl: 3 }}>
+                      Finalizar pagamento
+                    </Typography>
+                    
+                    <Paper elevation={0} sx={{ 
+                      border: '1px solid #e9ecef', 
+                      borderRadius: 3, 
+                      p: 4,
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}>
+                      <FormularioPagamento
+                        metodo={metodo}
+                        setMetodo={setMetodo}
+                        pedidoId={pedidoId}
+                        valorTotal={valorTotal}
+                        valorFrete={valorFrete}
+                        nomeFrete={nomeFrete}
+                      />
+                    </Paper>
+                  </Box>
                 )}
 
               </Box>

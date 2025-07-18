@@ -66,6 +66,7 @@ const PagamentoCartao = (props) => {
               },
               pedidoId: props.pedidoId,
               valorFrete: props.valorFrete ?? 0,
+              nomeFrete: props.nomeFrete ?? "Não informado",
             })
             .then(response => {
               if (response.data.status === 'pending') {
@@ -113,10 +114,12 @@ const PagamentoCartao = (props) => {
         cardFormInstance.unmount();
       }
     };
-  }, [props.valor, props.valorFrete, props.pedidoId, navigate]); // Adiciona dependências para recriar o form se o valor mudar
+  }, [props.valor, props.valorFrete, props.pedidoId, props.nomeFrete, navigate]); // Adiciona dependências para recriar o form se o valor mudar
 
   return (
-    <>
+    <Box sx={{
+      justifySelf: 'center',
+    }}>
       <form id="form-checkout" className={styles.formCheckout}>
         {/* ... seu JSX do formulário continua exatamente igual ... */}
         <Box
@@ -209,7 +212,7 @@ const PagamentoCartao = (props) => {
         </button>
         <progress value="0" className="progress-bar">Carregando...</progress>
       </form>
-    </>
+    </Box>
   );
 };
 
