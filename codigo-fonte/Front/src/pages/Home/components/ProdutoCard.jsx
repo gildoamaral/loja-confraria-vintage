@@ -52,7 +52,7 @@ const ProdutoCard = ({ produto }) => {
               <Typography
                 variant="body2"
                 color="text.secondary"
-                sx={{ textDecoration: 'line-through', display: 'inline', position: 'absolute', left: 9, top: 3 }}
+                sx={{ textDecoration: 'line-through', display: 'inline', position: 'absolute', left:{sm: 5, xs: 12}, top: 3 }}
               >
                 R$ {produto.preco.toFixed(2).replace('.', ',')}
               </Typography>
