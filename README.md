@@ -1,32 +1,24 @@
 # CONFRARIA VINTAGE
 
-`Análise e Desvolvimento de Sistemas`
+`REACT` `NODE` `PRISMA` `MYSQL` `MUI` `AWS S3` `KANBAN` `SCRUM` `REACT ROUTER`
 
-`EIXO 5 - PROJETO - DESENVOLVIMENTO DE UM SISTEMA SOCIOTÉCNICO INOVADOR`
-
-`2025/1`
-
-
-![Logomarca secundária -  cor 3](https://github.com/user-attachments/assets/92a74bae-38fc-4f3c-ae29-9f27bbd242ad)
-
-Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
+Link para o site: https://confraria-vintage.vercel.app/
 
 ## Integrantes
 
-* Carlos Eduardo Dos Santos Lima
-* Lais Barbosa de Oliveira
-* Lucas Henrique da Silva Vaz
-* Lucas Oliveira Soares
-* Marco Antonio Gil do Amaral Oliveira
-* Matheus Soares da Silva
+* Marco Antonio Gil do Amaral Oliveira (Scrum Master / Developer)
+* Carlos Eduardo Dos Santos Lima (Developer)
+* Lais Barbosa de Oliveira (Developer)
+* Lucas Oliveira Soares (Developer)
+* Matheus Soares da Silva (Developer)
 
-## Orientador
 
-* José Wilson da Costa
+## Sobre
+Trata-se de uma loja de roupas ecommerce desenvolvido para uma cliente externa, onde o usuario pode se cadastrar, comprar roupas e gerenciar seus pedidos, enquanto os administradores podem verificar pedidos feitos, receber pagamentos (dona da loja), e gerenciar a vida da loja.
 
-## Instruções de utilização
+* Veja todas as funcionalidades implementadas aqui: <a href="documentos/02-Especificação do Projeto.md"> Especificação do Projeto</a>.
 
-Assim que a primeira versão do sistema estiver disponível, deverá complementar com as instruções de utilização. Descreva como instalar eventuais dependências e como executar a aplicação.
+![alt text](./documentos/img/image.png)
 
 # Documentação
 
@@ -38,21 +30,4 @@ Assim que a primeira versão do sistema estiver disponível, deverá complementa
 <li><a href="documentos/05-Implantação.md"> Implantação</a></li>
 </ol>
 
-# Código
-
-<li><a href="codigo-fonte/README.md"> Código Fonte</a></li>
-
-# Apresentação
-
-
-<li><a href="apresentacao/README.md"> Apresentação da solução</a></li>
-# Solução
-
-https://pmv-ads-2025-1-e5-proj-empext-t4-g3-two.vercel.app/
-
-#### Etapa 1 - 09/03/2025
-
-O arquivo .pdf abaixo inclui a apresentação inicial do projeto a ser desenvolvido.
-
-
-[Apresentação - Confraria Vintage Camila Oliveira.pdf](https://github.com/user-attachments/files/19132614/Apresentacao.-.Confraria.Vintage.Camila.Oliveira.pdf)
+# 
