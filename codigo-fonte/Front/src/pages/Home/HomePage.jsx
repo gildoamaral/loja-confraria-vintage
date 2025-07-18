@@ -22,8 +22,9 @@ import {
 } from '@mui/material';
 import Carrossel from '../../components/Carrossel';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import CulturaVintage from '../../components/CulturaVintage';
 
-const OCASIOES_PRINCIPAIS = ['CONFRARIA' ,'FESTAS', 'OCASIOES_ESPECIAIS', 'CASUAL'];
+const OCASIOES_PRINCIPAIS = ['CONFRARIA', 'FESTAS', 'OCASIOES_ESPECIAIS', 'CASUAL'];
 
 const HomePage = () => {
   const { produtos, loading, fetchProdutos } = useProdutos();
@@ -68,17 +69,17 @@ const HomePage = () => {
     }));
   };
 
-  
+
   const dadosDaPagina = useMemo(() => {
     // Filtro especial para CONFRARIA: produtos com ocasiao null
-    const produtosDaOcasiao = selectedOcasiao === 'CONFRARIA' 
+    const produtosDaOcasiao = selectedOcasiao === 'CONFRARIA'
       ? produtos.filter(p => p.ocasiao === null || p.ocasiao === undefined)
       : produtos.filter(p => p.ocasiao === selectedOcasiao);
-      
+
     const categoriasDisponiveis = [...new Set(produtosDaOcasiao.map(p => p.categoria))];
     const tamanhosDisponiveis = [...new Set(produtosDaOcasiao.map(p => p.tamanho))].filter(Boolean);
     const coresDisponiveis = [...new Set(produtosDaOcasiao.map(p => p.cor))].filter(Boolean);
-    
+
     const contarProdutosPorFiltro = (campo, valor) => {
       return produtosDaOcasiao.filter(produto => produto[campo] === valor).length;
     };
@@ -101,11 +102,11 @@ const HomePage = () => {
       const passaCor = filtros.cor.length === 0 || filtros.cor.includes(produto.cor);
       return passaCategoria && passaTamanho && passaCor;
     });
-    
-    return { 
-      produtosFiltrados, 
-      categoriasDisponiveis, 
-      tamanhosDisponiveis, 
+
+    return {
+      produtosFiltrados,
+      categoriasDisponiveis,
+      tamanhosDisponiveis,
       coresDisponiveis,
       contadoresCategoria,
       contadoresTamanho,
@@ -132,7 +133,7 @@ const HomePage = () => {
           p: '1rem 0',
         }}>
           {isMobile ? (
-            <FormControl fullWidth variant="outlined" sx={{ 
+            <FormControl fullWidth variant="outlined" sx={{
               '& .MuiOutlinedInput-root': {
                 '& fieldset': {
                   borderColor: 'var(--cor-detalhes)',
@@ -173,10 +174,10 @@ const HomePage = () => {
                   key={ocasiao}
                   variant="text"
                   onClick={() => setSelectedOcasiao(ocasiao)}
-                  sx={{ 
+                  sx={{
                     color: "var(--cor-detalhes)",
                     fontSize: '1rem',
-                    fontWeight: selectedOcasiao === ocasiao ? '800' : 'normal', 
+                    fontWeight: selectedOcasiao === ocasiao ? '800' : 'normal',
                   }}
                 >
                   {ocasiao.replace(/_/g, ' ')}
@@ -187,15 +188,15 @@ const HomePage = () => {
         </Box>
 
         {/* FILTROS */}
-        <Box sx={{ 
-          mb: 2, 
-          position: 'sticky', 
-          top: navbarVisible ? '5rem' : '2rem', 
-          alignSelf: 'flex-start', 
+        <Box sx={{
+          mb: 2,
+          position: 'sticky',
+          top: navbarVisible ? '5rem' : '2rem',
+          alignSelf: 'flex-start',
           zIndex: 1,
           transition: 'top 0.3s ease-in-out'
         }}>
-          <Button onClick={toggleMobileFilters(true)} startIcon={<FilterListIcon />} variant="contained" sx={{bgcolor: 'var(--cor-detalhes)', color: 'white'}}>
+          <Button onClick={toggleMobileFilters(true)} startIcon={<FilterListIcon />} variant="contained" sx={{ bgcolor: 'var(--cor-detalhes)', color: 'white' }}>
             Filtrar
           </Button>
           <Drawer anchor="left" open={mobileFiltersOpen} onClose={toggleMobileFilters(false)}>
@@ -206,18 +207,18 @@ const HomePage = () => {
                 <Typography variant="subtitle1" fontWeight="bold">Categorias</Typography>
                 <FormGroup>
                   {dadosDaPagina.categoriasDisponiveis.map(categoria => (
-                    <FormControlLabel 
-                      key={categoria} 
-                      control={<Checkbox checked={filtros.categoria.includes(categoria)} onChange={() => handleFiltroChange('categoria', categoria)} />} 
+                    <FormControlLabel
+                      key={categoria}
+                      control={<Checkbox checked={filtros.categoria.includes(categoria)} onChange={() => handleFiltroChange('categoria', categoria)} />}
                       label={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography component="span">
                             {categoria.charAt(0) + categoria.slice(1).toLowerCase()}
                           </Typography>
-                          <Typography 
-                            component="span" 
-                            sx={{ 
-                              fontSize: '0.75rem', 
+                          <Typography
+                            component="span"
+                            sx={{
+                              fontSize: '0.75rem',
                               color: 'text.secondary',
                               fontWeight: 400
                             }}
@@ -225,7 +226,7 @@ const HomePage = () => {
                             ({dadosDaPagina.contadoresCategoria[categoria] || 0})
                           </Typography>
                         </Box>
-                      } 
+                      }
                     />
                   ))}
                 </FormGroup>
@@ -235,18 +236,18 @@ const HomePage = () => {
                 <Typography variant="subtitle1" fontWeight="bold">Tamanho</Typography>
                 <FormGroup>
                   {dadosDaPagina.tamanhosDisponiveis.map(tamanho => (
-                    <FormControlLabel 
-                      key={tamanho} 
-                      control={<Checkbox checked={filtros.tamanho.includes(tamanho)} onChange={() => handleFiltroChange('tamanho', tamanho)} />} 
+                    <FormControlLabel
+                      key={tamanho}
+                      control={<Checkbox checked={filtros.tamanho.includes(tamanho)} onChange={() => handleFiltroChange('tamanho', tamanho)} />}
                       label={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography component="span">
                             {tamanho}
                           </Typography>
-                          <Typography 
-                            component="span" 
-                            sx={{ 
-                              fontSize: '0.75rem', 
+                          <Typography
+                            component="span"
+                            sx={{
+                              fontSize: '0.75rem',
                               color: 'text.secondary',
                               fontWeight: 400
                             }}
@@ -254,7 +255,7 @@ const HomePage = () => {
                             ({dadosDaPagina.contadoresTamanho[tamanho] || 0})
                           </Typography>
                         </Box>
-                      } 
+                      }
                     />
                   ))}
                 </FormGroup>
@@ -264,18 +265,18 @@ const HomePage = () => {
                 <Typography variant="subtitle1" fontWeight="bold">Cor</Typography>
                 <FormGroup>
                   {dadosDaPagina.coresDisponiveis.map(cor => (
-                    <FormControlLabel 
-                      key={cor} 
-                      control={<Checkbox checked={filtros.cor.includes(cor)} onChange={() => handleFiltroChange('cor', cor)} />} 
+                    <FormControlLabel
+                      key={cor}
+                      control={<Checkbox checked={filtros.cor.includes(cor)} onChange={() => handleFiltroChange('cor', cor)} />}
                       label={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography component="span">
                             {cor.charAt(0) + cor.slice(1).toLowerCase()}
                           </Typography>
-                          <Typography 
-                            component="span" 
-                            sx={{ 
-                              fontSize: '0.75rem', 
+                          <Typography
+                            component="span"
+                            sx={{
+                              fontSize: '0.75rem',
                               color: 'text.secondary',
                               fontWeight: 400
                             }}
@@ -283,7 +284,7 @@ const HomePage = () => {
                             ({dadosDaPagina.contadoresCor[cor] || 0})
                           </Typography>
                         </Box>
-                      } 
+                      }
                     />
                   ))}
                 </FormGroup>
@@ -294,8 +295,8 @@ const HomePage = () => {
 
         {/* PRODUTOS */}
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
-          <Box component="main" sx={{ flexGrow: 1}}>
-            <Grid container columnSpacing={1} rowSpacing={{sm: 3, xs: 1}} >
+          <Box component="main" sx={{ flexGrow: 1 }}>
+            <Grid container columnSpacing={1} rowSpacing={{ sm: 3, xs: 1 }} >
               {dadosDaPagina.produtosFiltrados.length === 0 ? (
                 <Grid size={12}>
                   <Typography sx={{ p: 3 }}>Nenhum produto encontrado.</Typography>
@@ -319,7 +320,10 @@ const HomePage = () => {
           </Box>
         </Box>
 
+        {/* SEÇÃO CULTURA VINTAGE */}
+
       </Container>
+      <CulturaVintage />
     </>
   );
 };
