@@ -4,6 +4,8 @@
 
 Link para o site: https://confraria-vintage.vercel.app/
 
+(Por se tratar de uma mostra, o deploy do backEnd e DB podem demorar em torno de 5 segundos para iniciar (cold start))
+
 ## Integrantes
 
 * Marco Antonio Gil do Amaral Oliveira (Scrum Master / Developer)
@@ -14,7 +16,7 @@ Link para o site: https://confraria-vintage.vercel.app/
 
 
 ## Sobre
-Trata-se de uma loja de roupas ecommerce desenvolvido para uma cliente externa, onde o usuario pode se cadastrar, comprar roupas e gerenciar seus pedidos, enquanto os administradores podem verificar pedidos feitos, receber pagamentos (dona da loja), e gerenciar a vida da loja.
+Trata-se de uma loja de roupas ecommerce completa desenvolvido para uma cliente externa, onde o usuario pode se cadastrar, comprar roupas e gerenciar seus pedidos, enquanto os administradores podem verificar pedidos feitos, receber pagamentos (dona da loja), e gerenciar a vida da loja, cadastrar produtos, etc.
 
 * Veja todas as funcionalidades implementadas aqui: <a href="documentos/02-Especificação do Projeto.md"> Especificação do Projeto</a>.
 

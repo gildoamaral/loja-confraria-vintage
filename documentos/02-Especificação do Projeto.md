@@ -1,35 +1,22 @@
 # Especificações do Projeto
 
-<span style="color:red">Pré-requisitos: <a href="01-Documentação de Contexto.md"> Documentação de Contexto</a></span>
-
-Definição do problema e ideia de solução a partir da perspectiva do usuário. 
-
 ## Usuários
-| Tipo de Usuário   | Descrição | Responsabilidades |
-|------------------|-----------|------------------|
-| **xxx** | xxxxx | xxxxx |
-
-### Exemplo
 
 | Tipo de Usuário   | Descrição | Responsabilidades |
 |------------------|-----------|------------------|
-| **Administrador** | Gerencia a aplicação e os usuários. | Gerenciar usuários, configurar o sistema, acessar todos os relatórios. |
-| **Funcionário** | Usa a aplicação para suas tarefas principais. | Criar e editar registros, visualizar relatórios. |
+| **Administrador** | Gerencia as aplicações do site. | Altera funções do layout; cria e gerencia novos produtos; gerencia pedidos feitos pelos clientes; faz envios; |
+| **Cliente** | Comprador do produto | Cadastro e Login; Compra produtos; Analisa os próprios pedidos |
 
 
 ## Arquitetura e Tecnologias
-Conforme aprendizados anteriores da PUC para o curso de ADS, seguiremos utilizando as tecnologias já aprendidas, as quais são citadas abaixo:
 
-#### Frontend
+### Frontend
 Utizaremos React para realização do site em Desktop e responsivo para Mobile;
 
-#### Backend
+### Backend
 Um servidor criado com node.js integrado com o DB em MySql;
 
-#### Mobile
-Para a necessidade de uma aplicação mobile, utilizaremos React Native;
-
-#### Gerenciamento de Fluxo
+### Gerenciamento de Fluxo
 Para gerenciar as atividades feitas, utilizamos a metodologia Kanban através do GitHub Projects, conforme imagem abaixo
 
 ![image](https://github.com/user-attachments/assets/6d20968f-dce4-4933-b1e5-8eed44b67911)
@@ -43,77 +30,34 @@ Para gerenciar as atividades feitas, utilizamos a metodologia Kanban através do
 
 ## Requisitos
 
-As tabelas que se seguem apresentam os requisitos funcionais e não funcionais que detalham o escopo do projeto. Para determinar a prioridade de requisitos, aplicar uma técnica de priorização de requisitos e detalhar como a técnica foi aplicada.
-
-Para mais informações, consulte os microfundamentos Fundamentos de Engenharia de Software e Engenharia de Requisitos de Software. 
-
 ### Requisitos Funcionais
 
 |ID    | Descrição do Requisito  | Prioridade |
 |------|-----------------------------------------|----|
-|RF-001| O sistema deve permitir que o cliente inicie uma conversa com um atendente via WhatsApp com um clique. | ALTA | 
+|RF-001| O sistema deve permitir que o usuário compre produtos | ALTA | 
 |RF-002| O sistema deve permitir que o cliente tire dúvidas sobre produtos diretamente no WhatsApp.   | MÉDIA |
 |RF-003| O sistema deve permitir que os administradores adicionem, editem ou removam produtos do catálogo.  | MÉDIA |
 | RF-004| O sistema deve exibir as formas de pagamento aceitas na loja física | ALTA |
 | RF-005 | O sistema deve permitir a aplicação de filtros. | MÉDIA |
 | RF-006 | O sistema deve permitir que o cliente adicione produtos ao carrinho. | ALTA |
-| RF-007 | O sistema deve permitir a criação de relátorios de metricas de vendas. | ALTA |
-
-### Requisitos não Funcionais
-
-|ID     | Descrição do Requisito  |Prioridade |
-|-------|-------------------------|----|
-|RNF-001| A integração com WhatsApp deve funcionar em todas as versões compatíveis do sistema no Android, iOS e web. | ALTA | 
-|RNF-002| O aplicativo deve oferecer uma experiência fluida, com botões e menus de fácil acesso. |  MÉDIA | 
-|RNF-003| As notificações via WhatsApp devem ser enviadas rapidamente. | ALTA |
-|RNF-004| O sistema deve carregar a página inicial o mais rápido possível. | ALTA |
-
-Com base nas Histórias de Usuário, enumere os requisitos da sua solução. Classifique esses requisitos em dois grupos:
-
-- [Requisitos Funcionais
- (RF)](https://pt.wikipedia.org/wiki/Requisito_funcional):
- correspondem a uma funcionalidade que deve estar presente na
-  plataforma (ex: cadastro de usuário).
-- [Requisitos Não Funcionais
-  (RNF)](https://pt.wikipedia.org/wiki/Requisito_n%C3%A3o_funcional):
-  correspondem a uma característica técnica, seja de usabilidade,
-  desempenho, confiabilidade, segurança ou outro (ex: suporte a
-  dispositivos iOS e Android).
-Lembre-se que cada requisito deve corresponder à uma e somente uma
-característica alvo da sua solução. Além disso, certifique-se de que
-todos os aspectos capturados nas Histórias de Usuário foram cobertos.
-
-## Restrições
-
-O projeto está restrito pelos itens apresentados na tabela a seguir.
-
-|ID| Restrição                                             |
-|--|-------------------------------------------------------|
-|01| O projeto deverá ser entregue até o final do semestre. |
-|02| Essa aplicação não pode ser desenvolvida sozinha.        |
-|03| Essa aplicação não pode ser realizada por terceiros.   |
-|04| Essa aplicação deverá cumprir com todas suas normas. |
-
-Enumere as restrições à sua solução. Lembre-se de que as restrições geralmente limitam a solução candidata.
+| RF-007 | O sistema deve permitir que os administradores alterem o layout do carrossel | ALTA |
+| RF-008 | O sistema deve permitir que os administradores façam envios | ALTA |
 
 
-## Diagrama de Caso de Uso
+## Area de Administração
+![alt text](img/image3.png)
 
-![Diagrama Caso de uso](https://github.com/user-attachments/assets/3a155e2f-5470-4332-b207-93e54fe8d01a)
+## Area do Usuário
+![alt text](img/image5.png)
 
+## Informações do Pedido (Adm)
+![alt text](img/image4.png)
 
-## Projeto da Base de Dados
+## Area de Pagamento 
+![alt text](img/image6.png)
 
-O projeto da base de dados corresponde à representação das entidades e relacionamentos identificadas no Modelo ER, no formato de tabelas, com colunas e chaves primárias/estrangeiras necessárias para representar corretamente as restrições de integridade.
+## Catalogo
+![alt text](img/image7.png)
 
-![Diagrama ER](img/02-diagrama-ER.png)
-
-| Entidade   | Descrição |
-|------------------|-----------|
-| **Produto** | Representa os itens vendidos no e-commerce |
-| **Catálogo** | Organiza os produtos em categorias |
-| **Usuário** | Representa os clientes do e-commerce |
-| **Carrinho** | Cada usuário pode ter um carrinho associado |
-| **Itens do Carrinho** | Armazena os produtos adicionados ao carrinho |
-| **Pedido** | Quando um carrinho é finalizado, ele vira um pedido |
-| **Itens do Pedido** | Registra quais produtos foram comprados |
+## Pagina SOBRE NÓS
+![alt text](img/image2.png)
