@@ -2,7 +2,7 @@
   "name": "codigo-fonte",
   "version": "1.0.0",
   "description": "Descrever orientações essenciais para utilização da aplicação. Sugere-se anexar um pequeno manual de usuário.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "jest",
     "start": "node server.js",
