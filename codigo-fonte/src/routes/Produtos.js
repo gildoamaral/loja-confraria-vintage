@@ -7,33 +7,90 @@ const { deleteImageVersionsFromS3 } = require('../services/s3Service.js');
 const prisma = new PrismaClient();
 const router = express.Router();
 
-// GET - Obter todos os produtos
-router.get('/', async (req, res) => {
+// GET - Obter até 5 produtos em destaque HOMEPAGE
+router.get('/destaques', async (req, res) => {
   try {
-    const { includeInactive } = req.query; // Permite incluir produtos inativos se especificado
-    
-    const produtos = await prisma.produtos.findMany({
-      where: includeInactive === 'true' ? {} : { ativo: true }, // Só produtos ativos por padrão
-      // "Inclua" os dados da relação 'imagens' na busca
+    const produtosEmDestaque = await prisma.produtos.findMany({
+      where: {
+        ativo: true,
+        emDestaque: true, // A mágica acontece aqui!
+      },
+      take: 5, // Limita o resultado a no máximo 5 produtos
       include: {
         imagens: {
-          // Ordena para garantir que a imagem principal (posição 0) venha primeiro
-          orderBy: {
-            posicao: 'asc',
-          },
-          // Pega apenas 1 imagem. Super eficiente para a página de listagem!
-          take: 1,
+          orderBy: { posicao: 'asc' },
+          take: 1, // Pega apenas a primeira imagem para o card
         },
       },
     });
-    res.json(produtos);
+    res.json(produtosEmDestaque);
+  } catch (error) {
+    console.error("Erro ao buscar produtos em destaque:", error);
+    res.status(500).json({ error: "Erro ao buscar produtos em destaque." });
+  }
+});
+
+// GET - Obter todos os produtos
+router.get('/', async (req, res) => {
+  try {
+    const { includeInactive, page = 1, limit = 25, ocasiao } = req.query;
+    
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Condições de filtro
+    const whereConditions = {};
+    
+    // Filtro de produtos ativos
+    if (includeInactive !== 'true') {
+      whereConditions.ativo = true;
+    }
+
+    // Filtro por ocasião
+    if (ocasiao) {
+      if (ocasiao === 'CONFRARIA') {
+        whereConditions.ocasiao = null;
+      } else {
+        whereConditions.ocasiao = ocasiao;
+      }
+    }
+
+    const [produtos, totalProdutos] = await Promise.all([
+      prisma.produtos.findMany({
+        where: whereConditions,
+        skip: skip,
+        take: limitNum,
+        include: {
+          imagens: {
+            orderBy: {
+              posicao: 'asc',
+            },
+            take: 1,
+          },
+        },
+        orderBy: { nome: 'asc' },
+      }),
+      prisma.produtos.count({
+        where: whereConditions,
+      })
+    ]);
+
+    res.json({
+      produtos,
+      totalPages: Math.ceil(totalProdutos / limitNum),
+      currentPage: pageNum,
+      totalProdutos,
+      hasNextPage: pageNum < Math.ceil(totalProdutos / limitNum),
+      hasPreviousPage: pageNum > 1,
+    });
   } catch (error) {
     console.error("Erro ao buscar produtos com imagens:", error);
     res.status(500).json({ error: "Erro ao buscar produtos." });
   }
 });
 
-// GET - Produtos paginados
+// GET - Produtos ADM ESTOQUE
 router.get('/estoque/paginated', AuthAdmin, async (req, res) => {
   // Pega os parâmetros da URL, com valores padrão de página 1 e limite 10
   const page = parseInt(req.query.page) || 1;
@@ -172,13 +229,28 @@ router.put('/:id', AuthAdmin, async (req, res) => {
     tamanho,
     cor,
     categoria,
-    ocasiao
+    ocasiao,
+    emDestaque,
   } = req.body;
 
   try {
-    const existente = await prisma.produtos.findUnique({ where: { id } });
-    if (!existente) {
+    const produtoExistente = await prisma.produtos.findUnique({ where: { id } });
+    if (!produtoExistente) {
       return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    // Verifica se a intenção é marcar o produto como destaque (de false para true)
+    if (emDestaque === true && !produtoExistente.emDestaque) {
+      const totalEmDestaque = await prisma.produtos.count({
+        where: { emDestaque: true },
+      });
+
+      // Se já existem 5 ou mais, retorna um erro claro
+      if (totalEmDestaque >= 5) {
+        return res.status(400).json({ 
+          error: 'Limite de 5 produtos em destaque já foi atingido. Remova o destaque de outro produto antes de adicionar este.' 
+        });
+      }
     }
 
     // A lógica para atualizar as imagens é mais complexa (deletar as antigas, fazer novo upload, etc.)
@@ -194,6 +266,7 @@ router.put('/:id', AuthAdmin, async (req, res) => {
       cor,
       categoria,
       ocasiao,
+      emDestaque
     };
 
     const atualizado = await prisma.produtos.update({

@@ -1,0 +1,23 @@
+/* src/components/ProdutosDestaque.css */
+
+/* Centraliza o carrossel no desktop */
+.produtos-destaque-swiper {
+  width: 100%;
+  max-width: 1200px; /* Define uma largura máxima para o carrossel em telas grandes */
+  margin: 0 auto; /* Centraliza o carrossel */
+  padding: 16px 0; /* Espaço para a paginação */
+}
+
+/* Define a largura dos slides para o efeito de preview no celular */
+.produtos-destaque-slide {
+  width: 80%; /* Cada slide ocupa 80% da largura da tela */
+  max-width: 300px; /* Define uma largura máxima para o card */
+  height: auto; /* Garante que a altura se ajuste ao conteúdo */
+}
+
+/* Em telas maiores, a largura volta a ser automática */
+@media (min-width: 900px) {
+  .produtos-destaque-slide {
+    width: auto;
+  }
+}

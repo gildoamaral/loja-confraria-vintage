@@ -9,7 +9,8 @@ import {
   Grid,
   MenuItem,
   FormControlLabel,
-  Switch
+  Switch,
+  FormHelperText
 } from '@mui/material';
 
 // Defina os valores dos seus Enums aqui para os menus de seleção
@@ -33,9 +34,10 @@ const EditProductModal = ({ open, onClose, product, onSave }) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' || type === 'switch' ? checked : value, // <-- MUDANÇA 1: Handle Switch
     }));
   };
+
 
   const handleSave = () => {
     // Prepara os dados para enviar, convertendo para os tipos corretos
@@ -82,13 +84,33 @@ const EditProductModal = ({ open, onClose, product, onSave }) => {
               {OCASIOES.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)}
             </TextField>
           </Grid>
+
           <Grid size={12}>
             <FormControlLabel
               control={<Switch checked={formData.ativo || false} onChange={handleChange} name="ativo" />}
               label="Produto Ativo"
             />
+
+            <FormControlLabel
+            control={
+              <Switch
+                name="emDestaque"
+                checked={formData.emDestaque || false}
+                onChange={handleChange}
+                color="primary"
+              />
+            }
+            label="Colocar em Destaque na Homepage"
+          />
+          {/* AVISO ADICIONADO AQUI */}
+          <FormHelperText>
+            Apenas 5 produtos podem ser marcados como destaque. Se o limite for atingido, este produto não aparecerá na homepage.
+          </FormHelperText>
           </Grid>
+          
         </Grid>
+
+
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>

@@ -50,6 +50,7 @@ model produtos {
   precoPromocional Float?
   ativo            Boolean         @default(true)
   imagens          ProdutoImagem[]
+  emDestaque       Boolean   @default(false)
 
   itensPedido ItemPedido[]
 }
@@ -74,6 +75,7 @@ model Pedidos {
   dataFinalizado DateTime?
   codigoRastreio String?
   empresaFrete   String? // Nome da empresa de frete, se aplicável
+  QrCode         String? // QR Code para pagamento, se aplicável
 
   enderecoEntrega String?
   cep             String?

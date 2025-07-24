@@ -18,6 +18,7 @@ import Configuracoes from '../pages/Conta/Configuracoes.jsx';
 import DetalhePedido from '../pages/Conta/DetalhePedidos.jsx';
 import MeusPedidos from '../pages/Conta/MeusPedidos.jsx';
 import Seguranca from '../pages/Conta/Seguranca.jsx';
+import MenuProdutos from '../pages/Colecoes/MenuProdutos.jsx';
 
 function AppRoutes() {
   return (
@@ -29,7 +30,8 @@ function AppRoutes() {
         <Route path="/produto/:id" element={<NewInformProduto />} />
         <Route path='/sobre' element={<Sobre />} />
         <Route path="/cadastro-usuario" element={<CadastroUsuario />} />
-      <Route path='/carrinho' element={<Carrinho />} />
+        <Route path='/carrinho' element={<Carrinho />} />
+        <Route path="/colecoes" element={<MenuProdutos />} />
 
 
         {/* USUÁRIO */}

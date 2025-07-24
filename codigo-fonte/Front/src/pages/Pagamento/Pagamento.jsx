@@ -357,14 +357,23 @@ const Pagamento = () => {
                 left: { xs: 16, md: 24 },
                 top: '50%',
                 transform: 'translateY(-50%)',
-                minWidth: 0, 
+                minWidth: 40,
+                minHeight: 40,
                 color: 'white',
                 backgroundColor: 'rgba(255,255,255,0.1)',
                 borderRadius: '50%',
                 width: 40,
                 height: 40,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 10,
                 '&:hover': {
                   backgroundColor: 'rgba(255,255,255,0.2)',
+                },
+                '& .MuiSvgIcon-root': {
+                  pointerEvents: 'none',
                 }
               }}
               aria-label="Voltar"

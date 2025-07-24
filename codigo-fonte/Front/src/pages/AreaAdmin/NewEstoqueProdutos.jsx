@@ -18,6 +18,7 @@ import {
   Chip
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import StarIcon from '@mui/icons-material/Star';
 
 const NewEstoqueProdutos = () => {
   const [produtos, setProdutos] = useState([]);
@@ -66,7 +67,10 @@ const NewEstoqueProdutos = () => {
       alert('Produto atualizado com sucesso!');
     } catch (error) {
       console.error("Erro ao salvar produto:", error);
-      alert('Falha ao atualizar o produto.');
+      
+      // MUDANÇA AQUI: Tenta pegar a mensagem de erro específica da API
+      const errorMessage = error.response?.data?.error || 'Falha ao atualizar o produto.';
+      alert(errorMessage);
     }
   };
 
@@ -88,6 +92,7 @@ const NewEstoqueProdutos = () => {
               <TableCell align="right">Qtd.</TableCell>
               <TableCell>Categoria</TableCell>
               <TableCell>Ocasião</TableCell>
+              <TableCell>Destaque</TableCell>
               <TableCell>Ativo</TableCell>
               <TableCell align="center">Ações</TableCell>
             </TableRow>
@@ -109,6 +114,9 @@ const NewEstoqueProdutos = () => {
                 <TableCell align="right">{produto.quantidade}</TableCell>
                 <TableCell>{produto.categoria}</TableCell>
                 <TableCell>{produto.ocasiao || '-'}</TableCell>
+                <TableCell align="center">
+                  {produto.emDestaque && <StarIcon color="warning" fontSize="small" />}
+                </TableCell>
                 <TableCell>
                   <Chip 
                     label={produto.ativo ? 'Sim' : 'Não'} 

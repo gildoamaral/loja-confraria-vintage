@@ -38,7 +38,7 @@ const SeletorEndereco = ({
         aria-label="Opção de endereço"
         fullWidth
       >
-        <ToggleButton value="cadastrado" disabled={!enderecoUsuario.linha && !enderecoLinha}>
+        <ToggleButton value="cadastrado" >
           Usar endereço cadastrado
         </ToggleButton>
         <ToggleButton value="novo">

@@ -1,8 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardActionArea, CardMedia, CardContent, Typography, Box, Chip } from '@mui/material';
+import { Card, CardActionArea, CardMedia, CardContent, Typography, Box, Chip, Fade } from '@mui/material';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 
 const ProdutoCard = ({ produto }) => {
+  const { elementRef, hasBeenVisible } = useIntersectionObserver({
+    threshold: 0.2,
+    rootMargin: '20px',
+  });
 
   // Acessa a imagem de forma segura, usando a versão 'medium' para o card
   const imagemPrincipalUrl = produto.imagens?.[0]?.urls?.medium
@@ -13,7 +18,8 @@ const ProdutoCard = ({ produto }) => {
   const temPromocao = produto.precoPromocional != null;
 
   return (
-    <div >
+    <div ref={elementRef}>
+      <Fade in={hasBeenVisible} timeout={600}>
         <Card
           sx={{
             display: 'flex',
@@ -66,6 +72,7 @@ const ProdutoCard = ({ produto }) => {
             </CardContent>
           </CardActionArea>
         </Card>
+      </Fade>
     </div>
   );
 };

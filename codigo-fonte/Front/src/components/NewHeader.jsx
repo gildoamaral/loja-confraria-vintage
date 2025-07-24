@@ -42,27 +42,6 @@ const Navbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // useEffect(() => {
-  //   const fetchNavbarData = async () => {
-  //     try {
-  //       const userStatusResponse = await api.get('/api/auth/status');
-  //       if (userStatusResponse.status === 200) {
-  //         const userData = userStatusResponse.data;
-  //         setUser(userData);
-  //         const cartCountResponse = await api.get('/api/cart/count');
-  //         setCartItemCount(cartCountResponse.data.count);
-  //       }
-  //     } catch (error) {
-  //       console.log('Usuário não autenticado ou erro ao buscar dados: ', error);
-  //       setUser(null);
-  //       setCartItemCount(0);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchNavbarData();
-  // }, []);
-
   useEffect(() => {
     const controlNavbar = () => {
       const currentScrollY = window.scrollY;
@@ -105,7 +84,6 @@ const Navbar = () => {
 
   useEffect(() => {
     const fetchCartCount = async () => {
-      // Só busca a contagem se o usuário estiver autenticado.
       if (isAuthenticated) {
         try {
           const cartCountResponse = await api.get('/api/cart/count');
@@ -115,12 +93,11 @@ const Navbar = () => {
           setCartItemCount(0);
         }
       } else {
-        // Se não há usuário, zera a contagem.
         setCartItemCount(0);
       }
     };
     fetchCartCount();
-  }, [isAuthenticated]); // Roda sempre que o status de login muda.
+  }, [isAuthenticated]);
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -172,6 +149,7 @@ const Navbar = () => {
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button color="inherit" component={RouterLink} to="/">Home</Button>
+              <Button color="inherit" component={RouterLink} to="/colecoes">Coleções</Button>
               <Button color="inherit" component={RouterLink} to="/sobre">Sobre</Button>
               {isAuthenticated && usuario?.posicao === 'ADMIN' && (
                 <Button color="inherit" component={RouterLink} to="/admin" startIcon={<AdminPanelSettings />}>
@@ -249,17 +227,21 @@ const Navbar = () => {
         <Box sx={{ width: 250, pt: 2 }}>
           <List>
             {/* Navegação */}
-            <ListItem button component={RouterLink} to="/" onClick={handleMobileMenuClose}>
+            <ListItem component={RouterLink} to="/" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
               <ListItemText sx={{color: "black"}} primary="Home" />
             </ListItem>
+
+            <ListItem component={RouterLink} to="/colecoes" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
+              <ListItemText sx={{color: "black"}} primary="Coleções" />
+            </ListItem>
             
-            <ListItem button component={RouterLink} to="/sobre" onClick={handleMobileMenuClose}>
+            <ListItem component={RouterLink} to="/sobre" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
               <ListItemText sx={{color: "black"}} primary="Sobre" />
             </ListItem>
 
             {/* Admin - Só se for admin */}
             {isAuthenticated && usuario?.posicao === 'ADMIN' && (
-              <ListItem button component={RouterLink} to="/admin" onClick={handleMobileMenuClose}>
+              <ListItem component={RouterLink} to="/admin" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
                 <ListItemIcon>
                   <AdminPanelSettings />
                 </ListItemIcon>
@@ -279,19 +261,19 @@ const Navbar = () => {
                   />
                 </ListItem>
                 
-                <ListItem button component={RouterLink} to="/minha-conta" onClick={handleMobileMenuClose}>
+                <ListItem component={RouterLink} to="/minha-conta" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
                   <ListItemText sx={{color: "black"}} primary="Minha Conta" />
                 </ListItem>
                 
-                <ListItem button onClick={handleLogout}>
+                <ListItem onClick={handleLogout} sx={{ cursor: 'pointer' }}>
                   <ListItemText primary="Sair" />
                 </ListItem>
               </>
             ) : (
-              <ListItem button component={RouterLink} to="/login" onClick={handleMobileMenuClose}>
+              <ListItem component={RouterLink} to="/login" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
                 <ListItemIcon>
                   <PersonOutline />
                 </ListItemIcon>
