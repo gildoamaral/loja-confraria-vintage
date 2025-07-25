@@ -3,6 +3,7 @@ const router = express.Router();
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
+const crypto = require('crypto');
 
 const prisma = new PrismaClient();
 const client = new MercadoPagoConfig(
@@ -441,5 +442,78 @@ router.post('/criar-cartao', async (req, res) => {
     res.status(500).send('Erro no servidor');
   }
 });
+
+// --- NOVA ROTA DE WEBHOOK COM VALIDAÇÃO DE ASSINATURA ---
+router.post('/webhook', async (req, res) => {
+  try {
+    const signatureHeader = req.get('x-signature');
+    if (!signatureHeader) {
+      return res.status(401).send('Assinatura não encontrada.');
+    }
+
+    const parts = signatureHeader.split(',');
+    const timestamp = parts.find(part => part.startsWith('ts=')).split('=')[1];
+    const receivedSignature = parts.find(part => part.startsWith('v1=')).split('=')[1];
+    const signedTemplate = `id:${req.body.id};request-id:${req.get('x-request-id')};ts:${timestamp};`;
+
+    const hmac = crypto.createHmac('sha256', process.env.MERCADO_PAGO_WEBHOOK_SECRET);
+    hmac.update(signedTemplate);
+    const calculatedSignature = hmac.digest('hex');
+
+    if (calculatedSignature !== receivedSignature) {
+      console.error('Webhook com assinatura inválida!');
+      return res.status(401).send('Assinatura inválida.');
+    }
+
+    console.log('--- Webhook com assinatura VÁLIDA recebido ---', req.body);
+    const notification = req.body;
+
+    if (notification.type === 'payment' && notification.data?.id) {
+      const paymentId = notification.data.id;
+      const paymentDetails = await payment.get({ id: paymentId });
+      const nossoPagamento = await prisma.pagamentos.findFirst({
+        where: { gatewayTransactionId: paymentId.toString() },
+      });
+
+      if (!nossoPagamento) {
+        console.warn(`Webhook: Pagamento com ID de gateway ${paymentId} não encontrado.`);
+        return res.status(200).send('Pagamento não encontrado no sistema.');
+      }
+
+      if (paymentDetails.status === 'approved' && nossoPagamento.status !== 'APROVADO') {
+        await prisma.$transaction([
+          prisma.pagamentos.update({
+            where: { id: nossoPagamento.id },
+            data: { status: 'APROVADO' },
+          }),
+          prisma.pedidos.update({
+            where: { id: nossoPagamento.pedidoId },
+            data: { status: 'PAGO' },
+          }),
+        ]);
+        console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para PAGO.`);
+      } else if (['cancelled', 'rejected'].includes(paymentDetails.status) && nossoPagamento.status !== 'FALHOU') {
+        await prisma.$transaction([
+          prisma.pagamentos.update({
+            where: { id: nossoPagamento.id },
+            data: { status: 'FALHOU' },
+          }),
+          prisma.pedidos.update({
+            where: { id: nossoPagamento.pedidoId },
+            data: { status: 'CANCELADO' },
+          }),
+        ]);
+        console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para CANCELADO.`);
+      }
+    }
+
+    res.status(200).send('Notificação recebida e validada.');
+
+  } catch (error) {
+    console.error('Erro geral ao processar webhook:', error);
+    res.status(500).send('Erro interno no servidor.');
+  }
+});
+
 
 module.exports = router;
