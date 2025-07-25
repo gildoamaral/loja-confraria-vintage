@@ -52,6 +52,8 @@ const Pagamento = () => {
   const [nomeFrete, setNomeFrete] = useState('');
   const [subtotal, setSubtotal] = useState(valorTotal);
   const [metodo, setMetodo] = useState('');
+  const [loading, setLoading] = useState(false);
+  
 
   // Estados e lógica do CEP movidos do FormularioEndereco
   const { addressData, loading: cepLoading, error: cepError, fetchAddress, clearData } = useCep();
@@ -211,6 +213,32 @@ const Pagamento = () => {
       console.error('Erro ao continuar para a próxima etapa:', error);
     }
   }
+
+   const handleFinalizarComPix = async () => {
+    setLoading(true);
+    try {
+      const response = await api.post('/pagamentos/criar-pix', {
+        pedidoId,
+        valorFrete,
+        nomeFrete,
+      });
+
+      // 3. Redireciona para a nova página de confirmação, passando os dados
+      navigate('/confirmacao-pedido', { 
+        state: { 
+          pixData: response.data.pixData,
+          pedidoId: pedidoId,
+          subtotal: subtotal // Passa o valor total para exibir na tela de sucesso
+        } 
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível gerar o PIX. Tente novamente.');
+      setLoading(false);
+    }
+    // Não precisa de finally, pois o usuário será redirecionado
+  };
 
   const handleNovoEndereco = () => {
     setEndereco({
@@ -568,7 +596,9 @@ const Pagamento = () => {
                         valorTotal={valorTotal}
                         valorFrete={valorFrete}
                         nomeFrete={nomeFrete}
-                      />
+                        onFinalizarPix={handleFinalizarComPix}
+                        loadingPix={loading}
+                    />
                     </Paper>
                   </Box>
                 )}

@@ -1,7 +1,8 @@
 import Carrossel from '../../components/Carrossel';
 import CulturaVintage from '../../components/CulturaVintage';
-import CategoriasDestaque from './components/CategoriasDestaque';
-import ProdutosDestaque from './components/ProdutosDestaque';
+import MenuProdutos from '../Colecoes/MenuProdutos';
+// import CategoriasDestaque from './components/CategoriasDestaque';
+// import ProdutosDestaque from './components/ProdutosDestaque';
 
 
 
@@ -12,11 +13,13 @@ const HomePage = () => {
     <>
       <Carrossel />
 
-      <CategoriasDestaque />
+      {/* <CategoriasDestaque /> */}
 
-      <ProdutosDestaque />
+      {/* <ProdutosDestaque /> */}
 
-      <CulturaVintage />
+      <MenuProdutos />
+
+      {/* <CulturaVintage /> */}
     </>
   );
 };

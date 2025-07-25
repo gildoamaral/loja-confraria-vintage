@@ -12,6 +12,7 @@ model Usuarios {
   nome           String
   sobrenome      String
   dataNascimento DateTime
+  cpf            String?  @unique
 
   endereco    String?
   cep         String?
@@ -50,7 +51,7 @@ model produtos {
   precoPromocional Float?
   ativo            Boolean         @default(true)
   imagens          ProdutoImagem[]
-  emDestaque       Boolean   @default(false)
+  emDestaque       Boolean         @default(false)
 
   itensPedido ItemPedido[]
 }
@@ -114,9 +115,12 @@ model Pagamentos {
   descontos             Float? // Valor de cupons, se houver
   valorTotal            Float // A soma final que o cliente pagou (valorProdutos + frete + taxas - descontos)
 
-  parcelas Int?
-  gatewayTransactionId    String?  // ID da transação no Mercado Pago, para reconciliação
-  criadoEm DateTime @default(now())
+  pixQrCodeBase64 String? @db.Text // Armazena a imagem do QR Code
+  pixQrCode       String? @db.Text // Armazena o código "copia e cola"
+
+  parcelas             Int?
+  gatewayTransactionId String? // ID da transação no Mercado Pago, para reconciliação
+  criadoEm             DateTime @default(now())
 
   pedido Pedidos @relation(fields: [pedidoId], references: [id])
 }

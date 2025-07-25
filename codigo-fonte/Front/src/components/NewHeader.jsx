@@ -149,7 +149,7 @@ const Navbar = () => {
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Button color="inherit" component={RouterLink} to="/">Home</Button>
-              <Button color="inherit" component={RouterLink} to="/colecoes">Coleções</Button>
+              {/* <Button color="inherit" component={RouterLink} to="/colecoes">Coleções</Button> */}
               <Button color="inherit" component={RouterLink} to="/sobre">Sobre</Button>
               {isAuthenticated && usuario?.posicao === 'ADMIN' && (
                 <Button color="inherit" component={RouterLink} to="/admin" startIcon={<AdminPanelSettings />}>
@@ -231,9 +231,9 @@ const Navbar = () => {
               <ListItemText sx={{color: "black"}} primary="Home" />
             </ListItem>
 
-            <ListItem component={RouterLink} to="/colecoes" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
+            {/* <ListItem component={RouterLink} to="/colecoes" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
               <ListItemText sx={{color: "black"}} primary="Coleções" />
-            </ListItem>
+            </ListItem> */}
             
             <ListItem component={RouterLink} to="/sobre" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
               <ListItemText sx={{color: "black"}} primary="Sobre" />

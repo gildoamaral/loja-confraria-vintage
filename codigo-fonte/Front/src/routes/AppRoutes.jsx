@@ -19,6 +19,7 @@ import DetalhePedido from '../pages/Conta/DetalhePedidos.jsx';
 import MeusPedidos from '../pages/Conta/MeusPedidos.jsx';
 import Seguranca from '../pages/Conta/Seguranca.jsx';
 import MenuProdutos from '../pages/Colecoes/MenuProdutos.jsx';
+import ConfirmacaoPedido from '../pages/Pagamento/ConfirmacaoPedido.jsx';
 
 function AppRoutes() {
   return (
@@ -43,6 +44,8 @@ function AppRoutes() {
             <Route path="pedidos/:id" element={<DetalhePedido />} />
             <Route path="seguranca" element={<Seguranca />} />
           </Route>
+        <Route path="/confirmacao-pedido" element={<ConfirmacaoPedido />} />
+
         </Route>
 
         {/* ADMIN */}

@@ -138,11 +138,11 @@ const MenuProdutos = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ pt: 2, pb: 10 }}>
+    <Container maxWidth="xl" sx={{ pt: 2, pb: 10, minHeight: '100vh' }}>
 
       {/* OCASIOES */}
       <Box sx={{
-        mb: 7,
+        mb: 3,
         p: '1rem 0',
       }}>
         {isMobile ? (
@@ -207,7 +207,8 @@ const MenuProdutos = () => {
         top: navbarVisible ? '5rem' : '2rem',
         alignSelf: 'flex-start',
         zIndex: 1,
-        transition: 'top 0.3s ease-in-out'
+        transition: 'top 0.3s ease-in-out',
+        justifySelf: 'flex-end'
       }}>
         <Button onClick={toggleMobileFilters(true)} startIcon={<FilterListIcon />} variant="contained" sx={{ bgcolor: 'var(--cor-detalhes)', color: 'white' }}>
           Filtrar

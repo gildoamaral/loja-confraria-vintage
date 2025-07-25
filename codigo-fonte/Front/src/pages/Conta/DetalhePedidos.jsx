@@ -12,13 +12,18 @@ import {
   Card,
   CardContent,
   Chip,
-  Avatar
+  Avatar,
+  TextField,     // <-- Adicione estes imports
+  IconButton,
+  Tooltip,
+  Dialog
 } from '@mui/material';
 import { 
   ArrowBack as ArrowBackIcon,
   Receipt as ReceiptIcon,
   LocalShipping as ShippingIcon,
-  ShoppingBag as ShoppingBagIcon
+  ShoppingBag as ShoppingBagIcon,
+  ContentCopy as ContentCopyIcon
 } from '@mui/icons-material';
 import { getDetalhePedido } from '../../services/usuarioService';
 
@@ -27,6 +32,8 @@ const DetalhePedido = () => {
   const [pedido, setPedido] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [copySuccess, setCopySuccess] = useState('');
+  const [pixModalOpen, setPixModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchDetalhes = async () => {
@@ -42,6 +49,12 @@ const DetalhePedido = () => {
     };
     fetchDetalhes();
   }, [id]);
+
+  const handleCopy = (textToCopy) => {
+        navigator.clipboard.writeText(textToCopy);
+        setCopySuccess('Copiado!');
+        setTimeout(() => setCopySuccess(''), 2000);
+    };
 
   if (loading) {
     return (
@@ -75,7 +88,7 @@ const DetalhePedido = () => {
     );
   }
 
-  const { itens, pagamento, rua, numero, bairro, cidade, estado, cep } = pedido;
+  const { itens = [], pagamento = {}, rua, numero, bairro, cidade, estado, cep } = pedido || {};
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -97,19 +110,153 @@ const DetalhePedido = () => {
         <Button 
           component={RouterLink} 
           to="/minha-conta/pedidos" 
+          color='error'
           startIcon={<ArrowBackIcon />} 
           sx={{ mb: 2 }}
           variant="outlined"
         >
           Voltar para Meus Pedidos
         </Button>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" color="errr.main" gutterBottom>
           Detalhes do Pedido
         </Typography>
-        <Typography variant="h5" color="primary" gutterBottom>
+        <Typography variant="h5" color="errr.main" gutterBottom>
           Nº {pedido.id}
         </Typography>
       </Box>
+
+      {pedido.status === 'AGUARDANDO_PAGAMENTO' && pagamento?.metodo === 'PIX' && (
+        <>
+          <Card sx={{ mb: 3, border: '2px solid', borderColor: 'warning.main', bgcolor: '#FFF3CD' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Avatar sx={{ bgcolor: 'warning.main', mr: 2 }}>
+                    <ContentCopyIcon />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6" color="warning.main" gutterBottom>
+                      Pagamento PIX Pendente
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Seu pagamento via PIX está aguardando confirmação. Clique para visualizar os dados de pagamento.
+                    </Typography>
+                  </Box>
+                </Box>
+                <Button 
+                  variant="contained" 
+                  color="warning" 
+                  onClick={() => setPixModalOpen(true)}
+                  sx={{ ml: 2 }}
+                >
+                  Ver PIX
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+          
+          <Dialog 
+            open={pixModalOpen} 
+            onClose={() => setPixModalOpen(false)} 
+            maxWidth="sm" 
+            fullWidth
+            scroll="body"
+            PaperProps={{
+              sx: {
+                borderRadius: 2,
+                maxHeight: '90vh',
+                overflow: 'hidden'
+              }
+            }}
+          >
+            <Card sx={{ maxHeight: '90vh', overflow: 'auto' }}>
+              <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
+                  <Avatar sx={{ bgcolor: 'error.main', mr: 2, width: 48, height: 48 }}>
+                    <ContentCopyIcon />
+                  </Avatar>
+                  <Typography variant="h5" color="error.main">
+                    Finalize seu Pagamento PIX
+                  </Typography>
+                </Box>
+                
+                <Divider sx={{ mb: 3 }} />
+                
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                  Escaneie o QR Code abaixo com o app do seu banco ou use o código PIX Copia e Cola.
+                </Typography>
+                
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  mb: 3,
+                  p: 2,
+                  bgcolor: 'grey.50',
+                  borderRadius: 2,
+                  border: '2px dashed',
+                  borderColor: 'grey.300'
+                }}>
+                  <img
+                    src={`data:image/png;base64,${pagamento.pixQrCodeBase64}`}
+                    alt="QR Code PIX"
+                    style={{ maxWidth: '200px', borderRadius: '8px' }}
+                  />
+                </Box>
+                
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
+                  Código PIX Copia e Cola:
+                </Typography>
+                
+                <TextField
+                  fullWidth
+                  value={pagamento.pixQrCode}
+                  variant="outlined"
+                  size="small"
+                  sx={{ mb: 2 }}
+                  InputProps={{
+                    readOnly: true,
+                    endAdornment: (
+                      <Tooltip title="Copiar código PIX">
+                        <IconButton 
+                          onClick={() => handleCopy(pagamento.pixQrCode)}
+                          edge="end"
+                          color="primary"
+                        >
+                          <ContentCopyIcon />
+                        </IconButton>
+                      </Tooltip>
+                    ),
+                  }}
+                />
+                
+                {copySuccess && (
+                  <Alert severity="success" sx={{ mb: 2 }}>
+                    {copySuccess}
+                  </Alert>
+                )}
+                
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+                  <Button 
+                    onClick={() => setPixModalOpen(false)} 
+                    variant="outlined" 
+                    color="primary"
+                  >
+                    Fechar
+                  </Button>
+                  <Button 
+                    onClick={() => handleCopy(pagamento.pixQrCode)}
+                    variant="contained" 
+                    color="primary"
+                    startIcon={<ContentCopyIcon />}
+                  >
+                    Copiar Código
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </Dialog>
+        </>
+      )}
 
       <Grid container spacing={3}>
         {/* Resumo do Pedido */}
