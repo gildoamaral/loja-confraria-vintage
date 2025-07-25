@@ -452,36 +452,23 @@ router.post('/webhook', async (req, res) => {
       return res.status(401).send('Assinatura não encontrada.');
     }
 
-    console.log('--------------------------------------------------');
-
-
-
-    console.log('Webhook recebido:', req.body);
-    console.log('Assinatura recebida:', signatureHeader);
-
     const parts = signatureHeader.split(',');
     const timestamp = parts.find(part => part.startsWith('ts=')).split('=')[1];
     const receivedSignature = parts.find(part => part.startsWith('v1=')).split('=')[1];
-    const signedTemplate = `id:${req.body.id};request-id:${req.get('x-request-id')};ts:${timestamp};`;
-
-    console.log({
-      id: req.body.id,
-      requestId: req.get('x-request-id'),
-      timestamp
-    });
-
-    console.log('Template assinado:', signedTemplate);
+    
+    // CORREÇÃO: Usamos req.body.data.id em vez de req.body.id
+    const signedTemplate = `id:${req.body.data.id};request-id:${req.get('x-request-id')};ts:${timestamp};`;
 
     const hmac = crypto.createHmac('sha256', process.env.MERCADO_PAGO_WEBHOOK_SECRET);
     hmac.update(signedTemplate);
     const calculatedSignature = hmac.digest('hex');
 
-    console.log('Assinatura calculada:', calculatedSignature);
-    console.log('Assinatura recebida:', receivedSignature);
-
-
     if (calculatedSignature !== receivedSignature) {
       console.error('Webhook com assinatura inválida!');
+      // Log para ajudar na depuração futura
+      console.log('Template usado:', signedTemplate);
+      console.log('Assinatura calculada:', calculatedSignature);
+      console.log('Assinatura recebida:', receivedSignature);
       return res.status(401).send('Assinatura inválida.');
     }
 
@@ -500,28 +487,17 @@ router.post('/webhook', async (req, res) => {
         return res.status(200).send('Pagamento não encontrado no sistema.');
       }
 
+      // Lógica para atualizar o banco de dados (sem alterações aqui)
       if (paymentDetails.status === 'approved' && nossoPagamento.status !== 'APROVADO') {
         await prisma.$transaction([
-          prisma.pagamentos.update({
-            where: { id: nossoPagamento.id },
-            data: { status: 'APROVADO' },
-          }),
-          prisma.pedidos.update({
-            where: { id: nossoPagamento.pedidoId },
-            data: { status: 'PAGO' },
-          }),
+          prisma.pagamentos.update({ where: { id: nossoPagamento.id }, data: { status: 'APROVADO' } }),
+          prisma.pedidos.update({ where: { id: nossoPagamento.pedidoId }, data: { status: 'PAGO' } }),
         ]);
         console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para PAGO.`);
       } else if (['cancelled', 'rejected'].includes(paymentDetails.status) && nossoPagamento.status !== 'FALHOU') {
         await prisma.$transaction([
-          prisma.pagamentos.update({
-            where: { id: nossoPagamento.id },
-            data: { status: 'FALHOU' },
-          }),
-          prisma.pedidos.update({
-            where: { id: nossoPagamento.pedidoId },
-            data: { status: 'CANCELADO' },
-          }),
+          prisma.pagamentos.update({ where: { id: nossoPagamento.id }, data: { status: 'FALHOU' } }),
+          prisma.pedidos.update({ where: { id: nossoPagamento.pedidoId }, data: { status: 'CANCELADO' } }),
         ]);
         console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para CANCELADO.`);
       }
