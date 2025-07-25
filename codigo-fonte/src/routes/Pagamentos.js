@@ -4,6 +4,7 @@ const { MercadoPagoConfig, Payment } = require('mercadopago');
 require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
+const auth = require('../middlewares/Auth');
 
 const prisma = new PrismaClient();
 const client = new MercadoPagoConfig(
@@ -15,12 +16,12 @@ const client = new MercadoPagoConfig(
 const payment = new Payment(client);
 
 // Teste simples
-router.get('/', (req, res) => {
+router.get('/', auth, (req, res) => {
   res.send('Rota de pagamentos funcionando!');
 });
 
 // Nova rota para buscar pagamento por pedidoId
-router.get('/por-pedido/:pedidoId', async (req, res) => {
+router.get('/por-pedido/:pedidoId', auth, async (req, res) => {
   const pedidoId = Number(req.params.pedidoId);
 
   if (!pedidoId) {
@@ -78,7 +79,7 @@ router.get('/por-pedido/:pedidoId', async (req, res) => {
 //     });
 // });
 
-router.post('/criar-pix', async (req, res) => {
+router.post('/criar-pix', auth, async (req, res) => {
   const { pedidoId, valorFrete, nomeFrete } = req.body;
 
   console.log("PEDIDO ID ---------------", req.body)
@@ -319,7 +320,7 @@ router.post('/criar-pix', async (req, res) => {
 //     });
 // });
 
-router.post('/criar-cartao', async (req, res) => {
+router.post('/criar-cartao', auth, async (req, res) => {
   const { pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete, nomeFrete } = req.body;
 
   try {

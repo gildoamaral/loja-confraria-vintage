@@ -44,7 +44,7 @@ app.use(cookieParser());
 app.get('/', (req, res) => { res.send('Servidor rodando...'); });
 app.use('/usuarios', Usuario);
 app.use('/produtos', Produtos);
-app.use('/pagamentos', auth, Pagamentos);
+app.use('/pagamentos', Pagamentos);
 app.post('/login', Login)
 app.use('/pedidos', Pedidos);
 app.use('/auth', Check);
