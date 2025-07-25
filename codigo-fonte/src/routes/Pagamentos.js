@@ -452,14 +452,33 @@ router.post('/webhook', async (req, res) => {
       return res.status(401).send('Assinatura não encontrada.');
     }
 
+    console.log('--------------------------------------------------');
+
+
+
+    console.log('Webhook recebido:', req.body);
+    console.log('Assinatura recebida:', signatureHeader);
+
     const parts = signatureHeader.split(',');
     const timestamp = parts.find(part => part.startsWith('ts=')).split('=')[1];
     const receivedSignature = parts.find(part => part.startsWith('v1=')).split('=')[1];
     const signedTemplate = `id:${req.body.id};request-id:${req.get('x-request-id')};ts:${timestamp};`;
 
+    console.log({
+      id: req.body.id,
+      requestId: req.get('x-request-id'),
+      timestamp
+    });
+
+    console.log('Template assinado:', signedTemplate);
+
     const hmac = crypto.createHmac('sha256', process.env.MERCADO_PAGO_WEBHOOK_SECRET);
     hmac.update(signedTemplate);
     const calculatedSignature = hmac.digest('hex');
+
+    console.log('Assinatura calculada:', calculatedSignature);
+    console.log('Assinatura recebida:', receivedSignature);
+
 
     if (calculatedSignature !== receivedSignature) {
       console.error('Webhook com assinatura inválida!');
