@@ -39,9 +39,16 @@ const Carrossel = () => {
     const fetchCarrosselImagens = async () => {
       try {
         const response = await api.get('/api/carrossel');
-        setSlides(response.data);
+        // Adição crucial aqui:
+        if (Array.isArray(response.data)) {
+          setSlides(response.data);
+        } else {
+          console.error("Dados da API não são um array:", response.data);
+          setSlides([]); // Garante que slides seja sempre um array, mesmo que vazio
+        }
       } catch (error) {
         console.error("Erro ao buscar imagens do carrossel:", error);
+        setSlides([]); // Em caso de erro, garante que slides seja um array vazio
       } finally {
         setLoading(false);
       }
