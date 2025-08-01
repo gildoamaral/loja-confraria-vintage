@@ -12,6 +12,8 @@ import {
   Switch,
   FormHelperText
 } from '@mui/material';
+import inputStyles from '../../../styles/inputStyles';
+
 
 // Defina os valores dos seus Enums aqui para os menus de seleção
 const CATEGORIAS = ['SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO', 'CALCADO', 'ACESSORIOS', 'OUTROS'];
@@ -59,27 +61,27 @@ const EditProductModal = ({ open, onClose, product, onSave }) => {
       <DialogContent>
         <Grid container spacing={2} sx={{ pt: 1 }}>
           <Grid size={{ xs: 12, sm: 8 }}>
-            <TextField name="nome" label="Nome do Produto" value={formData.nome || ''} onChange={handleChange} fullWidth />
+            <TextField name="nome" label="Nome do Produto" value={formData.nome || ''} onChange={handleChange} fullWidth sx={inputStyles} />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField name="quantidade" label="Quantidade" type="number" value={formData.quantidade || 0} onChange={handleChange} fullWidth />
+            <TextField name="quantidade" label="Quantidade" type="number" value={formData.quantidade || 0} onChange={handleChange} fullWidth sx={inputStyles} />
           </Grid>
           <Grid size={12}>
-            <TextField name="descricao" label="Descrição" value={formData.descricao || ''} onChange={handleChange} fullWidth multiline rows={3} />
+            <TextField name="descricao" label="Descrição" value={formData.descricao || ''} onChange={handleChange} fullWidth multiline rows={3} sx={inputStyles} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField name="preco" label="Preço (R$)" type="number" value={formData.preco || ''} onChange={handleChange} fullWidth />
+            <TextField name="preco" label="Preço (R$)" type="number" value={formData.preco || ''} onChange={handleChange} fullWidth sx={inputStyles} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField name="precoPromocional" label="Preço Promocional (Opcional)" type="number" value={formData.precoPromocional || ''} onChange={handleChange} fullWidth />
+            <TextField name="precoPromocional" label="Preço Promocional (Opcional)" type="number" value={formData.precoPromocional || ''} onChange={handleChange} fullWidth sx={inputStyles} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField name="categoria" label="Categoria" value={formData.categoria || ''} onChange={handleChange} fullWidth select>
+            <TextField name="categoria" label="Categoria" value={formData.categoria || ''} onChange={handleChange} fullWidth select sx={inputStyles}>
               {CATEGORIAS.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)}
             </TextField>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField name="ocasiao" label="Ocasião" value={formData.ocasiao || ''} onChange={handleChange} fullWidth select>
+            <TextField name="ocasiao" label="Ocasião" value={formData.ocasiao || ''} onChange={handleChange} fullWidth select sx={inputStyles}>
               <MenuItem value="">Nenhuma (Para CONFRARIA)</MenuItem>
               {OCASIOES.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)}
             </TextField>
@@ -89,8 +91,16 @@ const EditProductModal = ({ open, onClose, product, onSave }) => {
             <FormControlLabel
               control={<Switch checked={formData.ativo || false} onChange={handleChange} name="ativo" />}
               label="Produto Ativo"
+              sx={{
+                '& .MuiSwitch-switchBase.Mui-checked': {
+                  color: 'var(--cor-marca-escuro)',
+                },
+                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                  backgroundColor: 'var(--cor-marca-escuro)',
+                },
+              }}
             />
-
+            {/* 
             <FormControlLabel
             control={
               <Switch
@@ -102,19 +112,19 @@ const EditProductModal = ({ open, onClose, product, onSave }) => {
             }
             label="Colocar em Destaque na Homepage"
           />
-          {/* AVISO ADICIONADO AQUI */}
           <FormHelperText>
             Apenas 5 produtos podem ser marcados como destaque. Se o limite for atingido, este produto não aparecerá na homepage.
           </FormHelperText>
+           */}
           </Grid>
-          
+
         </Grid>
 
 
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSave} variant="contained">Salvar Alterações</Button>
+        <Button onClick={onClose} color='error'>Cancelar</Button>
+        <Button onClick={handleSave} variant="contained" sx={{ bgcolor: 'var(--cor-marca-escuro)', color: 'white', '&:hover': { bgcolor: 'var(--cor-marca)' } }}>Salvar Alterações</Button>
       </DialogActions>
     </Dialog>
   );

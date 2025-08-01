@@ -138,7 +138,7 @@ const MenuProdutos = () => {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ pt: 2, pb: 10, minHeight: '100vh' }}>
+    <Container maxWidth="xl" sx={{ pt: 2, pb: 15, minHeight: '100vh' }}>
 
       {/* OCASIOES */}
       <Box sx={{
@@ -148,22 +148,15 @@ const MenuProdutos = () => {
         {isMobile ? (
           <FormControl fullWidth variant="outlined" sx={{
             '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: 'var(--cor-detalhes)',
-              },
-              '&:hover fieldset': {
-                borderColor: 'var(--cor-detalhes)',
-              },
               '&.Mui-focused fieldset': {
-                borderColor: 'var(--cor-detalhes)',
+                borderColor: 'var(--cor-marca-escuro)',
               },
             },
             '& .MuiInputLabel-root': {
-              color: 'var(--cor-detalhes)',
+              '&.Mui-focused': {
+                color: 'var(--cor-marca-escuro)',
+              },
             },
-            '& .MuiSelect-icon': {
-              color: 'var(--cor-detalhes)',
-            }
           }}>
             <InputLabel id="ocasiao-select-label">Ocasião</InputLabel>
             <Select
@@ -181,14 +174,14 @@ const MenuProdutos = () => {
             </Select>
           </FormControl>
         ) : (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 1, width: '100%', borderBottom: '1px solid var(--cor-detalhes)' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 1, width: '100%', borderBottom: '1px solid var(--cor-marca-escuro)' }}>
             {OCASIOES_PRINCIPAIS.map(ocasiao => (
               <Button
                 key={ocasiao}
                 variant="text"
                 onClick={() => handleOcasiaoChange(ocasiao)}
                 sx={{
-                  color: "var(--cor-detalhes)",
+                  color: "var(--cor-marca-escuro)",
                   fontSize: '1rem',
                   fontWeight: selectedOcasiao === ocasiao ? '800' : 'normal',
                 }}
@@ -204,13 +197,13 @@ const MenuProdutos = () => {
       <Box sx={{
         mb: 2,
         position: 'sticky',
-        top: navbarVisible ? '5rem' : '2rem',
+        top: navbarVisible ? '6rem' : '2rem',
         alignSelf: 'flex-start',
         zIndex: 1,
         transition: 'top 0.3s ease-in-out',
         justifySelf: 'flex-end'
       }}>
-        <Button onClick={toggleMobileFilters(true)} startIcon={<FilterListIcon />} variant="contained" sx={{ bgcolor: 'var(--cor-detalhes)', color: 'white' }}>
+        <Button onClick={toggleMobileFilters(true)} startIcon={<FilterListIcon />} variant="contained" sx={{ bgcolor: 'var(--cor-marca-escuro)', color: 'white' }}>
           Filtrar
         </Button>
         <Drawer anchor="left" open={mobileFiltersOpen} onClose={toggleMobileFilters(false)}>
@@ -332,7 +325,7 @@ const MenuProdutos = () => {
               </Grid>
             ) : dadosDaPagina.produtosFiltrados.length === 0 ? (
               <Grid size={12}>
-                <Typography sx={{ p: 3 }}>Nenhum produto encontrado.</Typography>
+                <Typography sx={{ p: 3, color: 'var(--cor-marca-escuro)' }}>Nenhum produto encontrado.</Typography>
               </Grid>
             ) : (
               dadosDaPagina.produtosFiltrados.map(produto => (

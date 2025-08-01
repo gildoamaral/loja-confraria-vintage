@@ -9,11 +9,12 @@ import {
   IconButton
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import inputStyles from '../../../styles/inputStyles';
 
-const FormularioEndereco = ({ 
-  endereco, 
-  handleEnderecoChange, 
-  usarEnderecoCadastrado, 
+const FormularioEndereco = ({
+  endereco,
+  handleEnderecoChange,
+  usarEnderecoCadastrado,
   handleContinuarParaFrete,
   mostrarCamposEndereco,
   cepLoading,
@@ -21,7 +22,6 @@ const FormularioEndereco = ({
   handleBuscarCep,
   validarCepCompleto
 }) => {
-
 
 
   return (
@@ -39,6 +39,7 @@ const FormularioEndereco = ({
             error={!!cepError}
             helperText={cepError}
             placeholder="00.000-000"
+            sx={inputStyles}
             slotProps={{
               input: {
                 endAdornment: (
@@ -52,10 +53,10 @@ const FormularioEndereco = ({
                         size="small"
                         aria-label="Buscar CEP"
                         color={validarCepCompleto() ? "error" : "default"}
-                        sx={{ 
+                        sx={{
                           transition: 'color 0.2s ease',
                           '&:hover': {
-                            backgroundColor: validarCepCompleto() ? 'error.light' : 'action.hover'
+                            backgroundColor: validarCepCompleto() ? '#ec714824' : 'action.hover'
                           }
                         }}
                       >
@@ -80,6 +81,7 @@ const FormularioEndereco = ({
                 onChange={handleEnderecoChange}
                 fullWidth
                 required
+                sx={inputStyles}
                 // Desabilita enquanto o CEP é buscado
                 disabled={usarEnderecoCadastrado || cepLoading}
                 slotProps={{
@@ -96,6 +98,7 @@ const FormularioEndereco = ({
                 onChange={handleEnderecoChange}
                 fullWidth
                 required
+                sx={inputStyles}
                 disabled={usarEnderecoCadastrado}
               />
             </Grid>
@@ -107,6 +110,7 @@ const FormularioEndereco = ({
                 value={endereco.complemento}
                 onChange={handleEnderecoChange}
                 fullWidth
+                sx={inputStyles}
                 disabled={usarEnderecoCadastrado}
               />
             </Grid>
@@ -119,6 +123,7 @@ const FormularioEndereco = ({
                 onChange={handleEnderecoChange}
                 fullWidth
                 required
+                sx={inputStyles}
                 disabled={usarEnderecoCadastrado || cepLoading}
                 slotProps={{
                   inputLabel: { shrink: !!endereco.bairro }
@@ -134,6 +139,7 @@ const FormularioEndereco = ({
                 onChange={handleEnderecoChange}
                 fullWidth
                 required
+                sx={inputStyles}
                 disabled={usarEnderecoCadastrado || cepLoading}
                 slotProps={{
                   inputLabel: { shrink: !!endereco.cidade }
@@ -149,6 +155,7 @@ const FormularioEndereco = ({
                 onChange={handleEnderecoChange}
                 fullWidth
                 required
+                sx={inputStyles}
                 disabled={usarEnderecoCadastrado || cepLoading}
                 slotProps={{
                   inputLabel: { shrink: !!endereco.estado },
@@ -166,7 +173,20 @@ const FormularioEndereco = ({
           <Button
             variant="contained"
             size="large"
-            sx={{ fontWeight: 700, px: 5, bgcolor: 'var(--cor-secundaria)' }}
+            sx={{
+              py: 2,
+              px: 6,
+              width: '100%',
+              fontWeight: 700,
+              borderRadius: 3,
+              background: 'var(--cor-marca)',
+              boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+              '&:hover': {
+                boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',
+              }
+            }}
+
+
             onClick={handleContinuarParaFrete}
             disabled={usarEnderecoCadastrado}
           >

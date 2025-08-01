@@ -8,8 +8,8 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 
 const NewFooter = () => {
   const footerStyles = {
-    textColor: '#5C3A21',
-    linkColor: '#7C5A41',
+    textColor: 'var(--cor-fonte-escuro, #5C3A21)',
+    linkColor: 'var(--cor-fonte-escuro, #7C5A41)',
   };
 
   return (
@@ -19,7 +19,7 @@ const NewFooter = () => {
         backgroundColor: 'var(--primary-color-theme, #FDF7F2)',
         color: footerStyles.textColor,
         py: { xs: 4, sm: 6 },
-        borderTop: '1px solid #EAE0D5'
+        borderTop: '1px solid #EAE0D5',
       }}
     >
       <Container maxWidth="lg">
@@ -75,7 +75,7 @@ const NewFooter = () => {
 
         </Grid>
 
-        <Divider sx={{ my: 4, borderColor: '#EAE0D5' }} />
+        <Divider sx={{ my: 4, borderColor: 'var(--cor-fonte-escuro)' }} />
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
           <Typography variant="body2" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>

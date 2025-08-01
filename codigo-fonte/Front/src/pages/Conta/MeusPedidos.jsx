@@ -74,39 +74,45 @@ const MeusPedidos = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 0 } }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.8rem', sm: '2.1rem', md: '2.5rem' } }}>
           Meus Pedidos
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}>
           Acompanhe o histórico dos seus pedidos
         </Typography>
       </Box>
 
       {pedidos.length === 0 ? (
         <Card>
-          <CardContent sx={{ textAlign: 'center', py: 8 }}>
+          <CardContent sx={{ textAlign: 'center', py: { xs: 4, sm: 8 }, px: { xs: 2, sm: 3 } }}>
             <Avatar sx={{ 
               bgcolor: 'grey.100', 
-              width: 80, 
-              height: 80, 
+              width: { xs: 60, sm: 80 }, 
+              height: { xs: 60, sm: 80 }, 
               mx: 'auto', 
               mb: 2 
             }}>
-              <ShoppingBagIcon sx={{ fontSize: 40, color: 'grey.400' }} />
+              <ShoppingBagIcon sx={{ fontSize: { xs: 30, sm: 40 }, color: 'grey.400' }} />
             </Avatar>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
               Nenhum pedido encontrado
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3, fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
               Você ainda não tem nenhum pedido finalizado.
             </Typography>
             <Button 
               variant="contained" 
               component={RouterLink} 
               to="/produtos"
+              sx={{ 
+                backgroundColor: 'var(--cor-marca-escuro)', 
+                '&:hover': { backgroundColor: 'brown' },
+                fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                px: { xs: 2, sm: 3 }
+              }}
             >
               Começar a Comprar
             </Button>
@@ -129,18 +135,19 @@ const MeusPedidos = () => {
                     justifyContent: 'space-between', 
                     alignItems: 'flex-start',
                     flexWrap: 'wrap',
-                    gap: 2
+                    gap: 2,
+                    flexDirection: { xs: 'column', sm: 'row' }
                   }}>
                     {/* Informações do Pedido */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
-                      <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
-                        <ReceiptIcon />
+                    <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 0, width: { xs: '100%', sm: 'auto' } }}>
+                      <Avatar sx={{ bgcolor: 'var(--cor-marca-escuro)', mr: 2, width: { xs: 40, sm: 48 }, height: { xs: 40, sm: 48 } }}>
+                        <ReceiptIcon sx={{ fontSize: { xs: 20, sm: 24 } }} />
                       </Avatar>
                       <Box>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
                           Pedido Nº {pedido.id}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
                           Realizado em: {new Date(pedido.dataFinalizado).toLocaleDateString('pt-BR')}
                         </Typography>
                       </Box>
@@ -149,16 +156,18 @@ const MeusPedidos = () => {
                     {/* Status e Valor */}
                     <Box sx={{ 
                       display: 'flex', 
-                      flexDirection: 'column', 
-                      alignItems: 'flex-end',
-                      gap: 1
+                      flexDirection: { xs: 'row', sm: 'column' },
+                      alignItems: { xs: 'center', sm: 'flex-end' },
+                      justifyContent: { xs: 'space-between', sm: 'flex-start' },
+                      gap: 1,
+                      width: { xs: '100%', sm: 'auto' }
                     }}>
                       <Chip 
                         label={pedido.status.replace('_', ' ')} 
                         color={getStatusColor(pedido.status)}
                         size="small"
                       />
-                      <Typography variant="h6" color="success.main">
+                      <Typography variant="h6" color="success.main" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
                         {pedido.pagamento?.valorTotal.toLocaleString('pt-BR', { 
                           style: 'currency', 
                           currency: 'BRL' 
@@ -167,13 +176,23 @@ const MeusPedidos = () => {
                     </Box>
 
                     {/* Botão Ver Detalhes */}
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center',
+                      width: { xs: '100%', sm: 'auto' },
+                      mt: { xs: 2, sm: 0 }
+                    }}>
                       <Button
                         variant="contained"
                         component={RouterLink}
                         to={`/minha-conta/pedidos/${pedido.id}`}
                         startIcon={<VisibilityIcon />}
-                        sx={{ minWidth: 140 }}
+                        sx={{ 
+                          minWidth: { xs: '100%', sm: 140 },
+                          backgroundColor: 'var(--cor-marca-escuro)', 
+                          '&:hover': { backgroundColor: 'brown' },
+                          fontSize: { xs: '0.8rem', sm: '0.875rem' }
+                        }}
                       >
                         Ver Detalhes
                       </Button>

@@ -52,7 +52,7 @@ const CulturaVintage = () => {
               sx={{
                 fontWeight: 700,
                 mb: 3,
-                color: 'var(--cor-secundaria)',
+                color: 'var(--cor-marca)',
                 fontSize: { xs: '2rem', md: '2.5rem' },
                 lineHeight: 1.2,
               }}
@@ -104,7 +104,7 @@ const CulturaVintage = () => {
             <Typography
               variant="body1"
               sx={{
-                color: 'var(--cor-secundaria)',
+                color: 'var(--cor-marca)',
                 lineHeight: 1.7,
                 fontSize: { xs: '0.95rem', md: '1.1rem' },
                 fontWeight: 600,

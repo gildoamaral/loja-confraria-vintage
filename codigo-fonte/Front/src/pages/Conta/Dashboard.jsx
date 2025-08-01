@@ -27,6 +27,19 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'FINALIZADO':
+        return 'success';
+      case 'PENDENTE':
+        return 'warning';
+      case 'CANCELADO':
+        return 'error';
+      default:
+        return 'default';
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -77,20 +90,29 @@ const Dashboard = () => {
   }
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 0 } }}>
+      <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.8rem', sm: '2.1rem', md: '2.5rem' } }}>
         Painel
       </Typography>
-      <Typography variant="h6" sx={{ mb: 4 }}>
+      <Typography variant="h6" sx={{ mb: 4, fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' } }}>
         Olá, {data?.nomeUsuario}! Bem-vindo(a) de volta.
       </Typography>
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Card sx={{ 
+            height: '100%', 
+            display: 'flex', 
+            flexDirection: 'column',
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              boxShadow: 3,
+              transform: 'translateY(-2px)'
+            }
+          }}>
             <CardContent sx={{ flexGrow: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <OrdersIcon sx={{ mr: 1, color: 'primary.main' }} />
+                <OrdersIcon sx={{ mr: 1 }} />
                 <Typography variant="h6">Último Pedido</Typography>
               </Box>
               {data?.ultimoPedido ? (
@@ -99,9 +121,8 @@ const Dashboard = () => {
                     Pedido Nº: <strong>{data.ultimoPedido.id}</strong>
                   </Typography>
                   <Chip 
-                    label={data.ultimoPedido.status} 
-                    color="primary" 
-                    variant="outlined"
+                    label={data.ultimoPedido.status.replace('_', ' ')} 
+                    color={getStatusColor(data.ultimoPedido.status)}
                     size="small"
                   />
                 </>
@@ -116,9 +137,13 @@ const Dashboard = () => {
                 <Button 
                   component={RouterLink} 
                   to={`/minha-conta/pedidos/${data.ultimoPedido.id}`}
-                  variant="outlined"
+                  variant="contained"
                   size="small"
                   startIcon={<ViewIcon />}
+                  sx={{ 
+                    backgroundColor: 'var(--cor-marca-escuro)', 
+                    '&:hover': { backgroundColor: 'brown' } 
+                  }}
                 >
                   Ver Detalhes
                 </Button>
@@ -126,36 +151,7 @@ const Dashboard = () => {
             )}
           </Card>
         </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <SettingsIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6">Atalhos</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Button 
-                  component={RouterLink} 
-                  to="/minha-conta/pedidos" 
-                  variant="text"
-                  startIcon={<OrdersIcon />}
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  Ver todos os pedidos
-                </Button>
-                <Button 
-                  component={RouterLink} 
-                  to="/minha-conta/configuracoes" 
-                  variant="text"
-                  startIcon={<SettingsIcon />}
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  Editar minhas informações
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+
       </Grid>
     </Box>
   );

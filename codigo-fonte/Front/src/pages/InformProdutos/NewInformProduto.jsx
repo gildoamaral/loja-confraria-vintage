@@ -21,6 +21,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import api from '../../services/api';
 import { useAuth } from '../../contexts'; // Importa nosso contexto de autenticação
+import inputStyles from '../../styles/inputStyles';
 
 const InformProduto = () => {
   const { id } = useParams();
@@ -294,8 +295,9 @@ const InformProduto = () => {
                       value={cepDestino}
                       onChange={e => setCepDestino(e.target.value)}
                       placeholder="00000-000"
+                      sx={inputStyles}
                     />
-                    <Button variant="outlined" onClick={calcularFrete} disabled={loadingFrete}>
+                    <Button variant="outlined" color="error" onClick={calcularFrete} disabled={loadingFrete}>
                       {loadingFrete ? <CircularProgress size={24} /> : 'Calcular'}
                     </Button>
                   </Box>

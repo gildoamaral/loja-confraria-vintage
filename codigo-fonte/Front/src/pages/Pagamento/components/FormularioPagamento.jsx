@@ -17,7 +17,7 @@ const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFre
     <Box>
       {/* Método de Pagamento */}
       <FormControl component="fieldset" fullWidth>
-        <FormLabel component="legend">
+        <FormLabel component="legend" color='error'>
           Método de Pagamento
         </FormLabel>
         <RadioGroup
@@ -27,12 +27,12 @@ const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFre
         >
           <FormControlLabel
             value="cartao"
-            control={<Radio color="primary" />}
+            control={<Radio color="error" />}
             label="Cartão de Crédito"
           />
           <FormControlLabel
             value="pix"
-            control={<Radio color="primary" />}
+            control={<Radio color="error" />}
             label="PIX"
           />
         </RadioGroup>

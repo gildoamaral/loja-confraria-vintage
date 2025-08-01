@@ -13,21 +13,23 @@
 }
 
 :root {
-  --primary-color-theme: #FDF7F2;
+  --primary-color-theme: #fff5f0;
   --secondary-color-theme: #feeee1;
 
-  --cor-principal: #ffe9d2;
-  --cor-secundaria: #ec7148;
-  --cor-secundaria-fonte: #b02c00;
-  --cor-detalhes: #000;
+  --cor-principal: #fff5f0;
+  /* --cor-marca: #ec7148;  <-- este é o que a Camila mandou. Mas gerei uma que se parece mais */
+  --cor-marca: #ff6c32;
+  --cor-marca-claro: #ffe9e2;
+  --cor-marca-escuro: #982600;
+  --cor-detalhes: var(--cor-marca);
 
-  --cor-gradiente: radial-gradient(circle at 50% 50%, var(--cor-principal) 30%, var(--cor-principal2) 200%);
+  --cor-gradiente: radial-gradient(circle at 50% 50%, var(--cor-marca) 30%, var(--cor-marca-escuro) 200%);
   --cor-gradiente2: linear-gradient(135deg, #fbeee6 0%, #ec7148 100%);
 
-  --cor-fonte: #202215;
-  --cor-fonte-claro: #202215;
+  --cor-fonte-escuro: #000000;
+  --cor-fonte-claro: #ffffff;
 
-  font-family:'Courier New', Courier, monospace;
+  font-family: 'Special Elite', Courier, monospace;
   line-height: 1.5;
   font-weight: 600;
 

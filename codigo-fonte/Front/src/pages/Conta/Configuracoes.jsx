@@ -144,7 +144,7 @@ const Configuracoes = () => {
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
+                  <PersonIcon sx={{ mr: 1 }} />
                   <Typography variant="h6">Dados Pessoais</Typography>
                   <IconButton
                     onClick={() => setEditingPersonalData(!editingPersonalData)}
@@ -235,7 +235,7 @@ const Configuracoes = () => {
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <HomeIcon sx={{ mr: 1, color: 'primary.main' }} />
+                  <HomeIcon sx={{ mr: 1 }} />
                   <Typography variant="h6">Endereço de Entrega</Typography>
                   <IconButton
                     onClick={() => setEditingAddressData(!editingAddressData)}

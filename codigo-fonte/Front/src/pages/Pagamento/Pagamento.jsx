@@ -373,7 +373,7 @@ const Pagamento = () => {
           
           {/* Header da página */}
           <Box sx={{ 
-            background: 'linear-gradient(135deg, var(--cor-secundaria) 50%, #764ba2 150%)',
+            background: 'linear-gradient(135deg, var(--cor-marca) 50%, #764ba2 150%)',
             color: 'white',
             p: { xs: 3, md: 4 },
             position: 'relative'
@@ -532,7 +532,7 @@ const Pagamento = () => {
                             width: '95%',
                             fontWeight: 700,
                             borderRadius: 3,
-                            background: 'var(--cor-secundaria)',
+                            background: 'var(--cor-marca)',
                             boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
                             '&:hover': {
                               boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',

@@ -28,6 +28,7 @@ import {
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../contexts';
+import logoSvg from '../assets/logo.svg';
 
 const Navbar = () => {
   const { usuario, isAuthenticated, loading, logout } = useAuth();
@@ -38,7 +39,7 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMenuOpen = Boolean(anchorEl);
-  
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -101,7 +102,7 @@ const Navbar = () => {
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
-  
+
   const handleMobileMenuOpen = () => setMobileMenuOpen(true);
   const handleMobileMenuClose = () => setMobileMenuOpen(false);
 
@@ -125,19 +126,21 @@ const Navbar = () => {
 
   return (
     <>
-      <Box height={isMobile ? 57 : 63} backgroundColor={"var(--primary-color-theme)"} />
+      <Box height={isMobile ? 68 : 78} backgroundColor={"var(--cor-marca)"} />
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: 'var(--primary-color-theme)',
-          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-          color: '#5C3A21',
+          background: 'var(--cor-gradiente)',
+          boxShadow: '0 0 10px 1px rgba(0, 0, 0, 0.5)',
+          color: 'var(--cor-fonte-escuro)',
           transform: visible ? 'translateY(0)' : 'translateY(-110%)',
           transition: 'transform 0.3s ease-in-out',
           zIndex: 1100,
+          height: isMobile ? 70 : 80,
+          
         }}
       >
-        <Toolbar sx={{ justifyContent: 'space-between', position: 'relative' }}>
+        <Toolbar sx={{ justifyContent: 'space-between', position: 'relative', alignItems: 'center', height: '100%' }}>
           {/* Menu Hambúrguer - Apenas Mobile */}
           {isMobile && (
             <IconButton color="inherit" onClick={handleMobileMenuOpen}>
@@ -160,7 +163,7 @@ const Navbar = () => {
           )}
 
           {/* Logo Central - Sempre Visível */}
-          <Typography 
+          {/* <Typography 
             variant={isMobile ? "body1" : "h6"} 
             component={RouterLink} 
             to="/" 
@@ -176,7 +179,33 @@ const Navbar = () => {
             }}
           >
             CONFRARIA VINTAGE
-          </Typography>
+          </Typography> */}
+
+          <Box
+            component={RouterLink}
+            to="/"
+            sx={{
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              textDecoration: 'none',
+              zIndex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              height: '100%',
+              overflow: 'hidden',
+              
+            }}
+          >
+            <img
+              src={logoSvg}
+              alt="Confraria Vintage"
+              style={{
+                height: isMobile ? "70%" : "80%",
+              }}
+            />
+          </Box>
+
 
           {/* Ações do usuário - Desktop e Mobile */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -186,11 +215,11 @@ const Navbar = () => {
                 <IconButton color="inherit" onClick={handleMenuOpen}>
                   <Person />
                 </IconButton>
-                <Menu 
-                  anchorEl={anchorEl} 
-                  open={isMenuOpen} 
-                  onClose={handleMenuClose} 
-                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} 
+                <Menu
+                  anchorEl={anchorEl}
+                  open={isMenuOpen}
+                  onClose={handleMenuClose}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                   transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 >
                   <Typography sx={{ p: 1, fontWeight: 'bold' }}>Olá, {usuario.nome}!</Typography>
@@ -228,15 +257,15 @@ const Navbar = () => {
           <List>
             {/* Navegação */}
             <ListItem component={RouterLink} to="/" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
-              <ListItemText sx={{color: "black"}} primary="Home" />
+              <ListItemText sx={{ color: "black" }} primary="Home" />
             </ListItem>
 
             {/* <ListItem component={RouterLink} to="/colecoes" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
               <ListItemText sx={{color: "black"}} primary="Coleções" />
             </ListItem> */}
-            
+
             <ListItem component={RouterLink} to="/sobre" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
-              <ListItemText sx={{color: "black"}} primary="Sobre" />
+              <ListItemText sx={{ color: "black" }} primary="Sobre" />
             </ListItem>
 
             {/* Admin - Só se for admin */}
@@ -245,7 +274,7 @@ const Navbar = () => {
                 <ListItemIcon>
                   <AdminPanelSettings />
                 </ListItemIcon>
-                <ListItemText sx={{color: "black"}} primary="Administração" />
+                <ListItemText sx={{ color: "black" }} primary="Administração" />
               </ListItem>
             )}
 
@@ -255,19 +284,19 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <ListItem>
-                  <ListItemText 
-                    primary={`Olá, ${usuario.nome}!`} 
+                  <ListItemText
+                    primary={`Olá, ${usuario.nome}!`}
                     sx={{ fontWeight: 'bold' }}
                   />
                 </ListItem>
-                
+
                 <ListItem component={RouterLink} to="/minha-conta" onClick={handleMobileMenuClose} sx={{ cursor: 'pointer' }}>
                   <ListItemIcon>
                     <Person />
                   </ListItemIcon>
-                  <ListItemText sx={{color: "black"}} primary="Minha Conta" />
+                  <ListItemText sx={{ color: "black" }} primary="Minha Conta" />
                 </ListItem>
-                
+
                 <ListItem onClick={handleLogout} sx={{ cursor: 'pointer' }}>
                   <ListItemText primary="Sair" />
                 </ListItem>
@@ -277,7 +306,7 @@ const Navbar = () => {
                 <ListItemIcon>
                   <PersonOutline />
                 </ListItemIcon>
-                <ListItemText sx={{color: "black"}} primary="Entrar" />
+                <ListItemText sx={{ color: "black" }} primary="Entrar" />
               </ListItem>
             )}
           </List>

@@ -84,7 +84,7 @@ const styles = {
     // marginTop: '7rem',
     // position: 'absolute',
     bottom: '0',
-    backgroundColor: 'var(--cor-secundaria)',
+    backgroundColor: 'var(--cor-marca)',
     // fontSize: '1rem',
     color: 'var(--cor-fonte-claro)',
 

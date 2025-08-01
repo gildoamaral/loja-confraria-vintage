@@ -112,7 +112,7 @@ const DetalhesPedidoDialog = ({ open, onClose, pedido }) => {
         </Grid>
       </DialogContent>
       <DialogActions sx={{ p: '16px 24px' }}>
-        <Button onClick={onClose}>Fechar</Button>
+        <Button onClick={onClose} color='error' variant="contained">Fechar</Button>
       </DialogActions>
     </Dialog>
   );

@@ -158,7 +158,7 @@ function Carrinho() {
                         <Typography variant="h6" fontWeight={700}>
                           Total:
                         </Typography>
-                        <Typography variant="h5" fontWeight={700} sx={{ color: 'var(--cor-secundaria)' }}>
+                        <Typography variant="h5" fontWeight={700} sx={{ color: 'var(--cor-marca)' }}>
                           R$ {valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Typography>
                       </Box>
@@ -173,10 +173,10 @@ function Carrinho() {
                           fontWeight: 700,
                           fontSize: '1rem',
                           boxShadow: 2,
-                          background: 'var(--cor-secundaria)',
+                          background: 'var(--cor-marca)',
                           color: '#4B2626',
                           '&:hover': {
-                            background: 'var(--cor-secundaria-fonte)',
+                            background: 'var(--cor-marca-escuro)',
                           },
                           py: 1.5,
                         }}
@@ -188,7 +188,7 @@ function Carrinho() {
                 </Grid>
               ) : (
                 <Box sx={{ textAlign: 'center', mt: 8, mb: 8 }}>
-                  <ShoppingCartIcon sx={{ fontSize: 80, color: '#FFE5D2', mb: 2 }} />
+                  <ShoppingCartIcon sx={{ fontSize: 80, color: 'var(--cor-marca)', mb: 2 }} />
                   <Typography variant="h6" color="text.secondary">
                     Seu carrinho está vazio.
                   </Typography>

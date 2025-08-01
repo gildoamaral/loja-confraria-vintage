@@ -176,7 +176,6 @@ const AdminPedidos = () => {
             count={totalPages}
             page={page}
             onChange={handlePageChange}
-            color="primary"
           />
         )}
       </Box>

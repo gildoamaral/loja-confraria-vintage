@@ -79,8 +79,7 @@ const NewEstoqueProdutos = () => {
   }
 
   return (
-    <Box sx={{ p: 3, maxWidth: '1400px', mx: 'auto' }}>
-      <Typography variant="h4" gutterBottom>Lista de Produtos</Typography>
+    <Box sx={{maxWidth: '1400px', mx: 'auto' }}>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="tabela de produtos" size="small">
           <TableHead>
@@ -139,7 +138,6 @@ const NewEstoqueProdutos = () => {
           count={totalPages} 
           page={page} 
           onChange={(event, value) => setPage(value)} 
-          color="primary"
         />
       </Box>
 
