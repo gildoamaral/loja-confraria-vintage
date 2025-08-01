@@ -21,6 +21,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import api from '../../services/api';
 import { useAuth } from '../../contexts'; // Importa nosso contexto de autenticação
+import inputStyles from '../../styles/inputStyles';
 
 const InformProduto = () => {
   const { id } = useParams();
@@ -183,7 +184,7 @@ const InformProduto = () => {
                 <Typography variant="overline" color="text.secondary">{produto.categoria.toLowerCase()}</Typography>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                  <Typography variant="h4" component={'h1'} fontWeight={700}>{produto.nome}</Typography>
+                  <Typography variant="h4" component={'h1'} fontWeight={700} sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>{produto.nome}</Typography>
                   {!produto.ativo && (
                     <Chip 
                       label="Inativo" 
@@ -202,7 +203,7 @@ const InformProduto = () => {
                     {/* COR */}
                     {produto.cor && (
                       <Box>
-                        <Typography variant="body2" fontWeight="medium" sx={{ mb: 0.4 }}>
+                        <Typography variant="body2" fontWeight="medium" sx={{ mb: 0.4 }} >
                           <span style={{ fontWeight: 'bold' }}>Cor:</span> {selectedCor}
                         </Typography>
                       </Box>
@@ -257,7 +258,7 @@ const InformProduto = () => {
                 </Grid>
 
 
-                <Typography variant="body1" color="text.secondary" paragraph>{produto.descricao}</Typography>
+                <Typography variant="body1" color="text.secondary" paragraph sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>{produto.descricao}</Typography>
 
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 10 }}>
@@ -294,8 +295,9 @@ const InformProduto = () => {
                       value={cepDestino}
                       onChange={e => setCepDestino(e.target.value)}
                       placeholder="00000-000"
+                      sx={inputStyles}
                     />
-                    <Button variant="outlined" onClick={calcularFrete} disabled={loadingFrete}>
+                    <Button variant="outlined" color="error" onClick={calcularFrete} disabled={loadingFrete}>
                       {loadingFrete ? <CircularProgress size={24} /> : 'Calcular'}
                     </Button>
                   </Box>

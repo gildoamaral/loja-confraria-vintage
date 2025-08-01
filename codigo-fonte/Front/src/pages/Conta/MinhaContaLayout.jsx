@@ -8,21 +8,21 @@ import {
   ListItemButton, 
   ListItemIcon, 
   ListItemText,
-  Drawer,
   IconButton,
   useTheme,
   useMediaQuery,
   AppBar,
   Toolbar,
-  Typography
+  Typography,
+  Collapse
 } from '@mui/material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import LockIcon from '@mui/icons-material/Lock';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 // Itens do menu de navegação
 const menuItems = [
@@ -37,17 +37,17 @@ const MinhaContaLayout = () => {
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuExpanded, setMenuExpanded] = useState(false);
 
   const handleMenuClick = (path) => {
     navigate(path);
     if (isMobile) {
-      setMobileMenuOpen(false);
+      setMenuExpanded(false);
     }
   };
 
   const menuContent = (
-    <List sx={{ width: 240 }}>
+    <List sx={{ width: '100%' }}>
       {menuItems.map((item) => (
         <ListItem key={item.text} disablePadding>
           <ListItemButton
@@ -55,10 +55,10 @@ const MinhaContaLayout = () => {
             onClick={() => handleMenuClick(item.path)}
             sx={{
               '&.Mui-selected': {
-                backgroundColor: 'primary.main',
+                backgroundColor: '#000',
                 color: 'white',
                 '&:hover': {
-                  backgroundColor: 'primary.dark',
+                  backgroundColor: '#000',
                 },
                 '& .MuiListItemIcon-root': {
                   color: 'white',
@@ -78,22 +78,31 @@ const MinhaContaLayout = () => {
     <Box>
       {/* AppBar para mobile */}
       {isMobile && (
-        <AppBar position="static" color="default" elevation={1}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              onClick={() => setMobileMenuOpen(true)}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
+        <AppBar position="static" color="default" elevation={1} onClick={() => setMenuExpanded(!menuExpanded)}>
+          <Toolbar
+          
+          >
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Minha Conta
             </Typography>
+            <IconButton
+              edge="end"
+              color="inherit"
+              aria-label="menu"
+            >
+              {menuExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
           </Toolbar>
         </AppBar>
+      )}
+
+      {/* Menu Mobile Suspenso */}
+      {isMobile && (
+        <Collapse in={menuExpanded}>
+          <Paper elevation={3} sx={{ width: '100%' }}>
+            {menuContent}
+          </Paper>
+        </Collapse>
       )}
 
       <Container maxWidth="xl" sx={{ 
@@ -101,43 +110,15 @@ const MinhaContaLayout = () => {
         mt: isMobile ? 2 : 4, 
         mb: 4, 
         gap: 3,
-        flexDirection: isMobile ? 'column' : 'row'
+        flexDirection: isMobile ? 'column' : 'row',
+        px: { xs: 1, sm: 2, md: 3 }
       }}>
         {/* Menu Desktop */}
         {!isMobile && (
-          <Paper elevation={3} sx={{ width: 240, flexShrink: 0, height: 'fit-content' }}>
+          <Paper elevation={3} sx={{ width: 240, flexShrink: 0, height: 'fit-content', mr: isMobile ? 0 : 2 }}>
             {menuContent}
           </Paper>
         )}
-
-        {/* Menu Mobile - Drawer */}
-        <Drawer
-          anchor="left"
-          open={mobileMenuOpen}
-          onClose={() => setMobileMenuOpen(false)}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': {
-              width: 240,
-              boxSizing: 'border-box',
-            },
-          }}
-        >
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            p: 2,
-            borderBottom: '1px solid',
-            borderColor: 'divider'
-          }}>
-            <Typography variant="h6">Minha Conta</Typography>
-            <IconButton onClick={() => setMobileMenuOpen(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          {menuContent}
-        </Drawer>
 
         {/* Área de Conteúdo */}
         <Box 
@@ -145,7 +126,7 @@ const MinhaContaLayout = () => {
           sx={{ 
             flexGrow: 1,
             width: { xs: '100%', md: 'calc(100% - 240px)' },
-            minHeight: '400px'
+            minHeight: '400px',
           }}
         >
           <Outlet />

@@ -210,7 +210,52 @@ const PagamentoCartao = (props) => {
         <button type="submit" id="form-checkout__submit" className={styles.button} disabled={isSubmitting}>
           {isSubmitting ? "Processando..." : "Pagar"}
         </button>
-        <progress value="0" className="progress-bar">Carregando...</progress>
+        {/* <progress value="0" className="progress-bar" style={{ width: "100%" }}>Carregando...</progress> */}
+        <Box 
+          sx={{ 
+            width: '100%',
+            display: isSubmitting ? 'block' : 'none',
+            mt: 2,
+            mb: 1
+          }}
+        >
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              textAlign: 'center', 
+              mb: 1, 
+              color: 'var(--cor-marca)',
+              fontWeight: 600 
+            }}
+          >
+            Processando pagamento...
+          </Typography>
+          <Box
+            sx={{
+              width: '100%',
+              height: 8,
+              backgroundColor: '#f0f0f0',
+              borderRadius: 4,
+              overflow: 'hidden',
+              position: 'relative'
+            }}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                background: 'linear-gradient(90deg, var(--cor-marca) 0%, #ff9a6b 100%)',
+                borderRadius: 4,
+                position: 'relative',
+                animation: 'progress-animation 2s ease-in-out infinite',
+                '@keyframes progress-animation': {
+                  '0%': { width: '0%' },
+                  '50%': { width: '70%' },
+                  '100%': { width: '0%' }
+                }
+              }}
+            />
+          </Box>
+        </Box>
       </form>
     </Box>
   );

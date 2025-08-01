@@ -9,8 +9,6 @@ import {
   Button,
   Typography,
   Grid,
-  Card,
-  CardContent,
   Alert,
   IconButton,
   ImageList,
@@ -21,6 +19,7 @@ import {
 } from '@mui/material';
 import { PhotoCamera, Close } from '@mui/icons-material';
 import api from '../../services/api';
+import inputStyles from '../../styles/inputStyles';
 
 const categorias = [
   'SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO',
@@ -171,9 +170,10 @@ const CadastroProdutos = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h2" gutterBottom align="center">
+    <Container >
+      <Paper elevation={3} sx={{ p: 4 }} >
+        <Box maxWidth='sm' mx="auto">
+        <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 5 }}>
           Cadastro de Produtos
         </Typography>
 
@@ -188,6 +188,7 @@ const CadastroProdutos = () => {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 variant="outlined"
+                sx={inputStyles}
               />
             </Grid>
 
@@ -201,6 +202,7 @@ const CadastroProdutos = () => {
                 value={preco}
                 onChange={(e) => setPreco(e.target.value)}
                 variant="outlined"
+                sx={inputStyles}
               />
             </Grid>
 
@@ -213,12 +215,13 @@ const CadastroProdutos = () => {
                 value={quantidade}
                 onChange={(e) => setQuantidade(e.target.value)}
                 variant="outlined"
+                sx={inputStyles}
               />
             </Grid>
 
             {/* LINHA 2: Tamanho, Cor, Categoria, Ocasião */}
             <Grid size={{ xs: 12, sm: 3 }}>
-              <FormControl required fullWidth>
+              <FormControl required fullWidth sx={inputStyles}>
                 <InputLabel>Tamanho</InputLabel>
                 <Select
                   value={tamanho}
@@ -235,7 +238,7 @@ const CadastroProdutos = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 3 }}>
-              <FormControl required fullWidth>
+              <FormControl required fullWidth sx={inputStyles}>
                 <InputLabel>Cor</InputLabel>
                 <Select
                   value={cor}
@@ -252,7 +255,7 @@ const CadastroProdutos = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 3 }}>
-              <FormControl required fullWidth>
+              <FormControl required fullWidth sx={inputStyles}>
                 <InputLabel>Categoria</InputLabel>
                 <Select
                   value={categoria}
@@ -269,7 +272,7 @@ const CadastroProdutos = () => {
             </Grid>
 
             <Grid size={{ xs: 12, sm: 3 }}>
-              <FormControl fullWidth>
+              <FormControl fullWidth sx={inputStyles}>
                 <InputLabel>Ocasião</InputLabel>
                 <Select
                   value={ocasiao}
@@ -295,6 +298,7 @@ const CadastroProdutos = () => {
                 required
                 rows={4}
                 value={descricao}
+                sx={inputStyles}
                 onChange={(e) => {
                   if (e.target.value.length <= 500) {
                     setDescricao(e.target.value);
@@ -317,7 +321,10 @@ const CadastroProdutos = () => {
                   component="label"
                   startIcon={<PhotoCamera />}
                   disabled={imagens.length >= 5}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, borderColor: '#000',
+                      color: '#000',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0, 0, 0, 0.08)', }}}
                 >
                   Adicionar Imagens
                   <input
@@ -373,7 +380,7 @@ const CadastroProdutos = () => {
                   variant="contained"
                   size="large"
                   disabled={isSubmitting}
-                  sx={{ px: 6, py: 1.5 }}
+                  sx={{ px: 6, py: 1.5, bgcolor: 'black', color: 'white' }}
                 >
                   {isSubmitting ? 'Enviando...' : 'Criar Produto'}
                 </Button>
@@ -393,6 +400,7 @@ const CadastroProdutos = () => {
             )}
           </Grid>
         </Box>
+      </Box>
       </Paper>
     </Container>
   );

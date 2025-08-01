@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextMaskAdapter from '../../components/TextMaskAdapter';
 import api from '../../services/api';
+import inputStyles from '../../styles/inputStyles';
 
 const Cadastro = () => {
   const [formData, setFormData] = useState({
@@ -68,16 +69,16 @@ const Cadastro = () => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container component="main" maxWidth="sm" sx={{ mt: 8, mb: 8 }}>
         <Paper elevation={6} sx={{ padding: 4 }}>
-          <Typography component="h1" variant="h5" align="center">
+          <Typography component="h1" variant="h5" align="center" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>
             Crie sua Conta
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid size={{xs:12, sm: 6}}>
-                <TextField name="nome" required fullWidth label="Nome" value={formData.nome} onChange={handleChange} error={!!errors.nome} helperText={errors.nome} />
+                <TextField name="nome" required fullWidth label="Nome" value={formData.nome} onChange={handleChange} error={!!errors.nome} helperText={errors.nome}  sx={inputStyles}/>
               </Grid>
               <Grid size={{xs:12, sm: 6}}>
-                <TextField name="sobrenome" required fullWidth label="Sobrenome" value={formData.sobrenome} onChange={handleChange} error={!!errors.sobrenome} helperText={errors.sobrenome} />
+                <TextField name="sobrenome" required fullWidth label="Sobrenome" value={formData.sobrenome} onChange={handleChange} error={!!errors.sobrenome} helperText={errors.sobrenome} sx={inputStyles}/>
               </Grid>
               <Grid size={{xs: 12}}>
                 <DatePicker
@@ -88,7 +89,7 @@ const Cadastro = () => {
                 />
               </Grid>
               <Grid size={{xs: 12}}>
-                <TextField name="email" required fullWidth label="Endereço de E-mail" type="email" value={formData.email} onChange={handleChange} error={!!errors.email} helperText={errors.email} />
+                <TextField name="email" required fullWidth label="Endereço de E-mail" type="email" value={formData.email} onChange={handleChange} error={!!errors.email} helperText={errors.email} sx={inputStyles} />
               </Grid>
                <Grid size={{xs: 12}}>
                 <TextField
@@ -100,19 +101,20 @@ const Cadastro = () => {
                   InputProps={{
                     inputComponent: TextMaskAdapter,
                   }}
+                  sx={inputStyles}
                 />
               </Grid>
               <Grid size={{xs: 12}}>
-                <TextField name="senha" required fullWidth label="Senha" type="password" value={formData.senha} onChange={handleChange} error={!!errors.senha} />
+                <TextField name="senha" required fullWidth label="Senha" type="password" value={formData.senha} onChange={handleChange} error={!!errors.senha} sx={inputStyles} />
                 <FormHelperText>A senha deve conter no mínimo 8 caracteres.</FormHelperText>
               </Grid>
               <Grid size={{xs: 12}}>
-                <TextField name="repetirSenha" required fullWidth label="Repetir Senha" type="password" value={formData.repetirSenha} onChange={handleChange} error={!!errors.repetirSenha} helperText={errors.repetirSenha} />
+                <TextField name="repetirSenha" required fullWidth label="Repetir Senha" type="password" value={formData.repetirSenha} onChange={handleChange} error={!!errors.repetirSenha} helperText={errors.repetirSenha} sx={inputStyles} />
               </Grid>
             </Grid>
             {apiError && <Alert severity="error" sx={{ mt: 2 }}>{apiError}</Alert>}
             {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={loading}>
+            <Button type="submit" fullWidth variant="contained" color='warning' sx={{ mt: 3, mb: 2 }} disabled={loading}>
               {loading ? 'Cadastrando...' : 'Cadastrar'}
             </Button>
           </Box>

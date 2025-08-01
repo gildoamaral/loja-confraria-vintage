@@ -7,12 +7,12 @@ import {
 } from '@mui/material';
 import Loading from '../../../components/Loading';
 
-const SeletorFrete = ({ 
-  carregandoFrete, 
-  opcoesFrete, 
-  freteSelecionado, 
-  setFreteSelecionado, 
-  handleContinuarParaPagamento 
+const SeletorFrete = ({
+  carregandoFrete,
+  opcoesFrete,
+  freteSelecionado,
+  setFreteSelecionado,
+  handleContinuarParaPagamento
 }) => {
   return (
     <Box sx={{ mt: 2 }}>
@@ -31,19 +31,21 @@ const SeletorFrete = ({
               opcoesFrete.map((opcao, idx) => (
                 <Paper
                   key={idx}
+                  elevation={freteSelecionado === opcao ? 6 : 1}
                   sx={{
                     p: 1,
                     cursor: 'pointer',
                     border: freteSelecionado === opcao ? '2px solid' : '1px solid',
-                    borderColor: freteSelecionado === opcao ? 'primary.main' : 'divider',
-                    '&:hover': { borderColor: 'primary.light' }
+                    borderColor: freteSelecionado === opcao ? 'var(--cor-marca)' : 'divider',
+                    bgcolor: freteSelecionado === opcao ? '#ffcebc44' : '#fff',
+                    '&:hover': { borderColor: 'var(--cor-marca)' }
                   }}
                   onClick={() => {
                     setFreteSelecionado(opcao);
                     console.log('Frete selecionado:', opcao);
                   }}
                 >
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       {opcao.company?.picture && (
                         <img
@@ -57,7 +59,7 @@ const SeletorFrete = ({
                       </Typography>
                     </Box>
                     <Box sx={{ textAlign: 'right' }}>
-                      <Typography variant="body1" fontWeight="bold" color="primary">
+                      <Typography variant="body1" fontWeight="bold" color="error.light">
                         R$ {parseFloat(opcao.price || opcao.valor).toFixed(2).replace('.', ',')}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
@@ -77,14 +79,27 @@ const SeletorFrete = ({
       )}
       <Button
         variant="contained"
-        color="primary"
-        sx={{ mt: 2, fontWeight: 700 }}
+        color="warning"
+        sx={{
+          mt: 3,
+          py: 2,
+          px: 6,
+          width: '100%',
+          fontWeight: 700,
+          borderRadius: 3,
+          background: 'var(--cor-marca)',
+          boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+          '&:hover': {
+            boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)',
+          }
+        }}
         onClick={handleContinuarParaPagamento}
         disabled={carregandoFrete}
       >
         Continuar para Pagamento
       </Button>
-    </Box>
+
+    </Box >
   );
 };
 

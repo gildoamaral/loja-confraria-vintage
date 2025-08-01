@@ -19,7 +19,8 @@ const PagamentoPix = ({ onFinalizar, loading }) => {
         sx={{
             py: 1.5,
             px: 5,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            bgcolor: 'var(--cor-marca)',
         }}
       >
         {loading ? <CircularProgress size={24} color="inherit" /> : 'Finalizar Compra com PIX'}

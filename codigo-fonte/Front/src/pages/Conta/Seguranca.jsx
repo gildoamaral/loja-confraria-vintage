@@ -38,11 +38,18 @@ const Seguranca = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: '600px' }}>
-      <Typography variant="h4" gutterBottom>
+    <Box 
+      component="form" 
+      onSubmit={handleSubmit(onSubmit)} 
+      sx={{ 
+        maxWidth: '600px',
+        p: { xs: 1, sm: 2, md: 0 }
+      }}
+    >
+      <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.8rem', sm: '2.1rem', md: '2.5rem' } }}>
         Segurança
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3, fontSize: { xs: '0.9rem', sm: '1rem' } }}>
         Para sua segurança, recomendamos que você escolha uma senha forte e não a compartilhe com ninguém.
       </Typography>
 
@@ -110,7 +117,16 @@ const Seguranca = () => {
           />
         </Grid>
         <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
-          <Button type="submit" variant="contained" color="primary" disabled={loading}>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            disabled={loading}
+            sx={{ 
+              backgroundColor: 'var(--cor-marca-escuro)', 
+              '&:hover': { backgroundColor: 'brown' },
+              '&:disabled': { backgroundColor: 'grey.400' }
+            }}
+          >
             {loading ? <CircularProgress size={24} /> : 'Alterar Senha'}
           </Button>
         </Grid>

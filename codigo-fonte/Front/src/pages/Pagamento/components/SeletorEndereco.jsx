@@ -56,10 +56,10 @@ const SeletorEndereco = ({
               sx={{
                 p: 2,
                 cursor: 'pointer',
-                border: enderecoSelecionado?.linha === enderecoUsuario.linha ? '2px solid #1976d2' : '1px solid #ccc',
-                background: enderecoSelecionado?.linha === enderecoUsuario.linha ? '#e3f2fd' : '#fff',
+                border: enderecoSelecionado?.linha === enderecoUsuario.linha ? '2px solid var(--cor-marca)' : '1px solid #ccc',
+                background: enderecoSelecionado?.linha === enderecoUsuario.linha ? '#ec714824' : '#fff',
                 '&:hover': {
-                  background: '#e3f2fd',
+                  background: '#ec714824',
                 },
               }}
               onClick={() => {
@@ -89,10 +89,10 @@ const SeletorEndereco = ({
               sx={{
                 p: 2,
                 cursor: 'pointer',
-                border: enderecoSelecionado?.linha === enderecoLinha ? '2px solid #1976d2' : '1px solid #ccc',
-                background: enderecoSelecionado?.linha === enderecoLinha ? '#e3f2fd' : '#fff',
+                border: enderecoSelecionado?.linha === enderecoLinha ? '2px solid var(--cor-marca)' : '1px solid #ccc',
+                background: enderecoSelecionado?.linha === enderecoLinha ? '#ec714824' : '#fff',
                 '&:hover': {
-                  background: '#e3f2fd',
+                  background: '#ec714824',
                 },
               }}
               onClick={() => {
