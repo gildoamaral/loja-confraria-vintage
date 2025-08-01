@@ -184,7 +184,7 @@ const InformProduto = () => {
                 <Typography variant="overline" color="text.secondary">{produto.categoria.toLowerCase()}</Typography>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                  <Typography variant="h4" component={'h1'} fontWeight={700}>{produto.nome}</Typography>
+                  <Typography variant="h4" component={'h1'} fontWeight={700} sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>{produto.nome}</Typography>
                   {!produto.ativo && (
                     <Chip 
                       label="Inativo" 
@@ -203,7 +203,7 @@ const InformProduto = () => {
                     {/* COR */}
                     {produto.cor && (
                       <Box>
-                        <Typography variant="body2" fontWeight="medium" sx={{ mb: 0.4 }}>
+                        <Typography variant="body2" fontWeight="medium" sx={{ mb: 0.4 }} >
                           <span style={{ fontWeight: 'bold' }}>Cor:</span> {selectedCor}
                         </Typography>
                       </Box>
@@ -258,7 +258,7 @@ const InformProduto = () => {
                 </Grid>
 
 
-                <Typography variant="body1" color="text.secondary" paragraph>{produto.descricao}</Typography>
+                <Typography variant="body1" color="text.secondary" paragraph sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>{produto.descricao}</Typography>
 
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 10 }}>

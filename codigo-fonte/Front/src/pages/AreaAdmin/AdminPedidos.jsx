@@ -109,10 +109,7 @@ const AdminPedidos = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Painel de Gerenciamento de Pedidos
-      </Typography>
+    <Box >
       <TableContainer component={Paper} >
         <Table sx={{ minWidth: 650 }} size={'small'} aria-label="tabela de pedidos">
 

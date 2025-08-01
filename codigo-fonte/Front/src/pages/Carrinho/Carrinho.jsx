@@ -11,7 +11,7 @@ import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import CarrinhoItemCard from './CarrinhoItemCard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+
 
 function Carrinho() {
   const [carrinho, setCarrinho] = useState([]);
@@ -189,7 +189,7 @@ function Carrinho() {
               ) : (
                 <Box sx={{ textAlign: 'center', mt: 8, mb: 8 }}>
                   <ShoppingCartIcon sx={{ fontSize: 80, color: 'var(--cor-marca)', mb: 2 }} />
-                  <Typography variant="h6" color="text.secondary">
+                  <Typography variant="h6" color="text.secondary" sx={{fontFamily: 'Special Elite, Courier, monospace'}}>
                     Seu carrinho está vazio.
                   </Typography>
                 </Box>

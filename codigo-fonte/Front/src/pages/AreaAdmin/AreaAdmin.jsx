@@ -30,8 +30,8 @@ import AdminPedidos from './AdminPedidos';
 // Itens do menu de navegação
 const menuItems = [
   { text: 'Estoque', key: 'estoque', icon: <InventoryIcon /> },
-  { text: 'Cadastro', key: 'cadastro', icon: <AddBoxIcon /> },
-  { text: 'Pedidos', key: 'pedidos', icon: <ShoppingCartIcon /> },
+  { text: 'Cadastro de Produtos', key: 'cadastro', icon: <AddBoxIcon /> },
+  { text: 'Pedidos de Clientes', key: 'pedidos', icon: <ShoppingCartIcon /> },
   { text: 'Carrossel', key: 'carrossel', icon: <ViewCarouselIcon /> },
 ];
 

@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa'; // Ícone do WhatsApp
 
 const WhatsAppButton = () => {
+  const [isHovered, setIsHovered] = useState(false);
+  
   const phoneNumber = '5573981071533'; // Substitua pelo número real
   const message = 'Olá! Gostaria de saber mais sobre os produtos da loja.';
   const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -11,10 +13,55 @@ const WhatsAppButton = () => {
       href={whatsappURL}
       target="_blank"
       rel="noopener noreferrer"
-      style={styles.floatingButton}
+      style={{
+        ...styles.floatingButton,
+        ...(isHovered ? styles.floatingButtonHover : {})
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <FaWhatsapp size={28} style={{ marginRight: 8 }} />
-      Fale conosco
+      <FaWhatsapp 
+        size={24} 
+        style={{
+          marginRight: 8,
+          animation: 'pulse 2s infinite',
+          filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.3))'
+        }} 
+      />
+      <span style={styles.buttonText}>Fale conosco</span>
+      
+      {/* CSS Animation */}
+      <style jsx>{`
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+          100% { transform: scale(1); }
+        }
+        
+        @keyframes slideIn {
+          from { 
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to { 
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .whatsapp-button {
+            padding: 10px 16px !important;
+            font-size: 14px !important;
+            bottom: 15px !important;
+            right: 15px !important;
+          }
+          
+          .whatsapp-text {
+            display: none !important;
+          }
+        }
+      `}</style>
     </a>
   );
 };
@@ -22,18 +69,41 @@ const WhatsAppButton = () => {
 const styles = {
   floatingButton: {
     position: 'fixed',
-    bottom: '20px',
-    right: '20px',
-    backgroundColor: '#25D366',
+    bottom: '25px',
+    right: '25px',
+    background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
     color: 'white',
-    padding: '12px 20px',
-    borderRadius: '30px',
+    padding: '14px 24px',
+    borderRadius: '50px',
     textDecoration: 'none',
     display: 'flex',
     alignItems: 'center',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+    justifyContent: 'center',
+    boxShadow: '0 8px 25px rgba(37, 211, 102, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15)',
     zIndex: 1000,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    fontSize: '16px',
+    fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    cursor: 'pointer',
+    border: '2px solid rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(10px)',
+    animation: 'slideIn 0.5s ease-out',
+    maxWidth: '200px',
+    minWidth: '60px',
+  },
+  
+  floatingButtonHover: {
+    transform: 'translateY(-3px) scale(1.05)',
+    boxShadow: '0 12px 35px rgba(37, 211, 102, 0.6), 0 8px 20px rgba(0, 0, 0, 0.2)',
+    background: 'linear-gradient(135deg, #2BE477 0%, #14A085 100%)',
+  },
+  
+  buttonText: {
+    fontWeight: '600',
+    letterSpacing: '0.5px',
+    textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+    whiteSpace: 'nowrap',
   },
 };
 

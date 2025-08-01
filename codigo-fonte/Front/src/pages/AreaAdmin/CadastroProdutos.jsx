@@ -9,8 +9,6 @@ import {
   Button,
   Typography,
   Grid,
-  Card,
-  CardContent,
   Alert,
   IconButton,
   ImageList,
@@ -172,8 +170,9 @@ const CadastroProdutos = () => {
   };
 
   return (
-    <Container maxWidth="md" >
-      <Paper elevation={3} sx={{ p: 4 }}>
+    <Container >
+      <Paper elevation={3} sx={{ p: 4 }} >
+        <Box maxWidth='sm' mx="auto">
         <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 5 }}>
           Cadastro de Produtos
         </Typography>
@@ -401,6 +400,7 @@ const CadastroProdutos = () => {
             )}
           </Grid>
         </Box>
+      </Box>
       </Paper>
     </Container>
   );

@@ -151,7 +151,7 @@ const Navbar = () => {
           {/* Navegação Desktop - Escondida no Mobile */}
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Button color="inherit" component={RouterLink} to="/">Home</Button>
+              <Button color="inherit" component={RouterLink} to="/" >Home</Button>
               {/* <Button color="inherit" component={RouterLink} to="/colecoes">Coleções</Button> */}
               <Button color="inherit" component={RouterLink} to="/sobre">Sobre</Button>
               {isAuthenticated && usuario?.posicao === 'ADMIN' && (

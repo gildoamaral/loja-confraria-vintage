@@ -33,7 +33,7 @@ const Login = () => {
   return (
     <Container component="main" maxWidth="xs" sx={{ mt: 8 }}>
       <Paper elevation={6} sx={{ padding: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5" >
+        <Typography component="h1" variant="h5" sx={{fontFamily: 'Special Elite, Courier, monospace'}}>
           Entrar na sua conta
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>

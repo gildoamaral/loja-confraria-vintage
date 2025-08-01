@@ -115,7 +115,7 @@ const MinhaContaLayout = () => {
       }}>
         {/* Menu Desktop */}
         {!isMobile && (
-          <Paper elevation={3} sx={{ width: 240, flexShrink: 0, height: 'fit-content' }}>
+          <Paper elevation={3} sx={{ width: 240, flexShrink: 0, height: 'fit-content', mr: isMobile ? 0 : 2 }}>
             {menuContent}
           </Paper>
         )}
@@ -126,7 +126,7 @@ const MinhaContaLayout = () => {
           sx={{ 
             flexGrow: 1,
             width: { xs: '100%', md: 'calc(100% - 240px)' },
-            minHeight: '400px'
+            minHeight: '400px',
           }}
         >
           <Outlet />

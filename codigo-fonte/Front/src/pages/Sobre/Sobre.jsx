@@ -46,10 +46,10 @@ const FadeInSection = ({ title, imageUrl, imagePosition = 'left', children }) =>
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }} order={{ xs: 2, md: textGridOrder }}>
-          <Typography variant="h3" component="h2" gutterBottom>
+          <Typography variant="h3" component="h2" gutterBottom sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>
             {title}
           </Typography>
-          <Typography variant="body1" align="justify">
+          <Typography variant="body1" align="justify" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>
             {children}
           </Typography>
         </Grid>

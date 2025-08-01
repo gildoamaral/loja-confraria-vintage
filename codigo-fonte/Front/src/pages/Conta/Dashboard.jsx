@@ -91,10 +91,7 @@ const Dashboard = () => {
 
   return (
     <Box sx={{ p: { xs: 1, sm: 2, md: 0 } }}>
-      <Typography variant="h4" gutterBottom sx={{ fontSize: { xs: '1.8rem', sm: '2.1rem', md: '2.5rem' } }}>
-        Painel
-      </Typography>
-      <Typography variant="h6" sx={{ mb: 4, fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' } }}>
+      <Typography variant="h6" sx={{ mb: 1, fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' } }}>
         Olá, {data?.nomeUsuario}! Bem-vindo(a) de volta.
       </Typography>
 
