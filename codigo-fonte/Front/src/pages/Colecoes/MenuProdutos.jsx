@@ -203,7 +203,7 @@ const MenuProdutos = () => {
         transition: 'top 0.3s ease-in-out',
         justifySelf: 'flex-end'
       }}>
-        <Button onClick={toggleMobileFilters(true)} startIcon={<FilterListIcon />} variant="contained" sx={{ bgcolor: 'var(--cor-marca-escuro)', color: 'white' }}>
+        <Button onClick={toggleMobileFilters(true)} startIcon={<FilterListIcon />} variant="contained" sx={{ background: 'var(--cor-marca)', color: 'white' }}>
           Filtrar
         </Button>
         <Drawer anchor="left" open={mobileFiltersOpen} onClose={toggleMobileFilters(false)}>

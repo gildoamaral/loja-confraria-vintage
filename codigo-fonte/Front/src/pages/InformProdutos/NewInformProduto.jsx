@@ -144,6 +144,8 @@ const InformProduto = () => {
   return (
     <>
       <Container maxWidth="lg" sx={{ my: { xs: 2, md: 5 } }}>
+          <Typography variant="overline" color="text.secondary">{produto.categoria.toLowerCase()} ♦ {produto.id}</Typography>
+
         <Paper elevation={3} sx={{ p: { xs: 2, md: 4 } }}>
           <Grid container spacing={{ xs: 2, md: 4 }}>
             {/* Coluna da Galeria de Imagens (Esquerda) */}
@@ -181,9 +183,8 @@ const InformProduto = () => {
             <Grid size={{ xs: 12, md: 4.7 }} >
 
               <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <Typography variant="overline" color="text.secondary">{produto.categoria.toLowerCase()}</Typography>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 5 }}>
                   <Typography variant="h4" component={'h1'} fontWeight={700} sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>{produto.nome}</Typography>
                   {!produto.ativo && (
                     <Chip 
@@ -194,7 +195,6 @@ const InformProduto = () => {
                     />
                   )}
                 </Box>
-                <Divider sx={{ mt: 1, mb: 3 }} />
 
 
                 <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -203,8 +203,8 @@ const InformProduto = () => {
                     {/* COR */}
                     {produto.cor && (
                       <Box>
-                        <Typography variant="body2" fontWeight="medium" sx={{ mb: 0.4 }} >
-                          <span style={{ fontWeight: 'bold' }}>Cor:</span> {selectedCor}
+                        <Typography variant="body2" fontWeight="medium" sx={{ mb: 0.4, fontFamily: 'Special Elite, Courier, monospace' }} >
+                          Cor: <span style={{color: 'gray'}}>{selectedCor}</span>
                         </Typography>
                       </Box>
                     )}
@@ -212,16 +212,16 @@ const InformProduto = () => {
                     {/* TAMANHO */}
                     {produto.tamanho && (
                       <Box>
-                        <Typography variant="body2" fontWeight="medium">
-                          <span style={{ fontWeight: 'bold' }}>Tamanho:</span> {selectedTamanho}
+                        <Typography variant="body2" fontWeight="medium" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>
+                          Tamanho: <span style={{color: 'gray'}}>{selectedTamanho}</span>
                         </Typography>
                       </Box>
                     )}
                   </Grid>
 
                   {/* Coluna 2: Preço */}
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Typography variant="body2" fontWeight="bold">
+                  <Grid size={{ xs: 12, sm: 6 }} >
+                    <Typography variant="body2" fontWeight="bold" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>
                       Preço:
                     </Typography>
                     {produto.precoPromocional ? (
@@ -237,7 +237,7 @@ const InformProduto = () => {
                           >
                             R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}
                           </Typography>
-                          <Typography variant="h6" color="error" fontWeight="bold">
+                          <Typography variant="h6" color="error" fontWeight="bold" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>
                             R$ {parseFloat(produto.precoPromocional).toFixed(2).replace('.', ',')}
                           </Typography>
                         </Box>
@@ -250,7 +250,7 @@ const InformProduto = () => {
                         />
                       </>
                     ) : (
-                      <Typography variant="h6" color="error" fontWeight="bold">
+                      <Typography variant="h5" color="error" fontWeight="900" sx={{ fontFamily: 'Libre Bodoni, Courier, monospace' }}>
                         R$ {parseFloat(produto.preco).toFixed(2).replace('.', ',')}
                       </Typography>
                     )}

@@ -54,49 +54,6 @@ app.use('/api/cart', require('./src/routes/cartRoutes')); // Rotas do carrinho
 app.use('/api/carrossel', carrosselRouter);
 app.use('/admin', adminRoutes);
 
-/*
-// ROTAS PRIVADAS
-//  //  Área de usuário
-app.get("/user/:id", auth, async (req, res) => {
-  const id = req.params.id;
-
-  //Verificar se o User existe
-  const user = await prisma.usuarios.findUnique({
-    where: { id },
-  });
-
-  if (user) {
-    // Remove o campo senha do objeto user
-    const { senha, ...userWithoutPassword } = user;
-
-    res.json({ message: "Perfil acessado!", user: userWithoutPassword });
-  } else {
-    res.status(404).json({ message: "Usuário não encontrado" });
-  }
-});
-*/
-
-/*
-//  //  Área de administrador
-app.get("/admin/:id", authAdmin, async (req, res) => {
-  const id = req.params.id;
-
-  //Verificar se o User existe
-  const user = await prisma.usuarios.findUnique({
-    where: { id },
-  });
-
-  if (user) {
-    // Remove o campo senha do objeto user
-    const { senha, ...userWithoutPassword } = user;
-
-    res.json({ message: "Perfil ADM acessado!", user: userWithoutPassword });
-  } else {
-    res.status(404).json({ message: "Usuário não encontrado" });
-  }
-});
-*/
-
 app.get("/verify-email/:token", async (req, res) => {
   const { token } = req.params;
 
@@ -130,7 +87,8 @@ app.post('/frete', async (req, res) => {
   
   try {
     const response = await axios.post(
-      'https://www.melhorenvio.com.br/api/v2/me/shipment/calculate',
+      // 'https://www.melhorenvio.com.br/api/v2/me/shipment/calculate',
+      'https://sandbox.melhorenvio.com.br/api/v2/me/shipment/calculate',
       {
         from: { postal_code: '45820440' }, // CEP de origem
         to: { postal_code: cepDestino },

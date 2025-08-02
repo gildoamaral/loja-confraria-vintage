@@ -73,7 +73,7 @@ const styles = {
     right: '25px',
     background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
     color: 'white',
-    padding: '14px 24px',
+    padding: '11px 18px',
     borderRadius: '50px',
     textDecoration: 'none',
     display: 'flex',

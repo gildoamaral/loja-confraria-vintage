@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
+import { Link } from 'react-router-dom';
 
 const NewEstoqueProdutos = () => {
   const [produtos, setProdutos] = useState([]);
@@ -91,7 +92,7 @@ const NewEstoqueProdutos = () => {
               <TableCell align="right">Qtd.</TableCell>
               <TableCell>Categoria</TableCell>
               <TableCell>Ocasião</TableCell>
-              <TableCell>Destaque</TableCell>
+              {/* <TableCell>Destaque</TableCell> */}
               <TableCell>Ativo</TableCell>
               <TableCell align="center">Ações</TableCell>
             </TableRow>
@@ -107,15 +108,28 @@ const NewEstoqueProdutos = () => {
                 <TableCell >
                   <Avatar variant='rounded' src={produto.imagens?.[0]?.urls?.thumbnail} alt={produto.nome} />
                 </TableCell>
-                <TableCell>{produto.id}</TableCell>
+                <TableCell> 
+                  <Link 
+                    to={`/produto/${produto.id}`}
+                    style={{ 
+                      textDecoration: 'none', 
+                      color: 'inherit',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => {e.target.style.color = 'gray', e.target.style.textDecoration = 'underline'}}
+                    onMouseLeave={(e) => {e.target.style.color = 'inherit', e.target.style.textDecoration = 'none'}}
+                  >
+                    {produto.id}
+                  </Link>
+                </TableCell>
                 <TableCell>{produto.nome}</TableCell>
                 <TableCell align="right">R$ {produto.preco.toFixed(2)}</TableCell>
                 <TableCell align="right">{produto.quantidade}</TableCell>
                 <TableCell>{produto.categoria}</TableCell>
                 <TableCell>{produto.ocasiao || '-'}</TableCell>
-                <TableCell align="center">
+                {/* <TableCell align="center">
                   {produto.emDestaque && <StarIcon color="warning" fontSize="small" />}
-                </TableCell>
+                </TableCell> */}
                 <TableCell>
                   <Chip 
                     label={produto.ativo ? 'Sim' : 'Não'} 
