@@ -52,6 +52,7 @@ model produtos {
   ativo            Boolean         @default(true)
   imagens          ProdutoImagem[]
   emDestaque       Boolean         @default(false)
+  criadoEm         DateTime        @default(now())
 
   itensPedido ItemPedido[]
 }

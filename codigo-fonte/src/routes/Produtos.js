@@ -92,18 +92,63 @@ router.get('/', async (req, res) => {
 
 // GET - Produtos ADM ESTOQUE
 router.get('/estoque/paginated', AuthAdmin, async (req, res) => {
-  // Pega os parâmetros da URL, com valores padrão de página 1 e limite 10
+  // Pega os parâmetros da URL, com valores padrão
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
+  
+  // Novos parâmetros para pesquisa, filtros e ordenação
+  const { 
+    search, 
+    categoria, 
+    ocasiao, 
+    ativo, 
+    orderBy = 'criadoEm', 
+    orderDirection = 'desc' 
+  } = req.query;
 
   try {
+    // Constrói as condições de filtro
+    const whereConditions = {};
+    
+    // Filtro de pesquisa por nome
+    if (search && search.trim()) {
+      whereConditions.nome = {
+        contains: search.trim()
+        // Removido mode: 'insensitive' pois MySQL não suporta (já é case-insensitive por padrão)
+      };
+    }
+    
+    // Filtro por categoria
+    if (categoria && categoria !== 'TODAS') {
+      whereConditions.categoria = categoria;
+    }
+    
+    // Filtro por ocasião
+    if (ocasiao && ocasiao !== 'TODAS') {
+      if (ocasiao === 'SEM_OCASIAO') {
+        whereConditions.ocasiao = null;
+      } else {
+        whereConditions.ocasiao = ocasiao;
+      }
+    }
+    
+    // Filtro por status ativo
+    if (ativo && ativo !== 'TODOS') {
+      whereConditions.ativo = ativo === 'true';
+    }
+
+    // Constrói a ordenação
+    const orderByObject = {};
+    orderByObject[orderBy] = orderDirection;
+
     // Busca os produtos e o total de produtos em duas chamadas paralelas
     const [produtos, totalProdutos] = await prisma.$transaction([
       prisma.produtos.findMany({
+        where: whereConditions,
         skip: skip,
         take: limit,
-        orderBy: { nome: 'asc' },
+        orderBy: orderByObject,
         include: {
           imagens: {
             orderBy: { posicao: 'asc' },
@@ -111,13 +156,16 @@ router.get('/estoque/paginated', AuthAdmin, async (req, res) => {
           },
         },
       }),
-      prisma.produtos.count(),
+      prisma.produtos.count({
+        where: whereConditions,
+      }),
     ]);
 
     res.json({
       produtos,
       totalPages: Math.ceil(totalProdutos / limit),
       currentPage: page,
+      totalProdutos,
     });
   } catch (error) {
     console.error("Erro ao buscar produtos paginados:", error);

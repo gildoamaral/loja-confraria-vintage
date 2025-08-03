@@ -5,11 +5,8 @@ const api = axios.create({
   withCredentials: true, // <- ESSENCIAL: isso garante que cookies sejam enviados automaticamente
 });
 
-// Interceptor de resposta para tratar expiração de token
 api.interceptors.response.use(
   (response) => {
-    // Se a resposta é bem-sucedida, apenas retorna
-    console.log("Resposta da API:", response);
     return response;
   },
   (error) => {
@@ -30,7 +27,6 @@ api.interceptors.response.use(
          console.log(isTokenExpired, errorMessage);
 
       if (isTokenExpired) {
-        // Dispara evento customizado para notificar sobre token expirado
         window.dispatchEvent(new CustomEvent('tokenExpired', {
           detail: {
             message: 'Sua sessão expirou. Faça login novamente.',
@@ -38,8 +34,6 @@ api.interceptors.response.use(
           }
         }));
         
-        // Limpa qualquer estado de autenticação local se existir
-        // (isso será capturado pelo AuthProvider)
         window.dispatchEvent(new CustomEvent('forceLogout'));
         
         return Promise.reject({

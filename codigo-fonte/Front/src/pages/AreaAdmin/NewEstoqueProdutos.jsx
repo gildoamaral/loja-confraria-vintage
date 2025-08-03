@@ -42,12 +42,18 @@ const NewEstoqueProdutos = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  // Estados para filtros e pesquisa
+  // Estados para filtros e pesquisa - valores aplicados
   const [search, setSearch] = useState('');
-  const [searchInput, setSearchInput] = useState(''); // Estado separado para o input
   const [categoria, setCategoria] = useState('TODAS');
   const [ocasiao, setOcasiao] = useState('TODAS');
   const [ativo, setAtivo] = useState('TODOS');
+  
+  // Estados para inputs dos filtros - valores temporários
+  const [searchInput, setSearchInput] = useState('');
+  const [categoriaInput, setCategoriaInput] = useState('TODAS');
+  const [ocasiaoInput, setOcasiaoInput] = useState('TODAS');
+  const [ativoInput, setAtivoInput] = useState('TODOS');
+  
   const [orderBy, setOrderBy] = useState('criadoEm');
   const [orderDirection, setOrderDirection] = useState('desc');
 
@@ -129,37 +135,23 @@ const NewEstoqueProdutos = () => {
     fetchProdutos(page);
   }, [page, fetchProdutos]);
 
-  // Função para executar a pesquisa
+  // Função para executar a pesquisa (aplicar todos os filtros)
   const handleSearch = () => {
     setSearch(searchInput.trim());
+    setCategoria(categoriaInput);
+    setOcasiao(ocasiaoInput);
+    setAtivo(ativoInput);
     setPage(1); // Volta para a primeira página
   };
 
-  // Função para lidar com Enter no campo de pesquisa
-  const handleSearchKeyPress = (event) => {
+  // Função para lidar com Enter em qualquer campo
+  const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       handleSearch();
     }
   };
 
-  // Função para lidar com mudanças nos filtros
-  const handleFilterChange = (filterType, value) => {
-    setPage(1); // Volta para a primeira página quando filtros mudam
-    
-    switch(filterType) {
-      case 'categoria':
-        setCategoria(value);
-        break;
-      case 'ocasiao':
-        setOcasiao(value);
-        break;
-      case 'ativo':
-        setAtivo(value);
-        break;
-      default:
-        break;
-    }
-  };
+  // Removemos a função handleFilterChange pois não precisamos mais dela
 
   // Função para lidar com ordenação
   const handleSort = (column) => {
@@ -212,27 +204,14 @@ const NewEstoqueProdutos = () => {
         </Typography>
         <Grid container spacing={2} alignItems="center">
           {/* Campo de Pesquisa */}
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} md={2.5}>
             <TextField
               fullWidth
               label="Pesquisar por nome"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              onKeyPress={handleSearchKeyPress}
+              onKeyPress={handleKeyPress}
               size="small"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleSearch}
-                      edge="end"
-                      size="small"
-                    >
-                      <SearchIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
             />
           </Grid>
 
@@ -241,9 +220,9 @@ const NewEstoqueProdutos = () => {
             <FormControl fullWidth size="small">
               <InputLabel>Categoria</InputLabel>
               <Select
-                value={categoria}
+                value={categoriaInput}
                 label="Categoria"
-                onChange={(e) => handleFilterChange('categoria', e.target.value)}
+                onChange={(e) => setCategoriaInput(e.target.value)}
               >
                 {categorias.map((cat) => (
                   <MenuItem key={cat} value={cat}>
@@ -259,9 +238,9 @@ const NewEstoqueProdutos = () => {
             <FormControl fullWidth size="small">
               <InputLabel>Ocasião</InputLabel>
               <Select
-                value={ocasiao}
+                value={ocasiaoInput}
                 label="Ocasião"
-                onChange={(e) => handleFilterChange('ocasiao', e.target.value)}
+                onChange={(e) => setOcasiaoInput(e.target.value)}
               >
                 {ocasioes.map((oc) => (
                   <MenuItem key={oc} value={oc}>
@@ -278,9 +257,9 @@ const NewEstoqueProdutos = () => {
             <FormControl fullWidth size="small">
               <InputLabel>Status</InputLabel>
               <Select
-                value={ativo}
+                value={ativoInput}
                 label="Status"
-                onChange={(e) => handleFilterChange('ativo', e.target.value)}
+                onChange={(e) => setAtivoInput(e.target.value)}
               >
                 {statusOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -289,6 +268,25 @@ const NewEstoqueProdutos = () => {
                 ))}
               </Select>
             </FormControl>
+          </Grid>
+
+          {/* Botão de Pesquisa */}
+          <Grid item xs={12} md={1.5}>
+            <IconButton
+              onClick={handleSearch}
+              size="large"
+              sx={{
+                color: 'primary.dark',
+                '&:hover': {
+                  backgroundColor: 'primary.light',
+                  color: '#fff',
+                },
+                width: '40px',
+                height: '40px'
+              }}
+            >
+              <SearchIcon />
+            </IconButton>
           </Grid>
         </Grid>
       </Paper>
@@ -306,17 +304,21 @@ const NewEstoqueProdutos = () => {
                   active={orderBy === 'nome'}
                   direction={orderBy === 'nome' ? orderDirection : 'asc'}
                   onClick={() => handleSort('nome')}
+                  hideSortIcon={false}
+                  sx={{ '& .MuiTableSortLabel-icon': { opacity: 1 } }}
                 >
                   Nome
                 </TableSortLabel>
               </TableCell>
               
               {/* Preço - ordenável */}
-              <TableCell align="right">
+              <TableCell>
                 <TableSortLabel
                   active={orderBy === 'preco'}
                   direction={orderBy === 'preco' ? orderDirection : 'asc'}
                   onClick={() => handleSort('preco')}
+                  hideSortIcon={false}
+                  sx={{ '& .MuiTableSortLabel-icon': { opacity: 1 } }}
                 >
                   Preço
                 </TableSortLabel>
@@ -330,6 +332,8 @@ const NewEstoqueProdutos = () => {
                   active={orderBy === 'categoria'}
                   direction={orderBy === 'categoria' ? orderDirection : 'asc'}
                   onClick={() => handleSort('categoria')}
+                  hideSortIcon={false}
+                  sx={{ '& .MuiTableSortLabel-icon': { opacity: 1 } }}
                 >
                   Categoria
                 </TableSortLabel>
@@ -341,6 +345,8 @@ const NewEstoqueProdutos = () => {
                   active={orderBy === 'ocasiao'}
                   direction={orderBy === 'ocasiao' ? orderDirection : 'asc'}
                   onClick={() => handleSort('ocasiao')}
+                  hideSortIcon={false}
+                  sx={{ '& .MuiTableSortLabel-icon': { opacity: 1 } }}
                 >
                   Ocasião
                 </TableSortLabel>
@@ -352,6 +358,8 @@ const NewEstoqueProdutos = () => {
                   active={orderBy === 'criadoEm'}
                   direction={orderBy === 'criadoEm' ? orderDirection : 'asc'}
                   onClick={() => handleSort('criadoEm')}
+                  hideSortIcon={false}
+                  sx={{ '& .MuiTableSortLabel-icon': { opacity: 1 } }}
                 >
                   Data Criação
                 </TableSortLabel>
@@ -363,6 +371,8 @@ const NewEstoqueProdutos = () => {
                   active={orderBy === 'ativo'}
                   direction={orderBy === 'ativo' ? orderDirection : 'asc'}
                   onClick={() => handleSort('ativo')}
+                  hideSortIcon={false}
+                  sx={{ '& .MuiTableSortLabel-icon': { opacity: 1 } }}
                 >
                   Ativo
                 </TableSortLabel>
