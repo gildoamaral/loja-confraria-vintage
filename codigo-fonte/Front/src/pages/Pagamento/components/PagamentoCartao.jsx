@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styles from './PagamentoCartao.module.css'
 import imagem from './image.png'
-import { Box, Typography, FormLabel, FormControl } from '@mui/material'
+import { Box, Typography, FormLabel, FormControl, Snackbar, Alert } from '@mui/material'
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
@@ -12,6 +12,25 @@ const PagamentoCartao = (props) => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const navigate = useNavigate();
+
+  // Estados para controlar as mensagens
+  const [snackbar, setSnackbar] = React.useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const showMessage = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   useEffect(() => {
 
@@ -110,13 +129,13 @@ const PagamentoCartao = (props) => {
             .then(async response => {
               console.log("log da response data: ", response.data)
               if (response.data.status === 'pending') {
-                alert("Pagamento em processamento. Aguardando confirmação.");
-                navigate('/conta');
+                showMessage("Pagamento em processamento. Aguardando confirmação.", 'info');
+                setTimeout(() => navigate('/conta'), 2000);
               }
               if (response.data.status === 'success') {
                 console.log("response: ", response.data);
-                alert("Pagamento realizado com sucesso!");
-                navigate('/conta');
+                showMessage("Pagamento realizado com sucesso!", 'success');
+                setTimeout(() => navigate('/conta'), 2000);
               }
             })
             .catch(error => {
@@ -125,10 +144,10 @@ const PagamentoCartao = (props) => {
               console.log("log do erro.data :", error.response.data);
               console.log("log do erro: ", error)
               if (error.response && error.response.status === 402) {
-                alert("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.");
+                showMessage("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.", 'error');
 
               } else {
-                alert("Erro ao processar pagamento.");
+                showMessage("Erro ao processar pagamento.", 'error');
                 navigate('/carrinho')
               }
             })
@@ -284,6 +303,22 @@ const PagamentoCartao = (props) => {
         </progress>
 
       </form>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

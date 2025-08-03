@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from './PagamentoCartao.module.css'
 import imagem from './image.png'
-import { Box, Typography, FormLabel, FormControl } from '@mui/material'
+import { Box, Typography, FormLabel, FormControl, Snackbar, Alert } from '@mui/material'
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
@@ -12,6 +12,25 @@ const mp = new window.MercadoPago(import.meta.env.VITE_MERCADO_PAGO_KEY);
 const PagamentoCartao = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  // Estados para controlar as mensagens
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const showMessage = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   useEffect(() => {
     let cardFormInstance; // Usa uma variável local para a instância
@@ -70,21 +89,21 @@ const PagamentoCartao = (props) => {
             })
             .then(response => {
               if (response.data.status === 'pending') {
-                alert("Pagamento em processamento. Aguardando confirmação.");
-                navigate('/minha-conta');
+                showMessage("Pagamento em processamento. Aguardando confirmação.", 'info');
+                setTimeout(() => navigate('/minha-conta'), 2000);
               }
               if (response.data.status === 'success') {
-                alert("Pagamento realizado com sucesso!");
-                navigate('/minha-conta');
+                showMessage("Pagamento realizado com sucesso!", 'success');
+                setTimeout(() => navigate('/minha-conta'), 2000);
               }
             })
             .catch(error => {
               setIsSubmitting(false);
               if (error.response && error.response.status === 402) {
-                alert("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.");
+                showMessage("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.", 'error');
               } else {
-                alert("Erro ao processar pagamento.");
-                navigate('/carrinho');
+                showMessage("Erro ao processar pagamento.", 'error');
+                setTimeout(() => navigate('/carrinho'), 2000);
               }
             })
             .finally(() => {
@@ -257,6 +276,22 @@ const PagamentoCartao = (props) => {
           </Box>
         </Box>
       </form>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

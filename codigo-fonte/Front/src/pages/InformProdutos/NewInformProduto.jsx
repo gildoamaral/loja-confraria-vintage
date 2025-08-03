@@ -14,7 +14,9 @@ import {
   Chip,
   Dialog,
   DialogTitle,
-  DialogActions
+  DialogActions,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import AddIcon from '@mui/icons-material/Add';
@@ -40,6 +42,25 @@ const InformProduto = () => {
   const [loadingFrete, setLoadingFrete] = useState(false);
   // Novo estado para controlar o modal de sucesso
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+
+  // Estados para controlar as mensagens
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'error'
+  });
+
+  const showMessage = (message, severity = 'error') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   useEffect(() => {
     const fetchProduto = async () => {
@@ -72,7 +93,7 @@ const InformProduto = () => {
 
   const calcularFrete = async () => {
     if (!cepDestino.match(/^\d{5}-?\d{3}$/)) {
-      alert('Informe um CEP válido (8 dígitos).');
+      showMessage('Informe um CEP válido (8 dígitos).');
       return;
     }
     setLoadingFrete(true);
@@ -85,7 +106,7 @@ const InformProduto = () => {
       setFreteOptions(sorted);
     } catch (err) {
       console.error('Erro ao calcular frete:', err);
-      alert('Não foi possível calcular o frete.');
+      showMessage('Não foi possível calcular o frete.');
     } finally {
       setLoadingFrete(false);
     }
@@ -102,19 +123,19 @@ const InformProduto = () => {
   const handleAddToCart = async () => {
     // Verifica se o produto está ativo
     if (!produto.ativo) {
-      alert('Este produto está inativo e não pode ser adicionado ao carrinho.');
+      showMessage('Este produto está inativo e não pode ser adicionado ao carrinho.', 'warning');
       return;
     }
 
     // Verifica se cor e tamanho foram selecionados
     if (!selectedTamanho || !selectedCor) {
-      alert('Por favor selecione o tamanho e a cor');
+      showMessage('Por favor selecione o tamanho e a cor', 'warning');
       return;
     }
 
     // Verifica se o usuário está logado
     if (!isAuthenticated) {
-      alert('Faça login para adicionar produtos ao carrinho.');
+      showMessage('Faça login para adicionar produtos ao carrinho.', 'info');
       navigate('/login', { state: { from: location }, replace: true });
       return;
     }
@@ -131,7 +152,7 @@ const InformProduto = () => {
       window.dispatchEvent(new Event('cartUpdated'));
       setSuccessModalOpen(true);
     } catch (error) {
-      alert('Erro ao adicionar produto ao carrinho.');
+      showMessage('Erro ao adicionar produto ao carrinho.');
       console.error('Erro:', error);
     } finally {
       setLoading(false);
@@ -359,6 +380,22 @@ const InformProduto = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

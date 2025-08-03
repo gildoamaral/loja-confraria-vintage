@@ -20,12 +20,14 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
+import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import CadastroProdutos from './CadastroProdutos';
 import GerenciarCarrossel from './GerenciarCarrossel';
 import NewEstoqueProdutos from './NewEstoqueProdutos';
 import AdminPedidos from './AdminPedidos';
+import GerenciarSobre from './GerenciarSobre';
 
 // Itens do menu de navegação
 const menuItems = [
@@ -33,6 +35,7 @@ const menuItems = [
   { text: 'Cadastro de Produtos', key: 'cadastro', icon: <AddBoxIcon /> },
   { text: 'Pedidos de Clientes', key: 'pedidos', icon: <ShoppingCartIcon /> },
   { text: 'Carrossel', key: 'carrossel', icon: <ViewCarouselIcon /> },
+  { text: 'Página Sobre', key: 'sobre', icon: <InfoIcon /> },
 ];
 
 const AreaAdmin = () => {
@@ -59,6 +62,8 @@ const AreaAdmin = () => {
         return <CadastroProdutos />;
       case 'carrossel':
         return <GerenciarCarrossel />;
+      case 'sobre':
+        return <GerenciarSobre />;
       default:
         return <NewEstoqueProdutos />;
     }

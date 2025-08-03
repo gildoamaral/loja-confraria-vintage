@@ -15,6 +15,7 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const uploadRouter = require('./src/routes/upload.routes.js');
 const carrosselRouter = require('./src/routes/carrossel.routes.js');
+const sobreRouter = require('./src/routes/sobre.routes.js');
 const adminRoutes = require('./src/routes/Admin');
 
 
@@ -52,6 +53,7 @@ app.use('/api', uploadRouter);
 app.use('/api/auth', require('./src/routes/authRoutes')); // Rotas de autenticação
 app.use('/api/cart', require('./src/routes/cartRoutes')); // Rotas do carrinho
 app.use('/api/carrossel', carrosselRouter);
+app.use('/api/sobre', sobreRouter);
 app.use('/admin', adminRoutes);
 
 app.get("/verify-email/:token", async (req, res) => {

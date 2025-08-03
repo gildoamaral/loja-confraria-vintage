@@ -13,6 +13,7 @@ const WhatsAppButton = () => {
       href={whatsappURL}
       target="_blank"
       rel="noopener noreferrer"
+      className="whatsapp-button"
       style={{
         ...styles.floatingButton,
         ...(isHovered ? styles.floatingButtonHover : {})
@@ -21,22 +22,18 @@ const WhatsAppButton = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <FaWhatsapp 
-        size={24} 
+        size={30} 
+        className="whatsapp-icon"
         style={{
           marginRight: 8,
-          animation: 'pulse 2s infinite',
-          filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.3))'
+          filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.3))',
         }} 
       />
-      <span style={styles.buttonText}>Fale conosco</span>
+      <span className="whatsapp-text" style={styles.buttonText}>Fale conosco</span>
       
       {/* CSS Animation */}
       <style jsx>{`
-        @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); }
-        }
+
         
         @keyframes slideIn {
           from { 
@@ -51,14 +48,23 @@ const WhatsAppButton = () => {
         
         @media (max-width: 768px) {
           .whatsapp-button {
-            padding: 10px 16px !important;
+            padding: 12px !important;
             font-size: 14px !important;
-            bottom: 15px !important;
-            right: 15px !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            border-radius: 50% !important;
+            width: 56px !important;
+            height: 56px !important;
+            min-width: 56px !important;
+            max-width: 56px !important;
           }
           
           .whatsapp-text {
             display: none !important;
+          }
+          
+          .whatsapp-icon {
+            margin-right: 0 !important;
           }
         }
       `}</style>

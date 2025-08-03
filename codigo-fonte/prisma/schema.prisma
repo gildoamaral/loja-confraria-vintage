@@ -102,6 +102,22 @@ model ItemPedido {
   produto produtos @relation(fields: [produtoId], references: [id], onDelete: Cascade)
 }
 
+model ConteudoSobreNos {
+  id        String @id @default(uuid())
+  
+  // Identificador da seção, ex: "identidade" ou "valores"
+  // Usaremos isso para saber qual conteúdo buscar para qual seção.
+  secao     String @unique
+
+  titulo    String
+  texto     String @db.Text // @db.Text permite textos mais longos
+  
+  // O objeto JSON que já usamos para guardar as URLs das imagens no S3
+  urlsImagem Json
+
+  atualizadoEm DateTime @updatedAt
+}
+
 model Pagamentos {
   id       String          @id @default(uuid())
   pedidoId String          @unique

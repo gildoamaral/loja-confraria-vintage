@@ -24,20 +24,30 @@ const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
+  // Listener para logout forçado (quando token expira)
+  useEffect(() => {
+    const handleForceLogout = () => {
+      setUsuario(null);
+      navigate('/login');
+    };
+
+    window.addEventListener('forceLogout', handleForceLogout);
+
+    return () => {
+      window.removeEventListener('forceLogout', handleForceLogout);
+    };
+  }, [navigate]);
+
   // Função de Login
-  const login = async (email, senha, redirectTo = '/') => {
+  const login = async (email, senha) => {
     try {
-      // A chamada à API agora retorna os dados do usuário
       const response = await api.post('/login', { email, senha });
 
       if (response.status == 200) {
         console.log('Login bem-sucedido:', response.data);
-        alert('Login realizado com sucesso!');
       }
       
-      // Atualiza o estado global com os dados do usuário recebidos da API
       setUsuario(response.data.usuario);
-      navigate(redirectTo, { replace: true });
       
     } catch (error) {
       throw error.response?.data || new Error('Erro ao fazer login');

@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const AuthAdmin = require('../middlewares/AuthAdmin');
-const { upload } = require('../middlewares/multer'); // Precisamos do 'upload' para pegar o arquivo
+const { upload } = require('../middlewares/multer');
+const multer = require('multer');
 const { 
   getCarrosselImagens, 
   createCarrosselImagem, 
@@ -9,14 +10,28 @@ const {
 
 const carrosselRouter = Router();
 
-// Rota pública para buscar as imagens
+// Middleware para tratamento de erro do Multer
+const handleSingleImageError = (req, res, next) => {
+  const uploader = upload.single('image');
+
+  uploader(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'O arquivo excede o limite de 7MB.' });
+      }
+      return res.status(400).json({ error: err.message });
+    } else if (err) {
+      return res.status(500).json({ error: 'Ocorreu um erro inesperado durante o upload.' });
+    }
+
+    next();
+  });
+};
+
 carrosselRouter.get('/', getCarrosselImagens);
 
-// Rota de admin para CRIAR a imagem (agora faz upload e processamento)
-// Ela espera um único arquivo no campo 'image'
-carrosselRouter.post('/', AuthAdmin, upload.single('image'), createCarrosselImagem);
+carrosselRouter.post('/', AuthAdmin, handleSingleImageError, createCarrosselImagem);
 
-// Rota de admin para DELETAR uma imagem
 carrosselRouter.delete('/:id', AuthAdmin, deleteCarrosselImagem);
 
 module.exports = carrosselRouter;

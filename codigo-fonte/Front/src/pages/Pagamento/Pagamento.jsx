@@ -5,7 +5,9 @@ import {
   Typography,
   Button,
   Paper,
-  Divider
+  Divider,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
@@ -53,6 +55,25 @@ const Pagamento = () => {
   const [subtotal, setSubtotal] = useState(valorTotal);
   const [metodo, setMetodo] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Estados para controlar as mensagens
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'warning'
+  });
+
+  const showMessage = (message, severity = 'warning') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
   
 
   // Estados e lógica do CEP movidos do FormularioEndereco
@@ -234,7 +255,7 @@ const Pagamento = () => {
 
     } catch (err) {
       console.error(err);
-      alert('Não foi possível gerar o PIX. Tente novamente.');
+      showMessage('Não foi possível gerar o PIX. Tente novamente.', 'error');
       setLoading(false);
     }
     // Não precisa de finally, pois o usuário será redirecionado
@@ -258,7 +279,7 @@ const Pagamento = () => {
   const handleContinuarParaFrete = async () => {
     if (usarEnderecoCadastrado) {
       if (!enderecoSelecionado) {
-        alert('Selecione um endereço!');
+        showMessage('Selecione um endereço!');
         return;
       }
       setEnderecoLinha(enderecoSelecionado.linha);
@@ -303,7 +324,7 @@ const Pagamento = () => {
       !cep || !rua || !numero || !bairro || !cidade || !estado ||
       [cep, rua, numero, bairro, cidade, estado].some(val => !val)
     ) {
-      alert('Preencha todos os campos obrigatórios do endereço!');
+      showMessage('Preencha todos os campos obrigatórios do endereço!');
       return;
     }
 
@@ -339,7 +360,7 @@ const Pagamento = () => {
     );
     console.log('Frete selecionado:', frete.company.name);
     if (!frete) {
-      alert('Selecione uma opção de frete!');
+      showMessage('Selecione uma opção de frete!');
       return;
     }
     const nome = frete.company.name;
@@ -608,6 +629,22 @@ const Pagamento = () => {
 
           </Grid>
         </Paper>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert 
+            onClose={handleCloseSnackbar} 
+            severity={snackbar.severity}
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Box>
     </Box>
   );

@@ -5,7 +5,9 @@ import {
   Box,
   Grid,
   Divider,
-  CircularProgress, // Adicione esta linha
+  CircularProgress,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -16,8 +18,27 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 function Carrinho() {
   const [carrinho, setCarrinho] = useState([]);
   const [carrinhoOriginal, setCarrinhoOriginal] = useState([]);
-  const [loading, setLoading] = useState(true); // Novo estado
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Estados para controlar as mensagens
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'error'
+  });
+
+  const showMessage = (message, severity = 'error') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   useEffect(() => {
     async function fetchCarrinho() {
@@ -43,7 +64,7 @@ function Carrinho() {
       await api.delete(`/pedidos/item/${itemId}`);
       setCarrinho((prev) => prev.filter((item) => item.id !== itemId));
     } catch (error) {
-      alert('Erro ao remover item do carrinho.');
+      showMessage('Erro ao remover item do carrinho.');
       console.error('Erro ao remover item:', error);
     }
   };
@@ -67,7 +88,7 @@ function Carrinho() {
       // Redireciona para pagamento, passando valorTotal e quantidadeTotal
       navigate('/pagamento', { state: { valorTotal, quantidadeTotal } });
     } catch (error) {
-      alert('Erro ao salvar o carrinho. Tente novamente.');
+      showMessage('Erro ao salvar o carrinho. Tente novamente.');
       console.error('Erro ao salvar o carrinho:', error);
     }
   };
@@ -197,6 +218,22 @@ function Carrinho() {
             </>
           )}
         </Box>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert 
+            onClose={handleCloseSnackbar} 
+            severity={snackbar.severity}
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
     </>
   );
 }

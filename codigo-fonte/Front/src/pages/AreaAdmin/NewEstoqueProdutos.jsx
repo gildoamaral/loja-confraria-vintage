@@ -15,7 +15,9 @@ import {
   Pagination,
   IconButton,
   Avatar,
-  Chip
+  Chip,
+  Alert,
+  Snackbar
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import StarIcon from '@mui/icons-material/Star';
@@ -30,6 +32,25 @@ const NewEstoqueProdutos = () => {
   // Estados para controlar o modal de edição
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+
+  // Estados para controlar as mensagens
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const showMessage = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   const fetchProdutos = async (currentPage) => {
     setLoading(true);
@@ -65,13 +86,13 @@ const NewEstoqueProdutos = () => {
       await api.put(`/produtos/${updatedProduct.id}`, updatedProduct);
       handleCloseModal();
       fetchProdutos(page); // Atualiza a tabela com os novos dados
-      alert('Produto atualizado com sucesso!');
+      showMessage('Produto atualizado com sucesso!', 'success');
     } catch (error) {
       console.error("Erro ao salvar produto:", error);
       
       // MUDANÇA AQUI: Tenta pegar a mensagem de erro específica da API
       const errorMessage = error.response?.data?.error || 'Falha ao atualizar o produto.';
-      alert(errorMessage);
+      showMessage(errorMessage, 'error');
     }
   };
 
@@ -163,6 +184,22 @@ const NewEstoqueProdutos = () => {
           onSave={handleSaveProduct}
         />
       )}
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
