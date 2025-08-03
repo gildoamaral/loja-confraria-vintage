@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api'; // Importando o serviço de API
 import EditProductModal from './components/EditProductModal'; // Importaremos o modal que criaremos a seguir
 import {
@@ -17,9 +17,18 @@ import {
   Avatar,
   Chip,
   Alert,
-  Snackbar
+  Snackbar,
+  TextField,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TableSortLabel,
+  InputAdornment
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
 import { Link } from 'react-router-dom';
 
@@ -33,12 +42,38 @@ const NewEstoqueProdutos = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
+  // Estados para filtros e pesquisa
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState(''); // Estado separado para o input
+  const [categoria, setCategoria] = useState('TODAS');
+  const [ocasiao, setOcasiao] = useState('TODAS');
+  const [ativo, setAtivo] = useState('TODOS');
+  const [orderBy, setOrderBy] = useState('criadoEm');
+  const [orderDirection, setOrderDirection] = useState('desc');
+
   // Estados para controlar as mensagens
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success'
   });
+
+  // Opções para os filtros
+  const categorias = [
+    'TODAS', 'SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 
+    'VESTIDO', 'CALCADO', 'ACESSORIOS', 'OUTROS'
+  ];
+
+  const ocasioes = [
+    'TODAS', 'SEM_OCASIAO', 'CASAMENTO', 'BATIZADO', 'MADRINHAS', 
+    'FORMATURA', 'OCASIOES_ESPECIAIS', 'CASUAL', 'FESTAS', 'OUTROS'
+  ];
+
+  const statusOptions = [
+    { value: 'TODOS', label: 'Todos' },
+    { value: 'true', label: 'Ativos' },
+    { value: 'false', label: 'Inativos' }
+  ];
 
   const showMessage = (message, severity = 'success') => {
     setSnackbar({
@@ -52,24 +87,92 @@ const NewEstoqueProdutos = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  const fetchProdutos = async (currentPage) => {
+  const fetchProdutos = useCallback(async (currentPage) => {
     setLoading(true);
     try {
-      const response = await api.get(`/produtos/estoque/paginated?page=${currentPage}&limit=10`);
+      // Constrói os parâmetros da query
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '10',
+        orderBy,
+        orderDirection
+      });
+
+      // Adiciona filtros apenas se não forem valores padrão
+      if (search.trim()) {
+        params.append('search', search.trim());
+      }
+      if (categoria !== 'TODAS') {
+        params.append('categoria', categoria);
+      }
+      if (ocasiao !== 'TODAS') {
+        params.append('ocasiao', ocasiao);
+      }
+      if (ativo !== 'TODOS') {
+        params.append('ativo', ativo);
+      }
+
+      const response = await api.get(`/produtos/estoque/paginated?${params.toString()}`);
       console.log("Produtos recebidos:", response.data);
       setProdutos(response.data.produtos);
       setTotalPages(response.data.totalPages);
       setPage(response.data.currentPage);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
+      showMessage('Erro ao buscar produtos', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, categoria, ocasiao, ativo, orderBy, orderDirection]);
 
   useEffect(() => {
     fetchProdutos(page);
-  }, [page]);
+  }, [page, fetchProdutos]);
+
+  // Função para executar a pesquisa
+  const handleSearch = () => {
+    setSearch(searchInput.trim());
+    setPage(1); // Volta para a primeira página
+  };
+
+  // Função para lidar com Enter no campo de pesquisa
+  const handleSearchKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  // Função para lidar com mudanças nos filtros
+  const handleFilterChange = (filterType, value) => {
+    setPage(1); // Volta para a primeira página quando filtros mudam
+    
+    switch(filterType) {
+      case 'categoria':
+        setCategoria(value);
+        break;
+      case 'ocasiao':
+        setOcasiao(value);
+        break;
+      case 'ativo':
+        setAtivo(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Função para lidar com ordenação
+  const handleSort = (column) => {
+    if (orderBy === column) {
+      // Se já está ordenando por esta coluna, inverte a direção
+      setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Se é uma nova coluna, define ela como ordenação e direção padrão
+      setOrderBy(column);
+      setOrderDirection('asc');
+    }
+    setPage(1); // Volta para a primeira página
+  };
 
   const handleEditClick = (produto) => {
     setEditingProduct(produto);
@@ -102,19 +205,169 @@ const NewEstoqueProdutos = () => {
 
   return (
     <Box sx={{maxWidth: '1400px', mx: 'auto' }}>
+      {/* Filtros e Pesquisa */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Filtros e Pesquisa
+        </Typography>
+        <Grid container spacing={2} alignItems="center">
+          {/* Campo de Pesquisa */}
+          <Grid item xs={12} md={3}>
+            <TextField
+              fullWidth
+              label="Pesquisar por nome"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
+              size="small"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleSearch}
+                      edge="end"
+                      size="small"
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+
+          {/* Filtro Categoria */}
+          <Grid item xs={12} md={2}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Categoria</InputLabel>
+              <Select
+                value={categoria}
+                label="Categoria"
+                onChange={(e) => handleFilterChange('categoria', e.target.value)}
+              >
+                {categorias.map((cat) => (
+                  <MenuItem key={cat} value={cat}>
+                    {cat === 'TODAS' ? 'Todas' : cat}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          {/* Filtro Ocasião */}
+          <Grid item xs={12} md={2}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Ocasião</InputLabel>
+              <Select
+                value={ocasiao}
+                label="Ocasião"
+                onChange={(e) => handleFilterChange('ocasiao', e.target.value)}
+              >
+                {ocasioes.map((oc) => (
+                  <MenuItem key={oc} value={oc}>
+                    {oc === 'TODAS' ? 'Todas' : 
+                     oc === 'SEM_OCASIAO' ? 'Sem Ocasião' : oc}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          {/* Filtro Status */}
+          <Grid item xs={12} md={2}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={ativo}
+                label="Status"
+                onChange={(e) => handleFilterChange('ativo', e.target.value)}
+              >
+                {statusOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
+
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="tabela de produtos" size="small">
           <TableHead>
             <TableRow sx={{ '& .MuiTableCell-root': { py: 2 } }}>
               <TableCell>Foto</TableCell>
               <TableCell>ID</TableCell>
-              <TableCell>Nome</TableCell>
-              <TableCell align="right">Preço</TableCell>
+              
+              {/* Nome - ordenável */}
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === 'nome'}
+                  direction={orderBy === 'nome' ? orderDirection : 'asc'}
+                  onClick={() => handleSort('nome')}
+                >
+                  Nome
+                </TableSortLabel>
+              </TableCell>
+              
+              {/* Preço - ordenável */}
+              <TableCell align="right">
+                <TableSortLabel
+                  active={orderBy === 'preco'}
+                  direction={orderBy === 'preco' ? orderDirection : 'asc'}
+                  onClick={() => handleSort('preco')}
+                >
+                  Preço
+                </TableSortLabel>
+              </TableCell>
+              
               <TableCell align="right">Qtd.</TableCell>
-              <TableCell>Categoria</TableCell>
-              <TableCell>Ocasião</TableCell>
-              {/* <TableCell>Destaque</TableCell> */}
-              <TableCell>Ativo</TableCell>
+              
+              {/* Categoria - ordenável */}
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === 'categoria'}
+                  direction={orderBy === 'categoria' ? orderDirection : 'asc'}
+                  onClick={() => handleSort('categoria')}
+                >
+                  Categoria
+                </TableSortLabel>
+              </TableCell>
+              
+              {/* Ocasião - ordenável */}
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === 'ocasiao'}
+                  direction={orderBy === 'ocasiao' ? orderDirection : 'asc'}
+                  onClick={() => handleSort('ocasiao')}
+                >
+                  Ocasião
+                </TableSortLabel>
+              </TableCell>
+              
+              {/* Data Criação - ordenável */}
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === 'criadoEm'}
+                  direction={orderBy === 'criadoEm' ? orderDirection : 'asc'}
+                  onClick={() => handleSort('criadoEm')}
+                >
+                  Data Criação
+                </TableSortLabel>
+              </TableCell>
+              
+              {/* Ativo - ordenável */}
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === 'ativo'}
+                  direction={orderBy === 'ativo' ? orderDirection : 'asc'}
+                  onClick={() => handleSort('ativo')}
+                >
+                  Ativo
+                </TableSortLabel>
+              </TableCell>
+              
               <TableCell align="center">Ações</TableCell>
             </TableRow>
           </TableHead>
@@ -148,9 +401,13 @@ const NewEstoqueProdutos = () => {
                 <TableCell align="right">{produto.quantidade}</TableCell>
                 <TableCell>{produto.categoria}</TableCell>
                 <TableCell>{produto.ocasiao || '-'}</TableCell>
-                {/* <TableCell align="center">
-                  {produto.emDestaque && <StarIcon color="warning" fontSize="small" />}
-                </TableCell> */}
+                <TableCell>
+                  {new Date(produto.criadoEm).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  })}
+                </TableCell>
                 <TableCell>
                   <Chip 
                     label={produto.ativo ? 'Sim' : 'Não'} 
