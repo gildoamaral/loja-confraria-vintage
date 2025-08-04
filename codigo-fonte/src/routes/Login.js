@@ -6,14 +6,12 @@ const prisma = new PrismaClient();
 require("dotenv").config();
 
 const login = async (req, res) => {
-  console.log('chamado')
   try {
     const { email, senha } = req.body;
 
     // Verifica se o usuário existe
     const user = await prisma.usuarios.findUnique({ where: { email } });
     if (!user) return res.status(400).json({ message: "E-mail ou senha inválidos" });
-    console.log('usuario que fez login:', user.nome)
 
     // Compara as senhas
     const validPassword = await bcrypt.compare(senha, user.senha);

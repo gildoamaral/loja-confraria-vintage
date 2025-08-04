@@ -483,7 +483,6 @@ router.post('/criar-cartao', auth, async (req, res) => {
     // VERIFICAÇÃO DE ESTOQUE: Verifica se há estoque suficiente antes de processar o pagamento
     const problemasEstoque = await verificarEstoque(pedidoId);
     if (problemasEstoque.length > 0) {
-      console.log("sem estoque disponível")
       return res.status(400).json({
         error: 'Não é possível processar o pagamento',
         detalhes: problemasEstoque
@@ -528,10 +527,11 @@ router.post('/criar-cartao', auth, async (req, res) => {
       }
     };
 
-    console.log(body)
+    console.log("body da requisição: ",body)
+    
     payment.create({ body, requestOptions })
       .then(async (result) => {
-        console.log(result);
+        console.log("resultado da requisição: ", result);
 
         let statusPayment = '';
         if (result.status === 'rejected') {

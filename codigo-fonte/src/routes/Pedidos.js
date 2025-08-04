@@ -13,7 +13,6 @@ router.post('/criar', auth, async (req, res) => {
     where: { id: usuarioId }
   });
 
-  console.log('Usuário encontrado:', usuario);
 
   try {
     // Verifica se o usuário já tem pedido com status CARRINHO
@@ -144,7 +143,6 @@ router.put('/pagamento/:id', async (req, res) => {
 
 // Atualizar endereço de entrega do pedido
 router.put('/endereco/:pedidoId', async (req, res) => {
-  console.log("Atualizando endereço de entrega do pedido...", req.body);
 
   const { pedidoId } = req.params;
   const {
@@ -169,7 +167,6 @@ router.put('/endereco/:pedidoId', async (req, res) => {
     cep,
   };
 
-  console.log("Endereço a ser atualizado:", enderecoFields);
 
   try {
     // Atualiza o endereço do pedido
@@ -178,7 +175,6 @@ router.put('/endereco/:pedidoId', async (req, res) => {
       data: enderecoFields,
     });
 
-    console.log("teste", pedido);
 
 
     res.json(pedido);
@@ -219,7 +215,6 @@ router.get('/carrinho', auth, async (req, res) => {
     if (!pedido) {
       return res.status(404).json({ message: 'Nenhum pedido em andamento encontrado.' });
     }
-    // console.log('Pedido encontrado:', pedido);
 
 
     res.json(pedido);

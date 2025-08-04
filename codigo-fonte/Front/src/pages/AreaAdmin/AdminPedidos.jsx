@@ -154,7 +154,7 @@ const AdminPedidos = () => {
                   <IconButton
                     aria-label="ações"
                     onClick={(event) => handleMenuClick(event, pedido)}
-                    disabled={pedido.status === 'ENTREGUE' || pedido.status === 'CANCELADO'}
+                    disabled={pedido.status === 'ENTREGUE'}
                   >
                     <MoreVertIcon />
                   </IconButton>
