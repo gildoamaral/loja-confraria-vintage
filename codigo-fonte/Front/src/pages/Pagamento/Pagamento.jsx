@@ -7,7 +7,8 @@ import {
   Paper,
   Divider,
   Snackbar,
-  Alert
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
@@ -255,7 +256,34 @@ const Pagamento = () => {
 
     } catch (err) {
       console.error(err);
-      showMessage('Não foi possível gerar o PIX. Tente novamente.', 'error');
+      
+      if (err.response && err.response.status === 400) {
+        // Verifica se é erro de estoque insuficiente
+        if (err.response.data?.detalhes && Array.isArray(err.response.data.detalhes)) {
+          const problemas = err.response.data.detalhes;
+          let mensagem = "Problemas encontrados:\n\n";
+          
+          problemas.forEach((problema) => {
+            if (problema.problema === 'Estoque insuficiente') {
+              mensagem += `• ${problema.produto}: Disponível ${problema.disponivel}, solicitado ${problema.solicitado}\n`;
+            } else if (problema.problema === 'Produto não está mais disponível') {
+              mensagem += `• ${problema.produto}: Produto não está mais disponível\n`;
+            } else {
+              mensagem += `• ${problema.produto}: ${problema.problema}\n`;
+            }
+          });
+          
+          mensagem += "\nNão foi possível gerar o PIX.";
+          showMessage(mensagem, 'error');
+          setTimeout(() => navigate('/carrinho'), 8000);
+        } else {
+          // Outros erros 400
+          const errorMessage = err.response.data?.error || "Não foi possível gerar o PIX. Tente novamente.";
+          showMessage(errorMessage, 'error');
+        }
+      } else {
+        showMessage('Não foi possível gerar o PIX. Tente novamente.', 'error');
+      }
       setLoading(false);
     }
     // Não precisa de finally, pois o usuário será redirecionado
@@ -569,9 +597,6 @@ const Pagamento = () => {
                   </Box>
                 )}
 
-
-
-
                 {/* ETAPA 2: FRETE */}
                 {etapa === 2 && (
                   <Box>
@@ -632,7 +657,7 @@ const Pagamento = () => {
 
         <Snackbar
           open={snackbar.open}
-          autoHideDuration={4000}
+          autoHideDuration={snackbar.severity === 'error' ? 8000 : 4000}
           onClose={handleCloseSnackbar}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
@@ -640,7 +665,10 @@ const Pagamento = () => {
             onClose={handleCloseSnackbar} 
             severity={snackbar.severity}
             variant="filled"
-            sx={{ width: '100%' }}
+            sx={{ 
+              width: '100%',
+              whiteSpace: 'pre-line' // Esta propriedade faz as quebras de linha \n funcionarem
+            }}
           >
             {snackbar.message}
           </Alert>

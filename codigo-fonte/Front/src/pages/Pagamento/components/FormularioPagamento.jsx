@@ -38,6 +38,7 @@ const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFre
         </RadioGroup>
       </FormControl>
       <Divider sx={{ my: 3 }} />
+
       {metodo === 'cartao' && (
         <NewPagamentoCartao
           pedidoId={pedidoId}
@@ -46,14 +47,17 @@ const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFre
           nomeFrete={nomeFrete}
         />
       )}
+
       {metodo === 'pix' && (
         <PagamentoPix onFinalizar={onFinalizarPix} loading={loadingPix} />
       )}
+
       {metodo === '' && (
         <Typography variant="body1" color="text.secondary" sx={{ mt: 8 }}>
           Selecione um método de pagamento para continuar.
         </Typography>
       )}
+      
     </Box>
   );
 };

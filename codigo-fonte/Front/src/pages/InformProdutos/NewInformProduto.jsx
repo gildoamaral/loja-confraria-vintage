@@ -283,13 +283,15 @@ const InformProduto = () => {
 
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 10 }}>
-                  <Typography fontWeight="medium">Quantidade:</Typography>
+                  <Typography fontWeight="medium" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>Quantidade:</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', borderRadius: '20px' }}>
                     <IconButton onClick={() => setQuantidade(q => Math.max(1, q - 1))} size="small"><RemoveIcon /></IconButton>
                     <Typography sx={{ px: 2, fontWeight: 'bold' }}>{quantidade}</Typography>
                     <IconButton onClick={() => setQuantidade(q => q + 1)} size="small"><AddIcon /></IconButton>
                   </Box>
+                  {/* <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>( {produto.quantidade} unidades restantes )</Typography> */}
                 </Box>
+                
 
                 <Box mt={4} width={'50%'} sx={{ display: 'flex', justifyContent: 'center', width: '100%', pb: 5 }}>
                   <Button 

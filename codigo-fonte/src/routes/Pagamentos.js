@@ -15,6 +15,142 @@ const client = new MercadoPagoConfig(
 );
 const payment = new Payment(client);
 
+// Função auxiliar para verificar se há estoque suficiente
+async function verificarEstoque(pedidoId) {
+  try {
+    const pedido = await prisma.pedidos.findUnique({
+      where: { id: pedidoId },
+      include: {
+        itens: {
+          include: { produto: true }
+        }
+      }
+    });
+
+    if (!pedido) {
+      throw new Error('Pedido não encontrado');
+    }
+
+    const problemas = [];
+    const itensParaRemover = [];
+
+    for (const item of pedido.itens) {
+      let temProblema = false;
+
+      // Verifica se o produto está ativo
+      if (!item.produto.ativo) {
+        problemas.push({
+          produto: item.produto.nome,
+          problema: 'Produto não está mais disponível',
+          disponivel: 0,
+          solicitado: item.quantidade
+        });
+        itensParaRemover.push(item.id);
+        temProblema = true;
+      }
+      // Verifica se há estoque suficiente
+      else if (item.produto.quantidade < item.quantidade) {
+        problemas.push({
+          produto: item.produto.nome,
+          problema: 'Estoque insuficiente',
+          disponivel: item.produto.quantidade,
+          solicitado: item.quantidade
+        });
+        itensParaRemover.push(item.id);
+        temProblema = true;
+      }
+    }
+
+    // Remove os itens problemáticos do pedido
+    if (itensParaRemover.length > 0) {
+      await prisma.itemPedido.deleteMany({
+        where: {
+          id: { in: itensParaRemover }
+        }
+      });
+
+      console.log(`Removidos ${itensParaRemover.length} itens problemáticos do pedido ${pedidoId}`);
+
+      // Log dos itens removidos para auditoria
+      itensParaRemover.forEach((itemId, index) => {
+        const problema = problemas[index];
+        console.log(`Item removido: ${problema.produto} - ${problema.problema}`);
+      });
+    }
+
+    return problemas; // Retorna array vazio se tudo estiver ok
+  } catch (error) {
+    console.error('Erro ao verificar estoque:', error);
+    throw error;
+  }
+}
+
+// Função auxiliar para diminuir o estoque após pagamento aprovado
+async function diminuirEstoque(pedidoId) {
+  console.log(`Diminuindo estoque para o pedido ${pedidoId}...`);
+
+  try {
+    const pedido = await prisma.pedidos.findUnique({
+      where: { id: pedidoId },
+      include: {
+        itens: {
+          include: { produto: true }
+        }
+      }
+    });
+
+    if (!pedido) {
+      console.error(`Pedido ${pedidoId} não encontrado`);
+      return;
+    }
+
+    // Cria uma transação para diminuir a quantidade de cada produto
+    const updatePromises = pedido.itens.map(item =>
+      prisma.produtos.update({
+        where: { id: item.produtoId },
+        data: {
+          quantidade: {
+            decrement: item.quantidade
+          }
+        }
+      })
+    );
+
+    const produtosAtualizados = await prisma.$transaction(updatePromises);
+
+    // Verifica se algum produto ficou com quantidade 0 e o desativa
+    const produtosParaDesativar = produtosAtualizados
+      .filter(produto => produto.quantidade === 0 && produto.ativo)
+      .map(produto => produto.id);
+
+    if (produtosParaDesativar.length > 0) {
+      await prisma.produtos.updateMany({
+        where: {
+          id: { in: produtosParaDesativar }
+        },
+        data: { ativo: false }
+      });
+
+      console.log(`Produtos desativados por estoque zerado: ${produtosParaDesativar.join(', ')}`);
+    }
+
+    console.log(`Estoque diminuído com sucesso para o pedido ${pedidoId}`);
+
+    // Log das alterações para auditoria
+    pedido.itens.forEach(item => {
+      const produtoAtualizado = produtosAtualizados.find(p => p.id === item.produtoId);
+      const quantidadeRestante = produtoAtualizado ? produtoAtualizado.quantidade : 'N/A';
+      const statusProduto = produtoAtualizado && produtoAtualizado.quantidade === 0 ? ' - PRODUTO DESATIVADO' : '';
+
+      console.log(`Produto ${item.produto.nome} (ID: ${item.produtoId}): diminuído ${item.quantidade} unidade(s). Restante: ${quantidadeRestante}${statusProduto}`);
+    });
+
+  } catch (error) {
+    console.error(`Erro ao diminuir estoque do pedido ${pedidoId}:`, error);
+    // Em caso de erro, é importante logar para investigação manual
+  }
+}
+
 // Teste simples
 router.get('/', auth, (req, res) => {
   res.send('Rota de pagamentos funcionando!');
@@ -93,10 +229,17 @@ router.post('/criar-pix', auth, async (req, res) => {
       },
     });
 
-
-
     if (!pedido || !pedido.itens.length) {
       return res.status(400).json({ error: 'Pedido não encontrado ou sem itens.' });
+    }
+
+    // VERIFICAÇÃO DE ESTOQUE: Verifica se há estoque suficiente antes de processar o pagamento
+    const problemasEstoque = await verificarEstoque(pedidoId);
+    if (problemasEstoque.length > 0) {
+      return res.status(400).json({
+        error: 'Não é possível processar o pagamento',
+        detalhes: problemasEstoque
+      });
     }
 
     // "Congela" o preço dos itens no momento da compra
@@ -321,7 +464,7 @@ router.post('/criar-pix', auth, async (req, res) => {
 // });
 
 router.post('/criar-cartao', auth, async (req, res) => {
-  const { pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete, nomeFrete } = req.body;
+  const { pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete, nomeFrete, deviceId } = req.body;
 
   try {
     const pedido = await prisma.pedidos.findUnique({
@@ -335,6 +478,16 @@ router.post('/criar-cartao', auth, async (req, res) => {
 
     if (!pedido || !pedido.itens.length) {
       return res.status(400).json({ error: 'Pedido não encontrado ou sem itens.' });
+    }
+
+    // VERIFICAÇÃO DE ESTOQUE: Verifica se há estoque suficiente antes de processar o pagamento
+    const problemasEstoque = await verificarEstoque(pedidoId);
+    if (problemasEstoque.length > 0) {
+      console.log("sem estoque disponível")
+      return res.status(400).json({
+        error: 'Não é possível processar o pagamento',
+        detalhes: problemasEstoque
+      });
     }
 
     // --- ETAPA 1: "CONGELAR" OS PREÇOS DOS ITENS ---
@@ -368,7 +521,15 @@ router.post('/criar-cartao', auth, async (req, res) => {
       payer,
     };
 
-    payment.create({ body, requestOptions: { idempotencyKey: Date.now().toString() } })
+    const requestOptions = {
+      idempotencyKey: Date.now().toString(),
+      headers: {
+        'X-Meli-Session-Id': deviceId
+      }
+    };
+
+    console.log(body)
+    payment.create({ body, requestOptions })
       .then(async (result) => {
         console.log(result);
 
@@ -416,6 +577,11 @@ router.post('/criar-cartao', auth, async (req, res) => {
               }
             });
 
+            // DIMINUIR ESTOQUE: Se o pagamento foi aprovado imediatamente, diminui o estoque
+            if (statusPayment === "APROVADO") {
+              await diminuirEstoque(req.body.pedidoId);
+            }
+
             const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
             const messageResponse = statusPayment === "APROVADO" ? 'Pagamento aprovado!' : 'Pagamento em processamento.';
 
@@ -455,7 +621,7 @@ router.post('/webhook', async (req, res) => {
     const parts = signatureHeader.split(',');
     const timestamp = parts.find(part => part.startsWith('ts=')).split('=')[1];
     const receivedSignature = parts.find(part => part.startsWith('v1=')).split('=')[1];
-    
+
     // CORREÇÃO: Usamos req.body.data.id em vez de req.body.id
     const signedTemplate = `id:${req.body.data.id};request-id:${req.get('x-request-id')};ts:${timestamp};`;
 
@@ -487,13 +653,17 @@ router.post('/webhook', async (req, res) => {
         return res.status(200).send('Pagamento não encontrado no sistema.');
       }
 
-      // Lógica para atualizar o banco de dados (sem alterações aqui)
+      // Lógica para atualizar o banco de dados
       if (paymentDetails.status === 'approved' && nossoPagamento.status !== 'APROVADO') {
         await prisma.$transaction([
           prisma.pagamentos.update({ where: { id: nossoPagamento.id }, data: { status: 'APROVADO' } }),
           prisma.pedidos.update({ where: { id: nossoPagamento.pedidoId }, data: { status: 'PAGO' } }),
         ]);
-        console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para PAGO.`);
+
+        // DIMINUIR ESTOQUE: Quando o pagamento é aprovado via webhook (PIX ou cartão pendente)
+        await diminuirEstoque(nossoPagamento.pedidoId);
+
+        console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para PAGO e estoque diminuído.`);
       } else if (['cancelled', 'rejected'].includes(paymentDetails.status) && nossoPagamento.status !== 'FALHOU') {
         await prisma.$transaction([
           prisma.pagamentos.update({ where: { id: nossoPagamento.id }, data: { status: 'FALHOU' } }),

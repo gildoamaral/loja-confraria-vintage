@@ -69,6 +69,8 @@ const PagamentoCartao = (props) => {
 
             const cardFormData = cardFormInstance.getCardFormData();
 
+            const deviceId = document.getElementById('mercadoPagoDeviceSessionId')?.value;
+
             api.post('/pagamentos/criar-cartao', {
               transaction_amount: Number(cardFormData.amount),
               token: cardFormData.token,
@@ -86,6 +88,8 @@ const PagamentoCartao = (props) => {
               pedidoId: props.pedidoId,
               valorFrete: props.valorFrete ?? 0,
               nomeFrete: props.nomeFrete ?? "Não informado",
+
+              deviceId: deviceId,
             })
             .then(response => {
               if (response.data.status === 'pending') {
@@ -99,7 +103,33 @@ const PagamentoCartao = (props) => {
             })
             .catch(error => {
               setIsSubmitting(false);
-              if (error.response && error.response.status === 402) {
+              console.error('Erro no pagamento:', error);
+              
+              if (error.response && error.response.status === 400) {
+                // Verifica se é erro de estoque insuficiente
+                if (error.response.data?.detalhes && Array.isArray(error.response.data.detalhes)) {
+                  const problemas = error.response.data.detalhes;
+                  let mensagem = "Problemas encontrados:\n\n";
+                  
+                  problemas.forEach((problema) => {
+                    if (problema.problema === 'Estoque insuficiente') {
+                      mensagem += `• ${problema.produto}: Disponível ${problema.disponivel}, solicitado ${problema.solicitado}\n`;
+                    } else if (problema.problema === 'Produto não está mais disponível') {
+                      mensagem += `• ${problema.produto}: Produto não está mais disponível\n`;
+                    } else {
+                      mensagem += `• ${problema.produto}: ${problema.problema}\n`;
+                    }
+                  });
+                  
+                  mensagem += "\nNão foi possível realizar o pagamento.";
+                  showMessage(mensagem, 'error');
+                  setTimeout(() => navigate('/carrinho'), 8000);
+                } else {
+                  // Outros erros 400
+                  const errorMessage = error.response.data?.error || "Erro ao processar pagamento.";
+                  showMessage(errorMessage, 'error');
+                }
+              } else if (error.response && error.response.status === 402) {
                 showMessage("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.", 'error');
               } else {
                 showMessage("Erro ao processar pagamento.", 'error');
@@ -140,7 +170,7 @@ const PagamentoCartao = (props) => {
       justifySelf: 'center',
     }}>
       <form id="form-checkout" className={styles.formCheckout}>
-        {/* ... seu JSX do formulário continua exatamente igual ... */}
+        <input type="hidden" name="mercadoPagoDeviceSessionId" id="mercadoPagoDeviceSessionId" />
         <Box
           sx={{
             display: 'flex',
@@ -279,7 +309,7 @@ const PagamentoCartao = (props) => {
 
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={6000}
+        autoHideDuration={snackbar.severity === 'error' ? 8000 : 6000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
@@ -287,7 +317,7 @@ const PagamentoCartao = (props) => {
           onClose={handleCloseSnackbar} 
           severity={snackbar.severity}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ width: '100%', whiteSpace: 'pre-line' }}
         >
           {snackbar.message}
         </Alert>
