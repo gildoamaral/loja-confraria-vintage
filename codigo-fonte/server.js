@@ -89,8 +89,8 @@ app.post('/frete', async (req, res) => {
   
   try {
     const response = await axios.post(
-      // 'https://www.melhorenvio.com.br/api/v2/me/shipment/calculate',
-      'https://sandbox.melhorenvio.com.br/api/v2/me/shipment/calculate',
+      'https://www.melhorenvio.com.br/api/v2/me/shipment/calculate',
+      // 'https://sandbox.melhorenvio.com.br/api/v2/me/shipment/calculate',
       {
         from: { postal_code: '45820440' }, // CEP de origem
         to: { postal_code: cepDestino },
