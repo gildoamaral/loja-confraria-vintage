@@ -518,17 +518,19 @@ router.post('/criar-cartao', auth, async (req, res) => {
       installments,
       payment_method_id,
       issuer_id,
-      payer,
-      device_id: deviceId, // <-- NOVO CAMPO ENVIADO
-    };
+    }; 
+    console.log("deviceId: ", deviceId);
 
     const requestOptions = {
       idempotencyKey: Date.now().toString(),
-
+      headers: {
+        'X-meli-session-id': deviceId
+      }
     };
 
-    console.log("body da requisição: ",body)
 
+    console.log("body da requisição: ", body)
+    console.log("============================================")
     payment.create({ body, requestOptions })
       .then(async (result) => {
         console.log("resultado da requisição: ", result);
@@ -754,10 +756,10 @@ router.post('/webhook', async (req, res) => {
 
 //     } catch (mpError) {
 //       console.error('Erro no Mercado Pago:', mpError);
-      
+
 //       // Verifica se é um erro específico do MP
 //       const errorMessage = mpError.cause?.[0]?.description || mpError.message || 'Erro ao processar estorno no gateway';
-      
+
 //       return res.status(400).json({ 
 //         error: 'Falha ao processar estorno', 
 //         details: errorMessage 
@@ -773,7 +775,7 @@ router.post('/webhook', async (req, res) => {
 // // Função auxiliar para restaurar estoque após estorno
 // async function restaurarEstoque(pedidoId) {
 //   console.log(`Restaurando estoque para o pedido ${pedidoId}...`);
-  
+
 //   try {
 //     const pedido = await prisma.pedidos.findUnique({
 //       where: { id: pedidoId },
@@ -806,12 +808,12 @@ router.post('/webhook', async (req, res) => {
 //     const produtosAtualizados = await prisma.$transaction(updatePromises);
 
 //     console.log(`Estoque restaurado com sucesso para o pedido ${pedidoId}`);
-    
+
 //     // Log das alterações para auditoria
 //     pedido.itens.forEach(item => {
 //       const produtoAtualizado = produtosAtualizados.find(p => p.id === item.produtoId);
 //       const quantidadeRestaurada = produtoAtualizado ? produtoAtualizado.quantidade : 'N/A';
-      
+
 //       console.log(`Produto ${item.produto.nome} (ID: ${item.produtoId}): restaurado ${item.quantidade} unidade(s). Total: ${quantidadeRestaurada} - PRODUTO REATIVADO`);
 //     });
 

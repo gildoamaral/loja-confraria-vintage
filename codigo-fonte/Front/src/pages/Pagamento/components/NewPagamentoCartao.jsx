@@ -60,8 +60,6 @@ const PagamentoCartao = (props) => {
         },
         callbacks: {
           onFormMounted: error => {
-                        const deviceId = document.getElementById('deviceId').value;
-            console.log("DeviceID", deviceId);
             if (error) return console.warn("Form Mounted handling error: ", error);
             console.log("Formulário de cartão montado.");
           },
@@ -70,8 +68,9 @@ const PagamentoCartao = (props) => {
             setIsSubmitting(true);
 
             const cardFormData = cardFormInstance.getCardFormData();
-            const deviceId = document.getElementById('deviceId').value;
-            console.log("DeviceID", deviceId);
+            
+            const deviceId = window.MP_DEVICE_SESSION_ID;
+            console.log("Device ID gerado:", deviceId);
 
 
             api.post('/pagamentos/criar-cartao', {
@@ -172,7 +171,6 @@ const PagamentoCartao = (props) => {
       justifySelf: 'center',
     }}>
       <form id="form-checkout" className={styles.formCheckout}>
-        <input type="hidden" id="deviceId" name="deviceId" />
 
         <Box
           sx={{
