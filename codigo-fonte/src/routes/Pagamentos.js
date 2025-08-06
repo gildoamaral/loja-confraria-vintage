@@ -681,141 +681,144 @@ router.post('/webhook', async (req, res) => {
   }
 });
 
+
+
+
 // --- ROTA PARA ESTORNO DE PAGAMENTO ---
-router.post('/estornar/:pedidoId', verifyAdmin, async (req, res) => {
-  const { pedidoId } = req.params;
+// router.post('/estornar/:pedidoId', verifyAdmin, async (req, res) => {
+//   const { pedidoId } = req.params;
 
-  try {
-    // Busca o pedido e pagamento
-    const pedido = await prisma.pedidos.findUnique({
-      where: { id: pedidoId },
-      include: {
-        pagamento: true,
-        itens: {
-          include: { produto: true }
-        }
-      }
-    });
+//   try {
+//     // Busca o pedido e pagamento
+//     const pedido = await prisma.pedidos.findUnique({
+//       where: { id: pedidoId },
+//       include: {
+//         pagamento: true,
+//         itens: {
+//           include: { produto: true }
+//         }
+//       }
+//     });
 
-    if (!pedido) {
-      return res.status(404).json({ error: 'Pedido não encontrado' });
-    }
+//     if (!pedido) {
+//       return res.status(404).json({ error: 'Pedido não encontrado' });
+//     }
 
-    if (!pedido.pagamento) {
-      return res.status(400).json({ error: 'Pedido não possui pagamento associado' });
-    }
+//     if (!pedido.pagamento) {
+//       return res.status(400).json({ error: 'Pedido não possui pagamento associado' });
+//     }
 
-    if (pedido.pagamento.status !== 'APROVADO') {
-      return res.status(400).json({ error: 'Apenas pagamentos aprovados podem ser estornados' });
-    }
+//     if (pedido.pagamento.status !== 'APROVADO') {
+//       return res.status(400).json({ error: 'Apenas pagamentos aprovados podem ser estornados' });
+//     }
 
-    if (!pedido.pagamento.gatewayTransactionId) {
-      return res.status(400).json({ error: 'ID da transação no gateway não encontrado' });
-    }
+//     if (!pedido.pagamento.gatewayTransactionId) {
+//       return res.status(400).json({ error: 'ID da transação no gateway não encontrado' });
+//     }
 
-    // Processa o estorno no Mercado Pago
-    try {
-      const refundResponse = await payment.refund({
-        id: pedido.pagamento.gatewayTransactionId,
-        body: {
-          amount: pedido.pagamento.valorTotal
-        }
-      });
+//     // Processa o estorno no Mercado Pago
+//     try {
+//       const refundResponse = await payment.refund({
+//         id: pedido.pagamento.gatewayTransactionId,
+//         body: {
+//           amount: pedido.pagamento.valorTotal
+//         }
+//       });
 
-      console.log('Resposta do estorno Mercado Pago:', refundResponse);
+//       console.log('Resposta do estorno Mercado Pago:', refundResponse);
 
-      // Atualiza o status no banco de dados
-      await prisma.$transaction([
-        prisma.pagamentos.update({
-          where: { id: pedido.pagamento.id },
-          data: { status: 'FALHOU' } // Marca como falhou pois foi estornado
-        }),
-        prisma.pedidos.update({
-          where: { id: pedidoId },
-          data: { status: 'REEMBOLSADO' } // Usa o status REEMBOLSADO já existente
-        })
-      ]);
+//       // Atualiza o status no banco de dados
+//       await prisma.$transaction([
+//         prisma.pagamentos.update({
+//           where: { id: pedido.pagamento.id },
+//           data: { status: 'FALHOU' } // Marca como falhou pois foi estornado
+//         }),
+//         prisma.pedidos.update({
+//           where: { id: pedidoId },
+//           data: { status: 'REEMBOLSADO' } // Usa o status REEMBOLSADO já existente
+//         })
+//       ]);
 
-      // Restaura o estoque dos produtos
-      await restaurarEstoque(pedidoId);
+//       // Restaura o estoque dos produtos
+//       await restaurarEstoque(pedidoId);
 
-      res.json({
-        success: true,
-        message: 'Estorno processado com sucesso',
-        estorno: {
-          id: refundResponse.id,
-          status: refundResponse.status,
-          valor: refundResponse.amount
-        }
-      });
+//       res.json({
+//         success: true,
+//         message: 'Estorno processado com sucesso',
+//         estorno: {
+//           id: refundResponse.id,
+//           status: refundResponse.status,
+//           valor: refundResponse.amount
+//         }
+//       });
 
-    } catch (mpError) {
-      console.error('Erro no Mercado Pago:', mpError);
+//     } catch (mpError) {
+//       console.error('Erro no Mercado Pago:', mpError);
       
-      // Verifica se é um erro específico do MP
-      const errorMessage = mpError.cause?.[0]?.description || mpError.message || 'Erro ao processar estorno no gateway';
+//       // Verifica se é um erro específico do MP
+//       const errorMessage = mpError.cause?.[0]?.description || mpError.message || 'Erro ao processar estorno no gateway';
       
-      return res.status(400).json({ 
-        error: 'Falha ao processar estorno', 
-        details: errorMessage 
-      });
-    }
+//       return res.status(400).json({ 
+//         error: 'Falha ao processar estorno', 
+//         details: errorMessage 
+//       });
+//     }
 
-  } catch (error) {
-    console.error('Erro geral ao processar estorno:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
+//   } catch (error) {
+//     console.error('Erro geral ao processar estorno:', error);
+//     res.status(500).json({ error: 'Erro interno do servidor' });
+//   }
+// });
 
-// Função auxiliar para restaurar estoque após estorno
-async function restaurarEstoque(pedidoId) {
-  console.log(`Restaurando estoque para o pedido ${pedidoId}...`);
+// // Função auxiliar para restaurar estoque após estorno
+// async function restaurarEstoque(pedidoId) {
+//   console.log(`Restaurando estoque para o pedido ${pedidoId}...`);
   
-  try {
-    const pedido = await prisma.pedidos.findUnique({
-      where: { id: pedidoId },
-      include: {
-        itens: {
-          include: { produto: true }
-        }
-      }
-    });
+//   try {
+//     const pedido = await prisma.pedidos.findUnique({
+//       where: { id: pedidoId },
+//       include: {
+//         itens: {
+//           include: { produto: true }
+//         }
+//       }
+//     });
 
-    if (!pedido) {
-      console.error(`Pedido ${pedidoId} não encontrado`);
-      return;
-    }
+//     if (!pedido) {
+//       console.error(`Pedido ${pedidoId} não encontrado`);
+//       return;
+//     }
 
-    // Restaura a quantidade de cada produto
-    const updatePromises = pedido.itens.map(item => 
-      prisma.produtos.update({
-        where: { id: item.produtoId },
-        data: {
-          quantidade: {
-            increment: item.quantidade
-          },
-          // Reativa o produto se ele estava inativo por falta de estoque
-          ativo: true
-        }
-      })
-    );
+//     // Restaura a quantidade de cada produto
+//     const updatePromises = pedido.itens.map(item => 
+//       prisma.produtos.update({
+//         where: { id: item.produtoId },
+//         data: {
+//           quantidade: {
+//             increment: item.quantidade
+//           },
+//           // Reativa o produto se ele estava inativo por falta de estoque
+//           ativo: true
+//         }
+//       })
+//     );
 
-    const produtosAtualizados = await prisma.$transaction(updatePromises);
+//     const produtosAtualizados = await prisma.$transaction(updatePromises);
 
-    console.log(`Estoque restaurado com sucesso para o pedido ${pedidoId}`);
+//     console.log(`Estoque restaurado com sucesso para o pedido ${pedidoId}`);
     
-    // Log das alterações para auditoria
-    pedido.itens.forEach(item => {
-      const produtoAtualizado = produtosAtualizados.find(p => p.id === item.produtoId);
-      const quantidadeRestaurada = produtoAtualizado ? produtoAtualizado.quantidade : 'N/A';
+//     // Log das alterações para auditoria
+//     pedido.itens.forEach(item => {
+//       const produtoAtualizado = produtosAtualizados.find(p => p.id === item.produtoId);
+//       const quantidadeRestaurada = produtoAtualizado ? produtoAtualizado.quantidade : 'N/A';
       
-      console.log(`Produto ${item.produto.nome} (ID: ${item.produtoId}): restaurado ${item.quantidade} unidade(s). Total: ${quantidadeRestaurada} - PRODUTO REATIVADO`);
-    });
+//       console.log(`Produto ${item.produto.nome} (ID: ${item.produtoId}): restaurado ${item.quantidade} unidade(s). Total: ${quantidadeRestaurada} - PRODUTO REATIVADO`);
+//     });
 
-  } catch (error) {
-    console.error(`Erro ao restaurar estoque do pedido ${pedidoId}:`, error);
-  }
-}
+//   } catch (error) {
+//     console.error(`Erro ao restaurar estoque do pedido ${pedidoId}:`, error);
+//   }
+// }
 
 
 module.exports = router;
