@@ -67,7 +67,6 @@ const Navbar = () => {
 
   useEffect(() => {
     const updateCartCount = async () => {
-      console.log("Evento 'cartUpdated' recebido, atualizando contagem do carrinho...");
       try {
         const cartCountResponse = await api.get('/api/cart/count');
         setCartItemCount(cartCountResponse.data.count);

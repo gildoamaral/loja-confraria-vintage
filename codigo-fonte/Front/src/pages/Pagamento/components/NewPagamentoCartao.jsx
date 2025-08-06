@@ -60,6 +60,8 @@ const PagamentoCartao = (props) => {
         },
         callbacks: {
           onFormMounted: error => {
+                        const deviceId = document.getElementById('deviceId').value;
+            console.log("DeviceID", deviceId);
             if (error) return console.warn("Form Mounted handling error: ", error);
             console.log("Formulário de cartão montado.");
           },
@@ -68,8 +70,9 @@ const PagamentoCartao = (props) => {
             setIsSubmitting(true);
 
             const cardFormData = cardFormInstance.getCardFormData();
+            const deviceId = document.getElementById('deviceId').value;
+            console.log("DeviceID", deviceId);
 
-            const deviceId = document.getElementById('mercadoPagoDeviceSessionId')?.value;
 
             api.post('/pagamentos/criar-cartao', {
               transaction_amount: Number(cardFormData.amount),
@@ -88,64 +91,63 @@ const PagamentoCartao = (props) => {
               pedidoId: props.pedidoId,
               valorFrete: props.valorFrete ?? 0,
               nomeFrete: props.nomeFrete ?? "Não informado",
-
-              deviceId: deviceId,
+              deviceId: deviceId, // <-- NOVO CAMPO ENVIADO
             })
-            .then(response => {
-              if (response.data.status === 'pending') {
-                showMessage("Pagamento em processamento. Aguardando confirmação.", 'info');
-                setTimeout(() => navigate('/minha-conta'), 2000);
-              }
-              if (response.data.status === 'success') {
-                showMessage("Pagamento realizado com sucesso!", 'success');
-                setTimeout(() => navigate('/minha-conta'), 2000);
-              }
-            })
-            .catch(error => {
-              setIsSubmitting(false);
-              console.error('Erro no pagamento:', error);
-              
-              if (error.response && error.response.status === 400) {
-                // Verifica se é erro de estoque insuficiente
-                if (error.response.data?.detalhes && Array.isArray(error.response.data.detalhes)) {
-                  const problemas = error.response.data.detalhes;
-                  let mensagem = "Problemas encontrados:\n\n";
-                  
-                  problemas.forEach((problema) => {
-                    if (problema.problema === 'Estoque insuficiente') {
-                      mensagem += `• ${problema.produto}: Disponível ${problema.disponivel}, solicitado ${problema.solicitado}\n`;
-                    } else if (problema.problema === 'Produto não está mais disponível') {
-                      mensagem += `• ${problema.produto}: Produto não está mais disponível\n`;
-                    } else {
-                      mensagem += `• ${problema.produto}: ${problema.problema}\n`;
-                    }
-                  });
-                  
-                  mensagem += "\nNão foi possível realizar o pagamento.";
-                  showMessage(mensagem, 'error');
-                  setTimeout(() => navigate('/carrinho'), 8000);
-                } else {
-                  // Outros erros 400
-                  const errorMessage = error.response.data?.error || "Erro ao processar pagamento.";
-                  showMessage(errorMessage, 'error');
+              .then(response => {
+                if (response.data.status === 'pending') {
+                  showMessage("Pagamento em processamento. Aguardando confirmação.", 'info');
+                  setTimeout(() => navigate('/minha-conta'), 2000);
                 }
-              } else if (error.response && error.response.status === 402) {
-                showMessage("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.", 'error');
-              } else {
-                showMessage("Erro ao processar pagamento.", 'error');
-                setTimeout(() => navigate('/carrinho'), 2000);
-              }
-            })
-            .finally(() => {
-              // Não desativa o isSubmitting aqui para evitar duplo clique
-            });
+                if (response.data.status === 'success') {
+                  showMessage("Pagamento realizado com sucesso!", 'success');
+                  setTimeout(() => navigate('/minha-conta'), 2000);
+                }
+              })
+              .catch(error => {
+                setIsSubmitting(false);
+                console.error('Erro no pagamento:', error);
+
+                if (error.response && error.response.status === 400) {
+                  // Verifica se é erro de estoque insuficiente
+                  if (error.response.data?.detalhes && Array.isArray(error.response.data.detalhes)) {
+                    const problemas = error.response.data.detalhes;
+                    let mensagem = "Problemas encontrados:\n\n";
+
+                    problemas.forEach((problema) => {
+                      if (problema.problema === 'Estoque insuficiente') {
+                        mensagem += `• ${problema.produto}: Disponível ${problema.disponivel}, solicitado ${problema.solicitado}\n`;
+                      } else if (problema.problema === 'Produto não está mais disponível') {
+                        mensagem += `• ${problema.produto}: Produto não está mais disponível\n`;
+                      } else {
+                        mensagem += `• ${problema.produto}: ${problema.problema}\n`;
+                      }
+                    });
+
+                    mensagem += "\nNão foi possível realizar o pagamento.";
+                    showMessage(mensagem, 'error');
+                    setTimeout(() => navigate('/carrinho'), 8000);
+                  } else {
+                    // Outros erros 400
+                    const errorMessage = error.response.data?.error || "Erro ao processar pagamento.";
+                    showMessage(errorMessage, 'error');
+                  }
+                } else if (error.response && error.response.status === 402) {
+                  showMessage("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.", 'error');
+                } else {
+                  showMessage("Erro ao processar pagamento.", 'error');
+                  setTimeout(() => navigate('/carrinho'), 2000);
+                }
+              })
+              .finally(() => {
+                // Não desativa o isSubmitting aqui para evitar duplo clique
+              });
           },
           onFetching: (resource) => {
             console.log("Buscando recurso: ", resource);
             const progressBar = document.querySelector(".progress-bar");
-            if(progressBar) progressBar.removeAttribute("value");
+            if (progressBar) progressBar.removeAttribute("value");
             return () => {
-              if(progressBar) progressBar.setAttribute("value", "0");
+              if (progressBar) progressBar.setAttribute("value", "0");
             };
           }
         },
@@ -170,7 +172,8 @@ const PagamentoCartao = (props) => {
       justifySelf: 'center',
     }}>
       <form id="form-checkout" className={styles.formCheckout}>
-        <input type="hidden" name="mercadoPagoDeviceSessionId" id="mercadoPagoDeviceSessionId" />
+        <input type="hidden" id="deviceId" name="deviceId" />
+
         <Box
           sx={{
             display: 'flex',
@@ -195,7 +198,7 @@ const PagamentoCartao = (props) => {
               boxShadow: 4,
             }}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: {xs: "1rem", sm: 0} }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: { xs: "1rem", sm: 0 } }}>
               <Typography sx={{ color: 'black' }} variant="subtitle2"> Cartão de Crédito </Typography>
               <CreditCardRoundedIcon sx={{ color: 'text.secondary' }} />
             </Box>
@@ -260,21 +263,21 @@ const PagamentoCartao = (props) => {
           {isSubmitting ? "Processando..." : "Pagar"}
         </button>
         {/* <progress value="0" className="progress-bar" style={{ width: "100%" }}>Carregando...</progress> */}
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             width: '100%',
             display: isSubmitting ? 'block' : 'none',
             mt: 2,
             mb: 1
           }}
         >
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              textAlign: 'center', 
-              mb: 1, 
+          <Typography
+            variant="body2"
+            sx={{
+              textAlign: 'center',
+              mb: 1,
               color: 'var(--cor-marca)',
-              fontWeight: 600 
+              fontWeight: 600
             }}
           >
             Processando pagamento...
@@ -313,8 +316,8 @@ const PagamentoCartao = (props) => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
+        <Alert
+          onClose={handleCloseSnackbar}
           severity={snackbar.severity}
           variant="filled"
           sx={{ width: '100%', whiteSpace: 'pre-line' }}

@@ -5,6 +5,7 @@ require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
 const auth = require('../middlewares/Auth');
+const verifyAdmin = require('../middlewares/AuthAdmin');
 
 const prisma = new PrismaClient();
 const client = new MercadoPagoConfig(
@@ -464,7 +465,7 @@ router.post('/criar-pix', auth, async (req, res) => {
 // });
 
 router.post('/criar-cartao', auth, async (req, res) => {
-  const { pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete, nomeFrete, deviceId } = req.body;
+  const { deviceId, pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete, nomeFrete } = req.body;
 
   try {
     const pedido = await prisma.pedidos.findUnique({
@@ -511,24 +512,23 @@ router.post('/criar-cartao', auth, async (req, res) => {
     const valorTotalParaGateway = Number(valorTotalProdutos) + Number(valorFrete || 0);
 
     const body = {
-      transaction_amount: Number(valorTotalParaGateway.toFixed(2)),
+      transaction_amount: 1.5,
       token,
       description,
       installments,
       payment_method_id,
       issuer_id,
       payer,
+      device_id: deviceId, // <-- NOVO CAMPO ENVIADO
     };
 
     const requestOptions = {
       idempotencyKey: Date.now().toString(),
-      headers: {
-        'X-Meli-Session-Id': deviceId
-      }
+
     };
 
     console.log("body da requisição: ",body)
-    
+
     payment.create({ body, requestOptions })
       .then(async (result) => {
         console.log("resultado da requisição: ", result);
@@ -599,9 +599,9 @@ router.post('/criar-cartao', auth, async (req, res) => {
       })
       .catch((error) => {
         console.log('ERRO na criação do pagamento: ', error);
-        console.log('ERRO na criação do pagamento: ', error.cause);
-        console.log('ERRO na criação do pagamento: ', error.cause[0]);
-        res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error });
+        // console.log('ERRO na criação do pagamento: ', error.cause);
+        // console.log('ERRO na criação do pagamento: ', error.cause[0]);
+        // res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error });
       });
 
   } catch (dbError) {
@@ -680,6 +680,142 @@ router.post('/webhook', async (req, res) => {
     res.status(500).send('Erro interno no servidor.');
   }
 });
+
+// --- ROTA PARA ESTORNO DE PAGAMENTO ---
+router.post('/estornar/:pedidoId', verifyAdmin, async (req, res) => {
+  const { pedidoId } = req.params;
+
+  try {
+    // Busca o pedido e pagamento
+    const pedido = await prisma.pedidos.findUnique({
+      where: { id: pedidoId },
+      include: {
+        pagamento: true,
+        itens: {
+          include: { produto: true }
+        }
+      }
+    });
+
+    if (!pedido) {
+      return res.status(404).json({ error: 'Pedido não encontrado' });
+    }
+
+    if (!pedido.pagamento) {
+      return res.status(400).json({ error: 'Pedido não possui pagamento associado' });
+    }
+
+    if (pedido.pagamento.status !== 'APROVADO') {
+      return res.status(400).json({ error: 'Apenas pagamentos aprovados podem ser estornados' });
+    }
+
+    if (!pedido.pagamento.gatewayTransactionId) {
+      return res.status(400).json({ error: 'ID da transação no gateway não encontrado' });
+    }
+
+    // Processa o estorno no Mercado Pago
+    try {
+      const refundResponse = await payment.refund({
+        id: pedido.pagamento.gatewayTransactionId,
+        body: {
+          amount: pedido.pagamento.valorTotal
+        }
+      });
+
+      console.log('Resposta do estorno Mercado Pago:', refundResponse);
+
+      // Atualiza o status no banco de dados
+      await prisma.$transaction([
+        prisma.pagamentos.update({
+          where: { id: pedido.pagamento.id },
+          data: { status: 'FALHOU' } // Marca como falhou pois foi estornado
+        }),
+        prisma.pedidos.update({
+          where: { id: pedidoId },
+          data: { status: 'REEMBOLSADO' } // Usa o status REEMBOLSADO já existente
+        })
+      ]);
+
+      // Restaura o estoque dos produtos
+      await restaurarEstoque(pedidoId);
+
+      res.json({
+        success: true,
+        message: 'Estorno processado com sucesso',
+        estorno: {
+          id: refundResponse.id,
+          status: refundResponse.status,
+          valor: refundResponse.amount
+        }
+      });
+
+    } catch (mpError) {
+      console.error('Erro no Mercado Pago:', mpError);
+      
+      // Verifica se é um erro específico do MP
+      const errorMessage = mpError.cause?.[0]?.description || mpError.message || 'Erro ao processar estorno no gateway';
+      
+      return res.status(400).json({ 
+        error: 'Falha ao processar estorno', 
+        details: errorMessage 
+      });
+    }
+
+  } catch (error) {
+    console.error('Erro geral ao processar estorno:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// Função auxiliar para restaurar estoque após estorno
+async function restaurarEstoque(pedidoId) {
+  console.log(`Restaurando estoque para o pedido ${pedidoId}...`);
+  
+  try {
+    const pedido = await prisma.pedidos.findUnique({
+      where: { id: pedidoId },
+      include: {
+        itens: {
+          include: { produto: true }
+        }
+      }
+    });
+
+    if (!pedido) {
+      console.error(`Pedido ${pedidoId} não encontrado`);
+      return;
+    }
+
+    // Restaura a quantidade de cada produto
+    const updatePromises = pedido.itens.map(item => 
+      prisma.produtos.update({
+        where: { id: item.produtoId },
+        data: {
+          quantidade: {
+            increment: item.quantidade
+          },
+          // Reativa o produto se ele estava inativo por falta de estoque
+          ativo: true
+        }
+      })
+    );
+
+    const produtosAtualizados = await prisma.$transaction(updatePromises);
+
+    console.log(`Estoque restaurado com sucesso para o pedido ${pedidoId}`);
+    
+    // Log das alterações para auditoria
+    pedido.itens.forEach(item => {
+      const produtoAtualizado = produtosAtualizados.find(p => p.id === item.produtoId);
+      const quantidadeRestaurada = produtoAtualizado ? produtoAtualizado.quantidade : 'N/A';
+      
+      console.log(`Produto ${item.produto.nome} (ID: ${item.produtoId}): restaurado ${item.quantidade} unidade(s). Total: ${quantidadeRestaurada} - PRODUTO REATIVADO`);
+    });
+
+  } catch (error) {
+    console.error(`Erro ao restaurar estoque do pedido ${pedidoId}:`, error);
+  }
+}
 
 
 module.exports = router;

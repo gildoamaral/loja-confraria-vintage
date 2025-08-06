@@ -119,7 +119,6 @@ const NewEstoqueProdutos = () => {
       }
 
       const response = await api.get(`/produtos/estoque/paginated?${params.toString()}`);
-      console.log("Produtos recebidos:", response.data);
       setProdutos(response.data.produtos);
       setTotalPages(response.data.totalPages);
       setPage(response.data.currentPage);

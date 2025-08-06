@@ -172,7 +172,6 @@ const Pagamento = () => {
       try {
         const response = await api.get('/pedidos/carrinho');
         if (response.data && response.data.id) {
-          console.log('Pedido do carrinho encontrado:', response.data);
           setPedidoId(response.data.id);
           setEndereco({
             rua: response.data.rua || '',
@@ -185,7 +184,6 @@ const Pagamento = () => {
           });
           setEnderecoLinha(response.data.enderecoEntrega);
 
-          console.log('cepPlaced vindo do carrinho: ', response.data.cep);
         }
       } catch (error) {
         console.error('Erro ao buscar o pedido do carrinho:', error);
@@ -225,8 +223,6 @@ const Pagamento = () => {
         peso: 0.3,
       });
 
-      console.log('cheguei aqui 3');
-      console.log('Opções de frete:', res.data);
       setOpcoesFrete(res.data);
       setCarregandoFrete(false);
 
@@ -330,7 +326,6 @@ const Pagamento = () => {
 
         renderFreteOptions(enderecoSelecionado.dados.cep);
 
-        console.log('cheguei aqui HE HE');
       } catch (error) {
         console.error('Erro ao atualizar o endereço do pedido:', error);
         return;
@@ -374,7 +369,6 @@ const Pagamento = () => {
       renderFreteOptions(cep)
       setEnderecoLinha(enderecoCompleto);
 
-      console.log('cheguei aqui 2');
     } catch (error) {
       console.error('Erro ao atualizar o endereço do pedido:', error);
       return;
@@ -386,7 +380,6 @@ const Pagamento = () => {
     const frete = opcoesFrete.find(
       (opcao) => String(opcao.id || opcao.nome) === String(freteSelecionado.id || freteSelecionado.nome)
     );
-    console.log('Frete selecionado:', frete.company.name);
     if (!frete) {
       showMessage('Selecione uma opção de frete!');
       return;

@@ -42,7 +42,6 @@ const SeletorFrete = ({
                   }}
                   onClick={() => {
                     setFreteSelecionado(opcao);
-                    console.log('Frete selecionado:', opcao);
                   }}
                 >
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2 }}>

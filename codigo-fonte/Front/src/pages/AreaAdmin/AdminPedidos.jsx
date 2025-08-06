@@ -7,7 +7,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { getAdminPedidos, updatePedidoStatus, getAdminPedidoDetalhes } from '../../services/adminService';
+import UndoIcon from '@mui/icons-material/Undo';
+import { getAdminPedidos, updatePedidoStatus, getAdminPedidoDetalhes, estornarPagamento } from '../../services/adminService';
 import AtualizarStatusDialog from './components/AtualizarStatusDialog';
 import DetalhesPedidoDialog from './components/DetalhesPedidoDialog';
 
@@ -27,6 +28,7 @@ const AdminPedidos = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [loadingEstorno, setLoadingEstorno] = useState(false);
 
   // A função fetch agora depende da página
   const fetchPedidos = async (currentPage) => {
@@ -79,6 +81,33 @@ const AdminPedidos = () => {
   const handleUpdate = async (dados) => { if (!pedidoSelecionado) return; try { await updatePedidoStatus(pedidoSelecionado.id, dados); fetchPedidos(page); } catch (updateError) { console.error(updateError); setError('Falha ao atualizar o pedido.'); } finally { handleMenuClose(); setPedidoSelecionado(null); } };
   const handleConfirmUpdateEnviado = async (dados) => { await handleUpdate(dados); handleCloseDialog(); };
 
+  const handleEstorno = async () => {
+    if (!pedidoSelecionado) return;
+    
+    const confirmEstorno = window.confirm(
+      `Tem certeza que deseja estornar o pagamento do pedido #${pedidoSelecionado.id}?\n\n` +
+      `Valor: ${pedidoSelecionado.pagamento?.valorTotal?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}\n\n` +
+      `Esta ação não pode ser desfeita.`
+    );
+    
+    if (!confirmEstorno) return;
+    
+    setLoadingEstorno(true);
+    try {
+      await estornarPagamento(pedidoSelecionado.id);
+      fetchPedidos(page); // Atualiza a lista
+      setError(''); // Limpa erros anteriores
+      alert('Estorno realizado com sucesso!');
+    } catch (estornoError) {
+      console.error('Erro ao processar estorno:', estornoError);
+      setError('Falha ao processar estorno. Verifique se o pagamento pode ser estornado.');
+    } finally {
+      setLoadingEstorno(false);
+      handleMenuClose();
+      setPedidoSelecionado(null);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'PAGO':
@@ -91,6 +120,8 @@ const AdminPedidos = () => {
         return 'primary'
       case 'CANCELADO':
         return 'error';
+      case 'REEMBOLSADO':
+        return 'secondary';
       default:
         return 'default';
     }
@@ -202,6 +233,14 @@ const AdminPedidos = () => {
           <MenuItem onClick={() => handleUpdate({ status: 'ENTREGUE' })}>
             <ListItemIcon><CheckCircleIcon fontSize="small" /></ListItemIcon>
             <ListItemText>Marcar como Entregue</ListItemText>
+          </MenuItem>
+        )}
+
+        {/* Ação: Estornar Pagamento */}
+        {(pedidoSelecionado?.status === 'PAGO' || pedidoSelecionado?.status === 'ENVIADO') && (
+          <MenuItem onClick={handleEstorno} disabled={loadingEstorno}>
+            <ListItemIcon><UndoIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>{loadingEstorno ? 'Processando...' : 'Estornar Pagamento'}</ListItemText>
           </MenuItem>
         )}
       </Menu>

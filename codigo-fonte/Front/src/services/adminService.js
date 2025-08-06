@@ -29,3 +29,13 @@ export const getAdminPedidoDetalhes = async (id) => {
     throw error.response?.data?.msg || "Erro ao buscar detalhes do pedido";
   }
 };
+
+// Função para estornar pagamento de um pedido
+export const estornarPagamento = async (pedidoId) => {
+  try {
+    const response = await api.post(`/pagamentos/estornar/${pedidoId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.response?.data?.msg || "Erro ao processar estorno";
+  }
+};
