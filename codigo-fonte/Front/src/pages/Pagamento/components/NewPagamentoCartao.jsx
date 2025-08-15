@@ -133,7 +133,7 @@ const PagamentoCartao = (props) => {
                     showMessage(errorMessage, 'error');
                   }
                 } else if (error.response && error.response.status === 402) {
-                  console.log("pagamento rejeitado: ", error.details)
+                  console.log("pagamento rejeitado: ", error.response.details)
                   showMessage("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.", 'error');
                   // setTimeout(() => window.location.reload(), 5000);
                 } else {
