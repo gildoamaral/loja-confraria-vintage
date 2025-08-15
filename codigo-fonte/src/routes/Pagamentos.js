@@ -6,156 +6,11 @@ const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
 const auth = require('../middlewares/Auth');
 const verifyAdmin = require('../middlewares/AuthAdmin');
+const { verificarEstoque, diminuirEstoque, restaurarEstoque } = require('../utils/VerificaEstoque');
 
 const prisma = new PrismaClient();
-const client = new MercadoPagoConfig(
-  {
-    accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
-    options: { timeout: 5000, idempotencyKey: 'abc' }
-  }
-);
+const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN });
 const payment = new Payment(client);
-
-// Função auxiliar para verificar se há estoque suficiente
-async function verificarEstoque(pedidoId) {
-  try {
-    const pedido = await prisma.pedidos.findUnique({
-      where: { id: pedidoId },
-      include: {
-        itens: {
-          include: { produto: true }
-        }
-      }
-    });
-
-    if (!pedido) {
-      throw new Error('Pedido não encontrado');
-    }
-
-    const problemas = [];
-    const itensParaRemover = [];
-
-    for (const item of pedido.itens) {
-      let temProblema = false;
-
-      // Verifica se o produto está ativo
-      if (!item.produto.ativo) {
-        problemas.push({
-          produto: item.produto.nome,
-          problema: 'Produto não está mais disponível',
-          disponivel: 0,
-          solicitado: item.quantidade
-        });
-        itensParaRemover.push(item.id);
-        temProblema = true;
-      }
-      // Verifica se há estoque suficiente
-      else if (item.produto.quantidade < item.quantidade) {
-        problemas.push({
-          produto: item.produto.nome,
-          problema: 'Estoque insuficiente',
-          disponivel: item.produto.quantidade,
-          solicitado: item.quantidade
-        });
-        itensParaRemover.push(item.id);
-        temProblema = true;
-      }
-    }
-
-    // Remove os itens problemáticos do pedido
-    if (itensParaRemover.length > 0) {
-      await prisma.itemPedido.deleteMany({
-        where: {
-          id: { in: itensParaRemover }
-        }
-      });
-
-      console.log(`Removidos ${itensParaRemover.length} itens problemáticos do pedido ${pedidoId}`);
-
-      // Log dos itens removidos para auditoria
-      itensParaRemover.forEach((itemId, index) => {
-        const problema = problemas[index];
-        console.log(`Item removido: ${problema.produto} - ${problema.problema}`);
-      });
-    }
-
-    return problemas; // Retorna array vazio se tudo estiver ok
-  } catch (error) {
-    console.error('Erro ao verificar estoque:', error);
-    throw error;
-  }
-}
-
-// Função auxiliar para diminuir o estoque após pagamento aprovado
-async function diminuirEstoque(pedidoId) {
-  console.log(`Diminuindo estoque para o pedido ${pedidoId}...`);
-
-  try {
-    const pedido = await prisma.pedidos.findUnique({
-      where: { id: pedidoId },
-      include: {
-        itens: {
-          include: { produto: true }
-        }
-      }
-    });
-
-    if (!pedido) {
-      console.error(`Pedido ${pedidoId} não encontrado`);
-      return;
-    }
-
-    // Cria uma transação para diminuir a quantidade de cada produto
-    const updatePromises = pedido.itens.map(item =>
-      prisma.produtos.update({
-        where: { id: item.produtoId },
-        data: {
-          quantidade: {
-            decrement: item.quantidade
-          }
-        }
-      })
-    );
-
-    const produtosAtualizados = await prisma.$transaction(updatePromises);
-
-    // Verifica se algum produto ficou com quantidade 0 e o desativa
-    const produtosParaDesativar = produtosAtualizados
-      .filter(produto => produto.quantidade === 0 && produto.ativo)
-      .map(produto => produto.id);
-
-    if (produtosParaDesativar.length > 0) {
-      await prisma.produtos.updateMany({
-        where: {
-          id: { in: produtosParaDesativar }
-        },
-        data: { ativo: false }
-      });
-
-      console.log(`Produtos desativados por estoque zerado: ${produtosParaDesativar.join(', ')}`);
-    }
-
-    console.log(`Estoque diminuído com sucesso para o pedido ${pedidoId}`);
-
-    // Log das alterações para auditoria
-    pedido.itens.forEach(item => {
-      const produtoAtualizado = produtosAtualizados.find(p => p.id === item.produtoId);
-      const quantidadeRestante = produtoAtualizado ? produtoAtualizado.quantidade : 'N/A';
-      const statusProduto = produtoAtualizado && produtoAtualizado.quantidade === 0 ? ' - PRODUTO DESATIVADO' : '';
-
-      console.log(`Produto ${item.produto.nome} (ID: ${item.produtoId}): diminuído ${item.quantidade} unidade(s). Restante: ${quantidadeRestante}${statusProduto}`);
-    });
-
-  } catch (error) {
-    console.error(`Erro ao diminuir estoque do pedido ${pedidoId}:`, error);
-    // Em caso de erro, é importante logar para investigação manual
-  }
-}
-
-// Teste simples
-router.get('/', auth, (req, res) => {
-  res.send('Rota de pagamentos funcionando!');
-});
 
 // Nova rota para buscar pagamento por pedidoId
 router.get('/por-pedido/:pedidoId', auth, async (req, res) => {
@@ -471,6 +326,7 @@ router.post('/criar-cartao', auth, async (req, res) => {
     const pedido = await prisma.pedidos.findUnique({
       where: { id: pedidoId },
       include: {
+        usuario: true,
         itens: {
           include: { produto: true }
         }
@@ -481,7 +337,6 @@ router.post('/criar-cartao', auth, async (req, res) => {
       return res.status(400).json({ error: 'Pedido não encontrado ou sem itens.' });
     }
 
-    // VERIFICAÇÃO DE ESTOQUE: Verifica se há estoque suficiente antes de processar o pagamento
     const problemasEstoque = await verificarEstoque(pedidoId);
     if (problemasEstoque.length > 0) {
       return res.status(400).json({
@@ -490,14 +345,11 @@ router.post('/criar-cartao', auth, async (req, res) => {
       });
     }
 
-    // --- ETAPA 1: "CONGELAR" OS PREÇOS DOS ITENS ---
-    // Usamos uma transação para garantir que todos os itens sejam atualizados ou nenhum.
     await prisma.$transaction(
       pedido.itens.map((item) =>
         prisma.itemPedido.update({
           where: { id: item.id },
           data: {
-            // Salva o preço do produto (com ou sem promoção) no item do pedido
             precoUnitario: item.produto.precoPromocional ?? item.produto.preco,
           },
         })
@@ -511,33 +363,55 @@ router.post('/criar-cartao', auth, async (req, res) => {
 
     const valorTotalParaGateway = Number(valorTotalProdutos) + Number(valorFrete || 0);
 
+    const itemsParaMercadoPago = pedido.itens.map((item, index) => ({
+      id: (index + 1).toString(), 
+      title: item.produto.nome,
+      description: `${item.produto.categoria} - ${item.produto.cor} - ${item.produto.tamanho}`,
+      quantity: item.quantidade,
+      unit_price: Number((item.produto.precoPromocional ?? item.produto.preco).toFixed(2)),
+      category_id: item.produto.categoria.toLowerCase()
+    }));
+
     const body = {
-      transaction_amount: 1.5,
+      transaction_amount: Number(valorTotalParaGateway),
       token,
       description,
       installments,
       payment_method_id,
       issuer_id,
-    }; 
-    console.log("deviceId: ", deviceId);
-
+      payer: {
+        email: payer.email,
+        first_name: pedido.usuario.nome,
+        last_name: pedido.usuario.sobrenome,
+        identification: {
+          type: payer.identification.type,
+          number: payer.identification.number,
+        },
+      },
+      external_reference: `PEDIDO Nº - ${pedidoId}`,
+      statement_descriptor: "CVintage",
+      additional_info: {
+        items: itemsParaMercadoPago, 
+        payer: {
+          first_name: pedido.usuario.nome,
+          last_name: pedido.usuario.sobrenome,
+        },
+      },
+    };
     const requestOptions = {
       idempotencyKey: Date.now().toString(),
-      headers: {
-        'X-meli-session-id': deviceId
-      }
+      meliSessionId: deviceId
     };
 
+    console.log('Requisição para o Mercado Pago:', { body, requestOptions });
 
-    console.log("body da requisição: ", body)
-    console.log("============================================")
     payment.create({ body, requestOptions })
       .then(async (result) => {
-        console.log("resultado da requisição: ", result);
+        console.log(result)
 
         let statusPayment = '';
         if (result.status === 'rejected') {
-          return res.status(402).json({ error: 'Pagamento negado pelo cartão.' });
+          return res.status(402).json({ error: 'Pagamento negado pelo cartão.', details: result });
         }
         if (result.status === 'approved') { statusPayment = "APROVADO"; }
         if (result.status === 'in_process') { statusPayment = "PENDENTE"; }
@@ -587,20 +461,22 @@ router.post('/criar-cartao', auth, async (req, res) => {
             const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
             const messageResponse = statusPayment === "APROVADO" ? 'Pagamento aprovado!' : 'Pagamento em processamento.';
 
-            res.status(201).json({ status: statusResponse, message: messageResponse, pagamento });
+            res.status(201).json({ status: statusResponse, message: messageResponse, pagamento, detalhesGateway: result });
             return;
           }
 
         } catch (error) {
           console.log('ERRO AO SALVAR PAGAMENTO NO BANCO: ', error);
           // TODO: Implementar lógica de estorno/cancelamento no gateway caso o BD falhe
-          res.status(500).json({ error: 'Falha ao salvar informações do pagamento.' });
+          // res.status(500).json({ error: 'Falha ao salvar informações do pagamento.' });
+          res.status(500).json({ error: 'Erro ao salvar pagamento no banco de dados', detalhes: error });
           return;
         }
 
       })
       .catch((error) => {
         console.log('ERRO na criação do pagamento: ', error);
+        res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error }); // <-- envia erro ao frontend
         // console.log('ERRO na criação do pagamento: ', error.cause);
         // console.log('ERRO na criação do pagamento: ', error.cause[0]);
         // res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error });
@@ -682,9 +558,6 @@ router.post('/webhook', async (req, res) => {
     res.status(500).send('Erro interno no servidor.');
   }
 });
-
-
-
 
 // --- ROTA PARA ESTORNO DE PAGAMENTO ---
 // router.post('/estornar/:pedidoId', verifyAdmin, async (req, res) => {
@@ -771,56 +644,6 @@ router.post('/webhook', async (req, res) => {
 //     res.status(500).json({ error: 'Erro interno do servidor' });
 //   }
 // });
-
-// // Função auxiliar para restaurar estoque após estorno
-// async function restaurarEstoque(pedidoId) {
-//   console.log(`Restaurando estoque para o pedido ${pedidoId}...`);
-
-//   try {
-//     const pedido = await prisma.pedidos.findUnique({
-//       where: { id: pedidoId },
-//       include: {
-//         itens: {
-//           include: { produto: true }
-//         }
-//       }
-//     });
-
-//     if (!pedido) {
-//       console.error(`Pedido ${pedidoId} não encontrado`);
-//       return;
-//     }
-
-//     // Restaura a quantidade de cada produto
-//     const updatePromises = pedido.itens.map(item => 
-//       prisma.produtos.update({
-//         where: { id: item.produtoId },
-//         data: {
-//           quantidade: {
-//             increment: item.quantidade
-//           },
-//           // Reativa o produto se ele estava inativo por falta de estoque
-//           ativo: true
-//         }
-//       })
-//     );
-
-//     const produtosAtualizados = await prisma.$transaction(updatePromises);
-
-//     console.log(`Estoque restaurado com sucesso para o pedido ${pedidoId}`);
-
-//     // Log das alterações para auditoria
-//     pedido.itens.forEach(item => {
-//       const produtoAtualizado = produtosAtualizados.find(p => p.id === item.produtoId);
-//       const quantidadeRestaurada = produtoAtualizado ? produtoAtualizado.quantidade : 'N/A';
-
-//       console.log(`Produto ${item.produto.nome} (ID: ${item.produtoId}): restaurado ${item.quantidade} unidade(s). Total: ${quantidadeRestaurada} - PRODUTO REATIVADO`);
-//     });
-
-//   } catch (error) {
-//     console.error(`Erro ao restaurar estoque do pedido ${pedidoId}:`, error);
-//   }
-// }
 
 
 module.exports = router;

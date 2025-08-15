@@ -11,7 +11,6 @@ api.interceptors.response.use(
   },
   (error) => {
     // Verifica se o erro é de token expirado (401 Unauthorized)
-    console.error("Erro da API:", error);
     if (error.response?.status === 401) {
       const errorMessage = error.response?.data?.error || error.response?.data?.message;
       

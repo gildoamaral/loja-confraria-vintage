@@ -6,14 +6,15 @@ import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
 
-// A chave pública do Mercado Pago
-const mp = new window.MercadoPago(import.meta.env.VITE_MERCADO_PAGO_KEY);
+const mp = new window.MercadoPago(import.meta.env.VITE_MERCADO_PAGO_KEY, {
+  locale: 'pt-BR',
+  advancedFraudPrevention: true,
+});
 
 const PagamentoCartao = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  // Estados para controlar as mensagens
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -68,15 +69,13 @@ const PagamentoCartao = (props) => {
             setIsSubmitting(true);
 
             const cardFormData = cardFormInstance.getCardFormData();
-            
-            const deviceId = window.MP_DEVICE_SESSION_ID;
-            console.log("Device ID gerado:", deviceId);
+            console.log(cardFormData);
+            const deviceId = window.deviceId;
 
-
-            api.post('/pagamentos/criar-cartao', {
+            const body = {
               transaction_amount: Number(cardFormData.amount),
               token: cardFormData.token,
-              description: "Descrição do produto",
+              description: "Produto da Confraria Vintage",
               installments: Number(cardFormData.installments),
               payment_method_id: cardFormData.paymentMethodId,
               issuer_id: cardFormData.issuerId,
@@ -90,8 +89,12 @@ const PagamentoCartao = (props) => {
               pedidoId: props.pedidoId,
               valorFrete: props.valorFrete ?? 0,
               nomeFrete: props.nomeFrete ?? "Não informado",
-              deviceId: deviceId, // <-- NOVO CAMPO ENVIADO
-            })
+              deviceId: deviceId,
+            };
+
+            console.log("Dados do pagamento:", body);
+
+            api.post('/pagamentos/criar-cartao', body)
               .then(response => {
                 if (response.data.status === 'pending') {
                   showMessage("Pagamento em processamento. Aguardando confirmação.", 'info');
@@ -104,7 +107,6 @@ const PagamentoCartao = (props) => {
               })
               .catch(error => {
                 setIsSubmitting(false);
-                console.error('Erro no pagamento:', error);
 
                 if (error.response && error.response.status === 400) {
                   // Verifica se é erro de estoque insuficiente
@@ -131,7 +133,9 @@ const PagamentoCartao = (props) => {
                     showMessage(errorMessage, 'error');
                   }
                 } else if (error.response && error.response.status === 402) {
+                  console.log("pagamento rejeitado: ", error.details)
                   showMessage("Pagamento negado pelo cartão. Tente novamente ou use outro cartão.", 'error');
+                  // setTimeout(() => window.location.reload(), 5000);
                 } else {
                   showMessage("Erro ao processar pagamento.", 'error');
                   setTimeout(() => navigate('/carrinho'), 2000);

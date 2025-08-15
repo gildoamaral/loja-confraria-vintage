@@ -32,7 +32,7 @@ const WhatsAppButton = () => {
       <span className="whatsapp-text" style={styles.buttonText}>Fale conosco</span>
       
       {/* CSS Animation */}
-      <style jsx>{`
+      <style>{`
 
         
         @keyframes slideIn {
