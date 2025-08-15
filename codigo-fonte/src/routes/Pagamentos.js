@@ -364,7 +364,7 @@ router.post('/criar-cartao', auth, async (req, res) => {
     const valorTotalParaGateway = Number(valorTotalProdutos) + Number(valorFrete || 0);
 
     const itemsParaMercadoPago = pedido.itens.map((item, index) => ({
-      id: (index + 1).toString(), 
+      id: (index + 1).toString(),
       title: item.produto.nome,
       description: `${item.produto.categoria} - ${item.produto.cor} - ${item.produto.tamanho}`,
       quantity: item.quantidade,
@@ -380,6 +380,8 @@ router.post('/criar-cartao', auth, async (req, res) => {
       payment_method_id,
       issuer_id,
       payer: {
+        // entity_type: 'individual',
+        type: 'customer',
         email: payer.email,
         first_name: pedido.usuario.nome,
         last_name: pedido.usuario.sobrenome,
@@ -391,11 +393,30 @@ router.post('/criar-cartao', auth, async (req, res) => {
       external_reference: `PEDIDO Nº - ${pedidoId}`,
       statement_descriptor: "CVintage",
       additional_info: {
-        items: itemsParaMercadoPago, 
+        items: itemsParaMercadoPago,
         payer: {
           first_name: pedido.usuario.nome,
           last_name: pedido.usuario.sobrenome,
+          phone: {
+            area_code: '21',
+            number: '979701239'
+          },
+          address: {
+            zip_code: pedido.usuario.cep,
+            street_name: pedido.usuario.rua,
+            street_number: pedido.usuario.numero || 'S/N',
+          }
         },
+        shipments: {
+          receiver_address: {
+            zip_code: pedido.usuario.cep,
+            state_name: pedido.usuario.estado,
+            city_name: pedido.usuario.cidade,
+            street_name: pedido.usuario.rua,
+            street_number: pedido.usuario.numero,
+            apartment: pedido.usuario.complemento || 'S/N',
+          }
+        }
       },
     };
     const requestOptions = {
