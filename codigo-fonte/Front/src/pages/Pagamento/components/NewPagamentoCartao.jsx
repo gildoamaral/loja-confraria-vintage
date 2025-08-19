@@ -8,7 +8,6 @@ import api from '../../../services/api';
 
 const mp = new window.MercadoPago(import.meta.env.VITE_MERCADO_PAGO_KEY, {
   locale: 'pt-BR',
-  advancedFraudPrevention: true,
 });
 
 const PagamentoCartao = (props) => {
@@ -96,6 +95,7 @@ const PagamentoCartao = (props) => {
 
             api.post('/pagamentos/criar-cartao', body)
               .then(response => {
+                console.log("Resposta do servidor:", response);
                 if (response.data.status === 'pending') {
                   showMessage("Pagamento em processamento. Aguardando confirmação.", 'info');
                   setTimeout(() => navigate('/minha-conta'), 2000);

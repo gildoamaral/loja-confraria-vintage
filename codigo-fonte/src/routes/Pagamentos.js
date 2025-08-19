@@ -7,10 +7,16 @@ const crypto = require('crypto');
 const auth = require('../middlewares/Auth');
 const verifyAdmin = require('../middlewares/AuthAdmin');
 const { verificarEstoque, diminuirEstoque, restaurarEstoque } = require('../utils/VerificaEstoque');
+const { v4: uuidv4 } = require('uuid');
 
 const prisma = new PrismaClient();
-const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN });
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN, options: {
+    timeout: 5000 
+  }
+});
 const payment = new Payment(client);
+
 
 // Nova rota para buscar pagamento por pedidoId
 router.get('/por-pedido/:pedidoId', auth, async (req, res) => {
@@ -369,7 +375,8 @@ router.post('/criar-cartao', auth, async (req, res) => {
       description: `${item.produto.categoria} - ${item.produto.cor} - ${item.produto.tamanho}`,
       quantity: item.quantidade,
       unit_price: Number((item.produto.precoPromocional ?? item.produto.preco).toFixed(2)),
-      category_id: item.produto.categoria.toLowerCase()
+      category_id: item.produto.categoria.toLowerCase(),
+      type: item.produto.categoria,
     }));
 
     const body = {
@@ -390,8 +397,6 @@ router.post('/criar-cartao', auth, async (req, res) => {
           number: payer.identification.number,
         },
       },
-      external_reference: `PEDIDO Nº - ${pedidoId}`,
-      statement_descriptor: "CVintage",
       additional_info: {
         items: itemsParaMercadoPago,
         payer: {
@@ -399,7 +404,7 @@ router.post('/criar-cartao', auth, async (req, res) => {
           last_name: pedido.usuario.sobrenome,
           phone: {
             area_code: '21',
-            number: '979701239'
+            number: '980101507'
           },
           address: {
             zip_code: pedido.usuario.cep,
@@ -414,13 +419,22 @@ router.post('/criar-cartao', auth, async (req, res) => {
             city_name: pedido.usuario.cidade,
             street_name: pedido.usuario.rua,
             street_number: pedido.usuario.numero,
+            floor: null,
             apartment: pedido.usuario.complemento || 'S/N',
           }
         }
       },
+      external_reference: `PEDIDO Nº - ${pedidoId}`,
+      statement_descriptor: "CVintage",
+      application_fee: null,
+      binary_mode: false,
+      campaign_id: null,
+      capture: false,
+      metadata: null,
+      differential_pricing_id: null,
     };
     const requestOptions = {
-      idempotencyKey: Date.now().toString(),
+      idempotencyKey: uuidv4(),
       meliSessionId: deviceId
     };
 
@@ -428,71 +442,73 @@ router.post('/criar-cartao', auth, async (req, res) => {
 
     payment.create({ body, requestOptions })
       .then(async (result) => {
-        console.log(result)
+        // console.log(result)
+        res.status(200).json({ status: 'success', data: result });
 
-        let statusPayment = '';
-        if (result.status === 'rejected') {
-          return res.status(402).json({ error: 'Pagamento negado pelo cartão.', details: result });
-        }
-        if (result.status === 'approved') { statusPayment = "APROVADO"; }
-        if (result.status === 'in_process') { statusPayment = "PENDENTE"; }
 
-        // --- ETAPA 2: COLETAR OS DETALHES FINANCEIROS ---
-        // O Mercado Pago retorna os custos na resposta.
-        const taxaGateway = result.fee_details?.find(fee => fee.type === 'mercadopago_fee')?.amount || 0;
-        const custoParcelamento = result.fee_details?.find(fee => fee.type === 'financing_fee')?.amount || 0;
+        // let statusPayment = '';
+        // if (result.status === 'rejected') {
+        //   return res.status(402).json({ error: 'Pagamento negado pelo cartão.', details: result });
+        // }
+        // if (result.status === 'approved') { statusPayment = "APROVADO"; }
+        // if (result.status === 'in_process') { statusPayment = "PENDENTE"; }
 
-        try {
-          // --- ETAPA 3: SALVAR O PAGAMENTO DETALHADO ---
-          const pagamento = await prisma.pagamentos.create({
-            data: {
-              pedidoId: req.body.pedidoId,
-              status: statusPayment,
-              metodo: 'CARTAO',
-              parcelas: result.installments,
-              gatewayTransactionId: result.id.toString(), // Salva o ID da transação do MP
+        // // --- ETAPA 2: COLETAR OS DETALHES FINANCEIROS ---
+        // // O Mercado Pago retorna os custos na resposta.
+        // const taxaGateway = result.fee_details?.find(fee => fee.type === 'mercadopago_fee')?.amount || 0;
+        // const custoParcelamento = result.fee_details?.find(fee => fee.type === 'financing_fee')?.amount || 0;
 
-              // Novos campos financeiros
-              valorProdutos: valorTotalProdutos,
-              valorFrete: Number(valorFrete || 0),
-              valorTaxaCartao: taxaGateway,
-              valorTaxaParcelamento: custoParcelamento,
-              valorTotal: result.transaction_details.total_paid_amount,
-            }
-          });
+        // try {
+        //   // --- ETAPA 3: SALVAR O PAGAMENTO DETALHADO ---
+        //   const pagamento = await prisma.pagamentos.create({
+        //     data: {
+        //       pedidoId: req.body.pedidoId,
+        //       status: statusPayment,
+        //       metodo: 'CARTAO',
+        //       parcelas: result.installments,
+        //       gatewayTransactionId: result.id.toString(), // Salva o ID da transação do MP
 
-          // O resto da lógica para atualizar o status do pedido continua igual
-          if (statusPayment === "APROVADO" || statusPayment === "PENDENTE") {
-            const novoStatus = statusPayment === "APROVADO" ? 'PAGO' : 'AGUARDANDO_PAGAMENTO';
+        //       // Novos campos financeiros
+        //       valorProdutos: valorTotalProdutos,
+        //       valorFrete: Number(valorFrete || 0),
+        //       valorTaxaCartao: taxaGateway,
+        //       valorTaxaParcelamento: custoParcelamento,
+        //       valorTotal: result.transaction_details.total_paid_amount,
+        //     }
+        //   });
 
-            await prisma.pedidos.update({
-              where: { id: req.body.pedidoId },
-              data: {
-                status: novoStatus,
-                dataFinalizado: new Date(),
-                empresaFrete: nomeFrete || null, // Se tiver nome de frete, salva
-              }
-            });
+        //   // O resto da lógica para atualizar o status do pedido continua igual
+        //   if (statusPayment === "APROVADO" || statusPayment === "PENDENTE") {
+        //     const novoStatus = statusPayment === "APROVADO" ? 'PAGO' : 'AGUARDANDO_PAGAMENTO';
 
-            // DIMINUIR ESTOQUE: Se o pagamento foi aprovado imediatamente, diminui o estoque
-            if (statusPayment === "APROVADO") {
-              await diminuirEstoque(req.body.pedidoId);
-            }
+        //     await prisma.pedidos.update({
+        //       where: { id: req.body.pedidoId },
+        //       data: {
+        //         status: novoStatus,
+        //         dataFinalizado: new Date(),
+        //         empresaFrete: nomeFrete || null, // Se tiver nome de frete, salva
+        //       }
+        //     });
 
-            const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
-            const messageResponse = statusPayment === "APROVADO" ? 'Pagamento aprovado!' : 'Pagamento em processamento.';
+        //     // DIMINUIR ESTOQUE: Se o pagamento foi aprovado imediatamente, diminui o estoque
+        //     if (statusPayment === "APROVADO") {
+        //       await diminuirEstoque(req.body.pedidoId);
+        //     }
 
-            res.status(201).json({ status: statusResponse, message: messageResponse, pagamento, detalhesGateway: result });
-            return;
-          }
+        //     const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
+        //     const messageResponse = statusPayment === "APROVADO" ? 'Pagamento aprovado!' : 'Pagamento em processamento.';
 
-        } catch (error) {
-          console.log('ERRO AO SALVAR PAGAMENTO NO BANCO: ', error);
-          // TODO: Implementar lógica de estorno/cancelamento no gateway caso o BD falhe
-          // res.status(500).json({ error: 'Falha ao salvar informações do pagamento.' });
-          res.status(500).json({ error: 'Erro ao salvar pagamento no banco de dados', detalhes: error });
-          return;
-        }
+        //     res.status(201).json({ status: statusResponse, message: messageResponse, pagamento, detalhesGateway: result });
+        //     return;
+        //   }
+
+        // } catch (error) {
+        //   console.log('ERRO AO SALVAR PAGAMENTO NO BANCO: ', error);
+        //   // TODO: Implementar lógica de estorno/cancelamento no gateway caso o BD falhe
+        //   // res.status(500).json({ error: 'Falha ao salvar informações do pagamento.' });
+        //   res.status(500).json({ error: 'Erro ao salvar pagamento no banco de dados', detalhes: error });
+        //   return;
+        // }
 
       })
       .catch((error) => {
