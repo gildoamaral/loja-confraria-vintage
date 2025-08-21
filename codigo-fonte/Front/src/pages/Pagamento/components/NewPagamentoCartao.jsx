@@ -74,7 +74,7 @@ const PagamentoCartao = (props) => {
             const body = {
               transaction_amount: Number(cardFormData.amount),
               token: cardFormData.token,
-              description: "Produto da Confraria Vintage",
+              description: "Produto",
               installments: Number(cardFormData.installments),
               payment_method_id: cardFormData.paymentMethodId,
               issuer_id: cardFormData.issuerId,
@@ -107,6 +107,7 @@ const PagamentoCartao = (props) => {
               })
               .catch(error => {
                 setIsSubmitting(false);
+                console.error("Erro ao processar pagamento:", error);
 
                 if (error.response && error.response.status === 400) {
                   // Verifica se é erro de estoque insuficiente

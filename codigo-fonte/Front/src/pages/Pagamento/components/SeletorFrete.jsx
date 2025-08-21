@@ -69,9 +69,14 @@ const SeletorFrete = ({
                 </Paper>
               ))
             ) : (
-              <Typography variant="body2" color="error">
-                Nenhuma opção de frete disponível.
-              </Typography>
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="body2" color="error" gutterBottom>
+                  Nenhuma opção de frete disponível
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  As transportadoras não conseguiram calcular o frete para este endereço
+                </Typography>
+              </Box>
             )}
           </Box>
         </Box>
@@ -93,9 +98,9 @@ const SeletorFrete = ({
           }
         }}
         onClick={handleContinuarParaPagamento}
-        disabled={carregandoFrete}
+        disabled={carregandoFrete || !freteSelecionado || (Array.isArray(opcoesFrete) && opcoesFrete.length === 0)}
       >
-        Continuar para Pagamento
+        {(Array.isArray(opcoesFrete) && opcoesFrete.length === 0) ? 'Nenhuma opção disponível' : 'Continuar para Pagamento'}
       </Button>
 
     </Box >

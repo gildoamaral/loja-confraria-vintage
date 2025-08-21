@@ -11,7 +11,8 @@ const { v4: uuidv4 } = require('uuid');
 
 const prisma = new PrismaClient();
 const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN, options: {
+  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN, 
+  options: {
     timeout: 5000 
   }
 });
@@ -380,14 +381,14 @@ router.post('/criar-cartao', auth, async (req, res) => {
     }));
 
     const body = {
-      transaction_amount: Number(valorTotalParaGateway),
+      transaction_amount: Number(valorTotalParaGateway.toFixed(2)),
       token,
       description,
       installments,
       payment_method_id,
       issuer_id,
       payer: {
-        // entity_type: 'individual',
+        entity_type: 'individual',
         type: 'customer',
         email: payer.email,
         first_name: pedido.usuario.nome,
@@ -426,89 +427,84 @@ router.post('/criar-cartao', auth, async (req, res) => {
       },
       external_reference: `PEDIDO Nº - ${pedidoId}`,
       statement_descriptor: "CVintage",
-      application_fee: null,
-      binary_mode: false,
-      campaign_id: null,
-      capture: false,
-      metadata: null,
-      differential_pricing_id: null,
     };
     const requestOptions = {
       idempotencyKey: uuidv4(),
       meliSessionId: deviceId
     };
 
-    console.log('Requisição para o Mercado Pago:', { body, requestOptions });
+    console.log(body, requestOptions)
 
     payment.create({ body, requestOptions })
       .then(async (result) => {
-        // console.log(result)
-        res.status(200).json({ status: 'success', data: result });
+        console.log(result.status)
+        console.log(result.status_detail)
+        console.log(token)
+        // res.status(201).json(result); // <-- agora retorna pro front
 
+        let statusPayment = '';
+        if (result.status === 'rejected') {
+          return res.status(402).json({ error: 'Pagamento negado pelo cartão.', details: result });
+        }
+        if (result.status === 'approved') { statusPayment = "APROVADO"; }
+        if (result.status === 'in_process') { statusPayment = "PENDENTE"; }
 
-        // let statusPayment = '';
-        // if (result.status === 'rejected') {
-        //   return res.status(402).json({ error: 'Pagamento negado pelo cartão.', details: result });
-        // }
-        // if (result.status === 'approved') { statusPayment = "APROVADO"; }
-        // if (result.status === 'in_process') { statusPayment = "PENDENTE"; }
+        // --- ETAPA 2: COLETAR OS DETALHES FINANCEIROS ---
+        // O Mercado Pago retorna os custos na resposta.
+        const taxaGateway = result.fee_details?.find(fee => fee.type === 'mercadopago_fee')?.amount || 0;
+        const custoParcelamento = result.fee_details?.find(fee => fee.type === 'financing_fee')?.amount || 0;
 
-        // // --- ETAPA 2: COLETAR OS DETALHES FINANCEIROS ---
-        // // O Mercado Pago retorna os custos na resposta.
-        // const taxaGateway = result.fee_details?.find(fee => fee.type === 'mercadopago_fee')?.amount || 0;
-        // const custoParcelamento = result.fee_details?.find(fee => fee.type === 'financing_fee')?.amount || 0;
+        try {
+          // --- ETAPA 3: SALVAR O PAGAMENTO DETALHADO ---
+          const pagamento = await prisma.pagamentos.create({
+            data: {
+              pedidoId: req.body.pedidoId,
+              status: statusPayment,
+              metodo: 'CARTAO',
+              parcelas: result.installments,
+              gatewayTransactionId: result.id.toString(), // Salva o ID da transação do MP
 
-        // try {
-        //   // --- ETAPA 3: SALVAR O PAGAMENTO DETALHADO ---
-        //   const pagamento = await prisma.pagamentos.create({
-        //     data: {
-        //       pedidoId: req.body.pedidoId,
-        //       status: statusPayment,
-        //       metodo: 'CARTAO',
-        //       parcelas: result.installments,
-        //       gatewayTransactionId: result.id.toString(), // Salva o ID da transação do MP
+              // Novos campos financeiros
+              valorProdutos: valorTotalProdutos,
+              valorFrete: Number(valorFrete || 0),
+              valorTaxaCartao: taxaGateway,
+              valorTaxaParcelamento: custoParcelamento,
+              valorTotal: result.transaction_details.total_paid_amount,
+            }
+          });
 
-        //       // Novos campos financeiros
-        //       valorProdutos: valorTotalProdutos,
-        //       valorFrete: Number(valorFrete || 0),
-        //       valorTaxaCartao: taxaGateway,
-        //       valorTaxaParcelamento: custoParcelamento,
-        //       valorTotal: result.transaction_details.total_paid_amount,
-        //     }
-        //   });
+          // O resto da lógica para atualizar o status do pedido continua igual
+          if (statusPayment === "APROVADO" || statusPayment === "PENDENTE") {
+            const novoStatus = statusPayment === "APROVADO" ? 'PAGO' : 'AGUARDANDO_PAGAMENTO';
 
-        //   // O resto da lógica para atualizar o status do pedido continua igual
-        //   if (statusPayment === "APROVADO" || statusPayment === "PENDENTE") {
-        //     const novoStatus = statusPayment === "APROVADO" ? 'PAGO' : 'AGUARDANDO_PAGAMENTO';
+            await prisma.pedidos.update({
+              where: { id: req.body.pedidoId },
+              data: {
+                status: novoStatus,
+                dataFinalizado: new Date(),
+                empresaFrete: nomeFrete || null, // Se tiver nome de frete, salva
+              }
+            });
 
-        //     await prisma.pedidos.update({
-        //       where: { id: req.body.pedidoId },
-        //       data: {
-        //         status: novoStatus,
-        //         dataFinalizado: new Date(),
-        //         empresaFrete: nomeFrete || null, // Se tiver nome de frete, salva
-        //       }
-        //     });
+            // DIMINUIR ESTOQUE: Se o pagamento foi aprovado imediatamente, diminui o estoque
+            if (statusPayment === "APROVADO") {
+              await diminuirEstoque(req.body.pedidoId);
+            }
 
-        //     // DIMINUIR ESTOQUE: Se o pagamento foi aprovado imediatamente, diminui o estoque
-        //     if (statusPayment === "APROVADO") {
-        //       await diminuirEstoque(req.body.pedidoId);
-        //     }
+            const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
+            const messageResponse = statusPayment === "APROVADO" ? 'Pagamento aprovado!' : 'Pagamento em processamento.';
 
-        //     const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
-        //     const messageResponse = statusPayment === "APROVADO" ? 'Pagamento aprovado!' : 'Pagamento em processamento.';
+            res.status(201).json({ status: statusResponse, message: messageResponse, pagamento, detalhesGateway: result });
+            return;
+          }
 
-        //     res.status(201).json({ status: statusResponse, message: messageResponse, pagamento, detalhesGateway: result });
-        //     return;
-        //   }
-
-        // } catch (error) {
-        //   console.log('ERRO AO SALVAR PAGAMENTO NO BANCO: ', error);
-        //   // TODO: Implementar lógica de estorno/cancelamento no gateway caso o BD falhe
-        //   // res.status(500).json({ error: 'Falha ao salvar informações do pagamento.' });
-        //   res.status(500).json({ error: 'Erro ao salvar pagamento no banco de dados', detalhes: error });
-        //   return;
-        // }
+        } catch (error) {
+          console.log('ERRO AO SALVAR PAGAMENTO NO BANCO: ', error);
+          // TODO: Implementar lógica de estorno/cancelamento no gateway caso o BD falhe
+          // res.status(500).json({ error: 'Falha ao salvar informações do pagamento.' });
+          res.status(500).json({ error: 'Erro ao salvar pagamento no banco de dados', detalhes: error });
+          return;
+        }
 
       })
       .catch((error) => {

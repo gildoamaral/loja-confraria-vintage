@@ -46,7 +46,6 @@ function Carrinho() {
         const res = await api.get('/pedidos/carrinho');
         setCarrinho(res.data.itens || []);
         setCarrinhoOriginal(res.data.itens || []);
-        console.log('Carrinho carregado:', res.data.itens);
 
       } catch (error) {
         console.error('Erro ao buscar carrinho:', error);

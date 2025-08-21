@@ -223,7 +223,20 @@ const Pagamento = () => {
         peso: 0.3,
       });
 
-      setOpcoesFrete(res.data);
+      // Filtra apenas as opções que não têm erro
+      const opcoesValidas = Array.isArray(res.data) ? res.data.filter(opcao => {
+        // Verifica se a opção tem erro ou propriedades inválidas
+        return opcao && 
+               !opcao.error && 
+               !opcao.erro && 
+               opcao.price !== null && 
+               opcao.price !== undefined && 
+               opcao.price > 0 &&
+               opcao.delivery_time !== null &&
+               opcao.delivery_time !== undefined;
+      }) : [];
+
+      setOpcoesFrete(opcoesValidas);
       setCarregandoFrete(false);
 
     } catch (error) {
