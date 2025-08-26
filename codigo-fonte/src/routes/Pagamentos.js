@@ -144,8 +144,12 @@ router.post('/criar-pix', auth, async (req, res) => {
     }
 
 
-    const result = await payment.create({ body, requestOptions });
+    const result = await payment.create({ body, requestOptions })
 
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Link mercado pago:');
+      console.log(result.point_of_interaction.transaction_data.ticket_url);
+    }
 
     // Salva o pagamento detalhado no seu banco de dados, incluindo os dados do PIX
     await prisma.pagamentos.create({
