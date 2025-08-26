@@ -25,6 +25,7 @@ router.get('/', async (req, res) => {
         dataNascimento: true,
         endereco: true,
         email: true,
+        ddd: true,
         telefone: true,
         posicao: true,
       },
@@ -39,9 +40,9 @@ router.get('/', async (req, res) => {
 // CREATE USUARIO
 router.post('/', async (req, res) => {
   const {
-    nome, sobrenome, dataNascimento, endereco,
+    nome, sobrenome, dataNascimento, cpf, endereco,
     rua, numero, complemento, bairro, cidade, estado, cep,
-    email, telefone, senha, posicao
+    email, ddd, telefone, senha, posicao
   } = req.body;
 
   if (!dataNascimento || isNaN(Date.parse(dataNascimento))) {
@@ -65,6 +66,7 @@ router.post('/', async (req, res) => {
         nome,
         sobrenome,
         dataNascimento: dataNascimentoISO,
+        cpf: cpf || null,
         endereco,
         rua,
         numero,
@@ -74,6 +76,7 @@ router.post('/', async (req, res) => {
         estado,
         cep,
         email,
+        ddd: ddd || null,
         telefone,
         senha: hashedPassword,
         posicao: posicao || "USER",
@@ -98,9 +101,9 @@ router.post('/', async (req, res) => {
 router.put('/conta', auth, async (req, res) => {
   const userId = req.user.userId;
   const {
-    nome, sobrenome, dataNascimento, endereco,
+    nome, sobrenome, dataNascimento, cpf, endereco,
     rua, numero, complemento, bairro, cidade, estado, cep,
-    email, telefone, senha, posicao
+    email, ddd, telefone, senha, posicao
   } = req.body;
 
   if (dataNascimento && isNaN(Date.parse(dataNascimento))) {
@@ -121,6 +124,7 @@ router.put('/conta', auth, async (req, res) => {
         nome,
         sobrenome,
         dataNascimento: dataNascimentoISO,
+        cpf: cpf || null,
         endereco,
         rua,
         numero,
@@ -130,6 +134,7 @@ router.put('/conta', auth, async (req, res) => {
         estado,
         cep,
         email,
+        ddd: ddd || null,
         telefone,
         senha: hashedPassword,
         posicao,

@@ -7,15 +7,20 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import SettingsIcon from '@mui/icons-material/Settings';
+import RefreshIcon from '@mui/icons-material/Refresh';
 // import UndoIcon from '@mui/icons-material/Undo';
 import {
   getAdminPedidos,
   updatePedidoStatus,
   getAdminPedidoDetalhes,
+  atualizarDadosFrete,
+  gerarEtiquetaNovamente,
   // estornarPagamento 
 } from '../../services/adminService';
 import AtualizarStatusDialog from './components/AtualizarStatusDialog';
 import DetalhesPedidoDialog from './components/DetalhesPedidoDialog';
+import DadosFreteDialog from './components/DadosFreteDialog';
 
 const AdminPedidos = () => {
   const [pedidos, setPedidos] = useState([]);
@@ -33,6 +38,7 @@ const AdminPedidos = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dadosFreteDialogOpen, setDadosFreteDialogOpen] = useState(false);
   // const [loadingEstorno, setLoadingEstorno] = useState(false);
 
   // A função fetch agora depende da página
@@ -86,6 +92,45 @@ const AdminPedidos = () => {
   const handleUpdate = async (dados) => { if (!pedidoSelecionado) return; try { await updatePedidoStatus(pedidoSelecionado.id, dados); fetchPedidos(page); } catch (updateError) { console.error(updateError); setError('Falha ao atualizar o pedido.'); } finally { handleMenuClose(); setPedidoSelecionado(null); } };
   const handleConfirmUpdateEnviado = async (dados) => { await handleUpdate(dados); handleCloseDialog(); };
 
+  // Funções para dados do frete
+  const handleOpenDadosFreteDialog = () => { 
+    handleMenuClose(); 
+    setDadosFreteDialogOpen(true); 
+  };
+  
+  const handleCloseDadosFreteDialog = () => { 
+    setDadosFreteDialogOpen(false); 
+    setPedidoSelecionado(null); 
+  };
+  
+  const handleConfirmDadosFrete = async (dadosFrete) => {
+    try {
+      await atualizarDadosFrete(pedidoSelecionado.id, dadosFrete);
+      fetchPedidos(page); // Atualiza a lista
+      setError(''); // Limpa erros anteriores
+    } catch (updateError) {
+      console.error('Erro ao atualizar dados do frete:', updateError);
+      throw new Error(updateError.message || 'Falha ao atualizar dados do frete');
+    }
+  };
+
+  const handleGerarEtiquetaNovamente = async () => {
+    if (!pedidoSelecionado) return;
+    
+    try {
+      await gerarEtiquetaNovamente(pedidoSelecionado.id);
+      fetchPedidos(page); // Atualiza a lista
+      setError(''); // Limpa erros anteriores
+      alert('Etiqueta gerada com sucesso!');
+    } catch (etiquetaError) {
+      console.error('Erro ao gerar etiqueta:', etiquetaError);
+      setError('Falha ao gerar etiqueta. Tente novamente.');
+    } finally {
+      handleMenuClose();
+      setPedidoSelecionado(null);
+    }
+  };
+
   // const handleEstorno = async () => {
   //   if (!pedidoSelecionado) return;
 
@@ -115,6 +160,8 @@ const AdminPedidos = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
+      case 'EM_PREPARACAO':
+        return 'success';
       case 'PAGO':
         return 'success';
       case 'AGUARDANDO_PAGAMENTO':
@@ -127,6 +174,21 @@ const AdminPedidos = () => {
         return 'error';
       case 'REEMBOLSADO':
         return 'secondary';
+      default:
+        return 'default';
+    }
+  };
+
+  const getStatusEtiquetaColor = (statusEtiqueta) => {
+    switch (statusEtiqueta) {
+      case 'AGUARDANDO_DADOS':
+        return 'warning';
+      case 'PROCESSANDO':
+        return 'info';
+      case 'AGUARDANDO_PAGAMENTO':
+        return 'info';
+      case 'FALHA_NA_GERACAO':
+        return 'error';
       default:
         return 'default';
     }
@@ -158,6 +220,7 @@ const AdminPedidos = () => {
               <TableCell>Cliente</TableCell>
               <TableCell align="right">Valor Total</TableCell>
               <TableCell align="center">Status</TableCell>
+              <TableCell align="center">Status Etiqueta</TableCell>
               <TableCell align="center">Ações</TableCell>
             </TableRow>
           </TableHead>
@@ -181,10 +244,20 @@ const AdminPedidos = () => {
                 </TableCell>
                 <TableCell align="center">
                   <Chip
-                    label={pedido.status.replace('_', ' ')}
+                    // label={pedido.status.replace('_', ' ')}
+                    label={pedido.status === "EM_PREPARACAO" ? "PAGO" : pedido.status.replace('_', ' ')}
                     color={getStatusColor(pedido.status)}
                     size="small"
                   />
+                </TableCell>
+                <TableCell align="center">
+                  {pedido.statusEtiqueta ? (
+                    <Chip
+                      label={pedido.statusEtiqueta.replace('_', ' ')}
+                      color={getStatusEtiquetaColor(pedido.statusEtiqueta)}
+                      size="small"
+                    />
+                  ) : '-'}
                 </TableCell>
                 <TableCell align="center">
                   <IconButton
@@ -225,8 +298,24 @@ const AdminPedidos = () => {
           <ListItemText>Ver Detalhes</ListItemText>
         </MenuItem>
 
+        {/* Ação: Configurar Dados do Frete (para pedidos em preparação) */}
+        {pedidoSelecionado?.status === 'EM_PREPARACAO' && pedidoSelecionado?.statusEtiqueta === 'AGUARDANDO_DADOS' && (
+          <MenuItem onClick={handleOpenDadosFreteDialog}>
+            <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>Configurar Dados do Frete</ListItemText>
+          </MenuItem>
+        )}
+
+        {/* Ação: Tentar Gerar Etiqueta Novamente (para falhas) */}
+        {pedidoSelecionado?.statusEtiqueta === 'FALHA_NA_GERACAO' && (
+          <MenuItem onClick={handleGerarEtiquetaNovamente}>
+            <ListItemIcon><RefreshIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>Tentar Gerar Etiqueta Novamente</ListItemText>
+          </MenuItem>
+        )}
+
         {/* Ação: Marcar como Enviado */}
-        {pedidoSelecionado?.status === 'PAGO' && (
+        {pedidoSelecionado?.status === 'EM_PREPARACAO' && pedidoSelecionado?.statusEtiqueta === 'AGUARDANDO_PAGAMENTO' && (
           <MenuItem onClick={handleOpenDialog}>
             <ListItemIcon><LocalShippingIcon fontSize="small" /></ListItemIcon>
             <ListItemText>Marcar como Enviado</ListItemText>
@@ -260,6 +349,13 @@ const AdminPedidos = () => {
         open={detalhesDialogOpen}
         onClose={handleCloseDetalhesDialog}
         pedido={loadingDetalhes ? null : pedidoDetalhado} // Mostra o diálogo apenas com os dados prontos
+      />
+      
+      <DadosFreteDialog
+        open={dadosFreteDialogOpen}
+        onClose={handleCloseDadosFreteDialog}
+        pedido={pedidoSelecionado}
+        onConfirm={handleConfirmDadosFrete}
       />
     </Box>
   );

@@ -134,9 +134,8 @@ router.post('/criar-pix', auth, async (req, res) => {
         first_name: pedido.usuario.nome,
         last_name: pedido.usuario.sobrenome,
         identification: {
-          type: 'CPF', // IMPORTANTE: Você precisará do CPF do usuário.
-          number: '19119119100',
-          // number: pedido.usuario.cpf 
+          type: 'CPF', 
+          number: pedido.usuario.cpf,
         },
       },
     };
@@ -405,8 +404,8 @@ router.post('/criar-cartao', auth, async (req, res) => {
           first_name: pedido.usuario.nome,
           last_name: pedido.usuario.sobrenome,
           phone: {
-            area_code: '21',
-            number: '980101507'
+            area_code: pedido.usuario.ddd,
+            number: pedido.usuario.telefone
           },
           address: {
             zip_code: pedido.usuario.cep,
@@ -472,7 +471,7 @@ router.post('/criar-cartao', auth, async (req, res) => {
             });
 
             if (statusPayment === "APROVADO" || statusPayment === "PENDENTE") {
-              const novoStatus = statusPayment === "APROVADO" ? 'PAGO' : 'AGUARDANDO_PAGAMENTO';
+              const novoStatus = statusPayment === "APROVADO" ? 'EM_PREPARACAO' : 'AGUARDANDO_PAGAMENTO';
 
               await tx.pedidos.update({
                 where: { id: req.body.pedidoId },
@@ -480,6 +479,7 @@ router.post('/criar-cartao', auth, async (req, res) => {
                   status: novoStatus,
                   dataFinalizado: new Date(),
                   empresaFrete: nomeFrete || null,
+                  statusEtiqueta: statusPayment === "APROVADO" ? 'AGUARDANDO_DADOS' : null,
                 }
               });
             }
@@ -490,12 +490,6 @@ router.post('/criar-cartao', auth, async (req, res) => {
           if (statusPayment === "APROVADO") {
             await diminuirEstoque(req.body.pedidoId);
 
-            gerarEtiquetaComRetentativas(req.body.pedidoId).catch(error => {
-              // O .catch aqui apenas garante que, se a função falhar no final,
-              // não vai quebrar sua aplicação (Node.js chama isso de Unhandled Promise Rejection).
-              // A lógica de erro já foi tratada dentro da própria função.
-              console.error(`[Plano B Ativado] Erro final capturado na rota de pagamento para o pedido ${req.body.pedidoId}:`, error.message);
-            });
           }
 
           const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
@@ -631,12 +625,18 @@ router.post('/webhook', async (req, res) => {
       if (paymentDetails.status === 'approved' && nossoPagamento.status !== 'APROVADO') {
         await prisma.$transaction([
           prisma.pagamentos.update({ where: { id: nossoPagamento.id }, data: { status: 'APROVADO' } }),
-          prisma.pedidos.update({ where: { id: nossoPagamento.pedidoId }, data: { status: 'PAGO' } }),
+          prisma.pedidos.update({ 
+            where: { id: nossoPagamento.pedidoId }, 
+            data: { 
+              status: 'EM_PREPARACAO',
+              statusEtiqueta: 'AGUARDANDO_DADOS'
+            } 
+          }),
         ]);
 
         await diminuirEstoque(nossoPagamento.pedidoId);
 
-        console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para PAGO e estoque diminuído.`);
+        console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para EM_PREPARACAO e estoque diminuído.`);
 
         // PAGAMENTO CANCELADO / REJEITADO
       } else if (['cancelled', 'rejected'].includes(paymentDetails.status) && nossoPagamento.status !== 'FALHOU') {

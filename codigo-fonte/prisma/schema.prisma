@@ -24,6 +24,7 @@ model Usuarios {
   estado      String?
 
   email    String @unique
+  ddd      String?
   telefone String
   senha    String
   posicao  String @default("USER")
@@ -87,6 +88,15 @@ model Pedidos {
   bairro          String?
   cidade          String?
   estado          String?
+
+  // Dados do frete para Melhor Envio
+  pesoFrete      Float?  // Peso do pacote em kg
+  alturaFrete    Float?  // Altura em cm
+  larguraFrete   Float?  // Largura em cm
+  comprimentoFrete Float? // Comprimento em cm
+  chaveNotaFiscal String? // Chave da nota fiscal
+  melhorEnvioId   String? // ID da etiqueta no Melhor Envio
+  statusEtiqueta  String? // Status da etiqueta (AGUARDANDO_DADOS, AGUARDANDO_PAGAMENTO, etc)
 
   usuario Usuarios     @relation(fields: [usuarioId], references: [id])
   itens   ItemPedido[] // Um pedido tem vários itens

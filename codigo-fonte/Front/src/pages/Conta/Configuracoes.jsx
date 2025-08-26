@@ -25,6 +25,9 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { getAccountData, updateAccountData } from '../../services/usuarioService';
 import { useCep } from '../../hooks/useCep';
+import DddMaskAdapter from '../../components/DddMaskAdapter';
+import TelefoneMaskAdapter from '../../components/TelefoneMaskAdapter';
+import CpfMaskAdapter from '../../components/CpfMaskAdapter';
 
 const Configuracoes = () => {
   const { control, handleSubmit, reset, setValue, watch, formState: { isSubmitting } } = useForm();
@@ -210,20 +213,61 @@ const Configuracoes = () => {
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <Controller 
-                      name="telefone" 
+                      name="cpf" 
                       control={control} 
                       defaultValue="" 
                       render={({ field }) => (
                         <TextField 
                           {...field} 
-                          label="Telefone" 
-                          fullWidth 
-                          required 
+                          label="CPF" 
+                          fullWidth
+                          disabled 
                           variant="outlined"
-                          disabled={!editingPersonalData}
+                          InputProps={{
+                            inputComponent: CpfMaskAdapter,
+                          }}
+                          helperText="CPF não pode ser alterado"
                         />
                       )} 
                     />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                      <Controller 
+                        name="ddd" 
+                        control={control} 
+                        defaultValue="" 
+                        render={({ field }) => (
+                          <TextField 
+                            {...field} 
+                            label="DDD" 
+                            variant="outlined"
+                            disabled={!editingPersonalData}
+                            InputProps={{
+                              inputComponent: DddMaskAdapter,
+                            }}
+                            sx={{ width: '120px' }}
+                          />
+                        )} 
+                      />
+                      <Controller 
+                        name="telefone" 
+                        control={control} 
+                        defaultValue="" 
+                        render={({ field }) => (
+                          <TextField 
+                            {...field} 
+                            label="Telefone" 
+                            fullWidth
+                            variant="outlined"
+                            disabled={!editingPersonalData}
+                            InputProps={{
+                              inputComponent: TelefoneMaskAdapter,
+                            }}
+                          />
+                        )} 
+                      />
+                    </Box>
                   </Grid>
                 </Grid>
               </CardContent>

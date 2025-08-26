@@ -39,3 +39,23 @@ export const getAdminPedidoDetalhes = async (id) => {
 //     throw error.response?.data?.error || error.response?.data?.msg || "Erro ao processar estorno";
 //   }
 // };
+
+// Função para atualizar dados do frete e gerar etiqueta
+export const atualizarDadosFrete = async (pedidoId, dadosFrete) => {
+  try {
+    const response = await api.patch(`/admin/pedidos/${pedidoId}/dados-frete`, dadosFrete);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.msg || "Erro ao atualizar dados do frete";
+  }
+};
+
+// Função para tentar gerar etiqueta novamente
+export const gerarEtiquetaNovamente = async (pedidoId) => {
+  try {
+    const response = await api.post(`/admin/pedidos/${pedidoId}/gerar-etiqueta`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.msg || "Erro ao gerar etiqueta";
+  }
+};

@@ -1,6 +1,7 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const authAdmin = require('../middlewares/AuthAdmin'); // Middleware que verifica se o usuário é ADMIN
+const { gerarEtiquetaComRetentativas } = require('../services/melhorEnvioService');
 
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -130,6 +131,111 @@ router.get('/pedidos/:id', authAdmin, async (req, res) => {
     res.status(200).json(pedido);
   } catch (error) {
     console.error(`Erro ao buscar detalhes do pedido ${id}:`, error);
+    res.status(500).json({ msg: 'Erro no servidor.' });
+  }
+});
+
+// ROTA: PATCH /api/admin/pedidos/:id/dados-frete
+// DESC: Atualiza os dados do frete e gera etiqueta no Melhor Envio
+// ACESSO: Restrito a Administradores
+router.patch('/pedidos/:id/dados-frete', authAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { pesoFrete, alturaFrete, larguraFrete, comprimentoFrete, chaveNotaFiscal } = req.body;
+
+  // Validações
+  if (!pesoFrete || !alturaFrete || !larguraFrete || !comprimentoFrete ) {
+    return res.status(400).json({ msg: 'Todos os dados do frete são obrigatórios.' });
+  }
+
+  try {
+    // Atualiza os dados do frete no banco
+    const pedidoAtualizado = await prisma.pedidos.update({
+      where: { id: id },
+      data: {
+        pesoFrete: parseFloat(pesoFrete),
+        alturaFrete: parseFloat(alturaFrete),
+        larguraFrete: parseFloat(larguraFrete),
+        comprimentoFrete: parseFloat(comprimentoFrete),
+        chaveNotaFiscal: chaveNotaFiscal,
+        statusEtiqueta: 'PROCESSANDO'
+      },
+    });
+
+    // Tenta gerar a etiqueta no Melhor Envio
+    try {
+      await gerarEtiquetaComRetentativas(id);
+      
+      res.status(200).json({
+        msg: 'Dados do frete atualizados e etiqueta gerada com sucesso!',
+        pedido: pedidoAtualizado
+      });
+    } catch (etiquetaError) {
+      console.error('Erro ao gerar etiqueta:', etiquetaError);
+      
+      // Atualiza status para falha
+      await prisma.pedidos.update({
+        where: { id: id },
+        data: { statusEtiqueta: 'FALHA_NA_GERACAO' }
+      });
+      
+      res.status(207).json({
+        msg: 'Dados do frete salvos, mas houve erro ao gerar etiqueta. Tente novamente.',
+        pedido: pedidoAtualizado,
+        error: 'Falha na geração da etiqueta'
+      });
+    }
+
+  } catch (error) {
+    console.error('Erro ao atualizar dados do frete:', error);
+    if (error.code === 'P2025') {
+      return res.status(404).json({ msg: `Pedido com ID ${id} não encontrado.` });
+    }
+    res.status(500).json({ msg: 'Erro no servidor.' });
+  }
+});
+
+// ROTA: POST /api/admin/pedidos/:id/gerar-etiqueta
+// DESC: Tenta gerar etiqueta novamente para pedidos com falha
+// ACESSO: Restrito a Administradores
+router.post('/pedidos/:id/gerar-etiqueta', authAdmin, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pedido = await prisma.pedidos.findUnique({
+      where: { id: id }
+    });
+
+    if (!pedido) {
+      return res.status(404).json({ msg: `Pedido com ID ${id} não encontrado.` });
+    }
+
+    if (!pedido.pesoFrete || !pedido.alturaFrete || !pedido.larguraFrete || !pedido.comprimentoFrete) {
+      return res.status(400).json({ msg: 'Dados do frete incompletos. Preencha todos os campos primeiro.' });
+    }
+
+    // Atualiza status para processando
+    await prisma.pedidos.update({
+      where: { id: id },
+      data: { statusEtiqueta: 'PROCESSANDO' }
+    });
+
+    try {
+      await gerarEtiquetaComRetentativas(id);
+      res.status(200).json({ msg: 'Etiqueta gerada com sucesso!' });
+    } catch (etiquetaError) {
+      await prisma.pedidos.update({
+        where: { id: id },
+        data: { statusEtiqueta: 'FALHA_NA_GERACAO' }
+      });
+      
+      res.status(500).json({ 
+        msg: 'Erro ao gerar etiqueta.',
+        error: etiquetaError.message 
+      });
+    }
+
+  } catch (error) {
+    console.error('Erro ao gerar etiqueta:', error);
     res.status(500).json({ msg: 'Erro no servidor.' });
   }
 });

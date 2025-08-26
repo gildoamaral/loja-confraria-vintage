@@ -34,7 +34,7 @@ const DetalhesPedidoDialog = ({ open, onClose, pedido }) => {
               <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}><PersonIcon sx={{ mr: 1 }} /> Cliente</Typography>
               <Typography variant="body2"><strong>Nome:</strong> {`${usuario.nome} ${usuario.sobrenome}`}</Typography>
               <Typography variant="body2"><strong>Email:</strong> {usuario.email}</Typography>
-              <Typography variant="body2"><strong>Telefone:</strong> {usuario.telefone}</Typography>
+              <Typography variant="body2"><strong>Telefone:</strong> {usuario.ddd ? `(${usuario.ddd}) ${usuario.telefone}` : usuario.telefone}</Typography>
             </Box>
             <Divider sx={{ my: 2 }} />
             <Box>
