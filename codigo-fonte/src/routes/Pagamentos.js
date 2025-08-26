@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { MercadoPagoConfig, Payment } = require('mercadopago');
+const { MercadoPagoConfig, Payment, PaymentRefund } = require('mercadopago');
 require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
@@ -11,12 +11,13 @@ const { v4: uuidv4 } = require('uuid');
 
 const prisma = new PrismaClient();
 const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN, 
+  accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN,
   options: {
-    timeout: 5000 
+    timeout: 5000
   }
 });
 const payment = new Payment(client);
+const refund = new PaymentRefund(client)
 
 
 // Nova rota para buscar pagamento por pedidoId
@@ -427,6 +428,7 @@ router.post('/criar-cartao', auth, async (req, res) => {
       },
       external_reference: `PEDIDO Nº - ${pedidoId}`,
       statement_descriptor: "CVintage",
+      binary_mode: true,
     };
     const requestOptions = {
       idempotencyKey: uuidv4(),
@@ -439,8 +441,6 @@ router.post('/criar-cartao', auth, async (req, res) => {
       .then(async (result) => {
         console.log(result.status)
         console.log(result.status_detail)
-        console.log(token)
-        // res.status(201).json(result); // <-- agora retorna pro front
 
         let statusPayment = '';
         if (result.status === 'rejected') {
@@ -449,70 +449,133 @@ router.post('/criar-cartao', auth, async (req, res) => {
         if (result.status === 'approved') { statusPayment = "APROVADO"; }
         if (result.status === 'in_process') { statusPayment = "PENDENTE"; }
 
-        // --- ETAPA 2: COLETAR OS DETALHES FINANCEIROS ---
-        // O Mercado Pago retorna os custos na resposta.
         const taxaGateway = result.fee_details?.find(fee => fee.type === 'mercadopago_fee')?.amount || 0;
         const custoParcelamento = result.fee_details?.find(fee => fee.type === 'financing_fee')?.amount || 0;
 
+        // SALVAR NO BANCO E GERAR PEDIDO DE ETIQUETA
         try {
-          // --- ETAPA 3: SALVAR O PAGAMENTO DETALHADO ---
-          const pagamento = await prisma.pagamentos.create({
-            data: {
-              pedidoId: req.body.pedidoId,
-              status: statusPayment,
-              metodo: 'CARTAO',
-              parcelas: result.installments,
-              gatewayTransactionId: result.id.toString(), // Salva o ID da transação do MP
-
-              // Novos campos financeiros
-              valorProdutos: valorTotalProdutos,
-              valorFrete: Number(valorFrete || 0),
-              valorTaxaCartao: taxaGateway,
-              valorTaxaParcelamento: custoParcelamento,
-              valorTotal: result.transaction_details.total_paid_amount,
-            }
-          });
-
-          // O resto da lógica para atualizar o status do pedido continua igual
-          if (statusPayment === "APROVADO" || statusPayment === "PENDENTE") {
-            const novoStatus = statusPayment === "APROVADO" ? 'PAGO' : 'AGUARDANDO_PAGAMENTO';
-
-            await prisma.pedidos.update({
-              where: { id: req.body.pedidoId },
+          const resultado = await prisma.$transaction(async (tx) => {
+            const pagamento = await tx.pagamentos.create({
               data: {
-                status: novoStatus,
-                dataFinalizado: new Date(),
-                empresaFrete: nomeFrete || null, // Se tiver nome de frete, salva
+                pedidoId: req.body.pedidoId,
+                status: statusPayment,
+                metodo: 'CARTAO',
+                parcelas: result.installments,
+                gatewayTransactionId: result.id.toString(),
+
+                valorProdutos: valorTotalProdutos,
+                valorFrete: Number(valorFrete || 0),
+                valorTaxaCartao: taxaGateway,
+                valorTaxaParcelamento: custoParcelamento,
+                valorTotal: result.transaction_details.total_paid_amount,
               }
             });
 
-            // DIMINUIR ESTOQUE: Se o pagamento foi aprovado imediatamente, diminui o estoque
-            if (statusPayment === "APROVADO") {
-              await diminuirEstoque(req.body.pedidoId);
+            if (statusPayment === "APROVADO" || statusPayment === "PENDENTE") {
+              const novoStatus = statusPayment === "APROVADO" ? 'PAGO' : 'AGUARDANDO_PAGAMENTO';
+
+              await tx.pedidos.update({
+                where: { id: req.body.pedidoId },
+                data: {
+                  status: novoStatus,
+                  dataFinalizado: new Date(),
+                  empresaFrete: nomeFrete || null,
+                }
+              });
             }
 
-            const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
-            const messageResponse = statusPayment === "APROVADO" ? 'Pagamento aprovado!' : 'Pagamento em processamento.';
+            return pagamento;
+          });
 
-            res.status(201).json({ status: statusResponse, message: messageResponse, pagamento, detalhesGateway: result });
-            return;
+          if (statusPayment === "APROVADO") {
+            await diminuirEstoque(req.body.pedidoId);
+
+            gerarEtiquetaComRetentativas(req.body.pedidoId).catch(error => {
+              // O .catch aqui apenas garante que, se a função falhar no final,
+              // não vai quebrar sua aplicação (Node.js chama isso de Unhandled Promise Rejection).
+              // A lógica de erro já foi tratada dentro da própria função.
+              console.error(`[Plano B Ativado] Erro final capturado na rota de pagamento para o pedido ${req.body.pedidoId}:`, error.message);
+            });
           }
+
+          const statusResponse = statusPayment === "APROVADO" ? 'success' : 'pending';
+          const messageResponse = statusPayment === "APROVADO" ? 'Pagamento aprovado!' : 'Pagamento em processamento.';
+
+          res.status(201).json({ status: statusResponse, message: messageResponse, pagamento: resultado, detalhesGateway: result });
+          return;
 
         } catch (error) {
           console.log('ERRO AO SALVAR PAGAMENTO NO BANCO: ', error);
-          // TODO: Implementar lógica de estorno/cancelamento no gateway caso o BD falhe
-          // res.status(500).json({ error: 'Falha ao salvar informações do pagamento.' });
-          res.status(500).json({ error: 'Erro ao salvar pagamento no banco de dados', detalhes: error });
+          // ATENÇÃO A TODA ESTA LOGICA NOVA, AINDA NÃO TESTADA
+
+          if (statusPayment === "APROVADO") {
+            console.log('⚠️ INICIANDO ESTORNO AUTOMÁTICO - Pagamento aprovado mas BD falhou');
+
+            try {
+              const refundResponse = await refund.create({
+                payment_id: result.id,
+                body: {
+                  amount: result.transaction_details.total_paid_amount
+                }
+              })
+
+              console.log('✅ ESTORNO AUTOMÁTICO REALIZADO:', {
+                paymentId: result.id,
+                refundId: refundResponse.id,
+                status: refundResponse.status,
+                amount: refundResponse.amount
+              });
+
+              res.status(500).json({
+                error: 'Erro ao salvar pagamento no banco de dados',
+                message: 'O pagamento foi automaticamente estornado para evitar inconsistências',
+                estorno: {
+                  realizado: true,
+                  refundId: refundResponse.id,
+                  valor: refundResponse.amount
+                },
+                detalhes: error.message
+              });
+
+            } catch (refundError) {
+              console.error('🚨 FALHA CRÍTICA - Não foi possível estornar o pagamento:', refundError);
+
+              console.error('🚨 ATENÇÃO MANUAL NECESSÁRIA:', {
+                paymentId: result.id,
+                valor: result.transaction_details.total_paid_amount,
+                pedidoId: req.body.pedidoId,
+                timestamp: new Date().toISOString(),
+                gatewayStatus: 'APROVADO',
+                dbError: error.message,
+                refundError: refundError.message
+              });
+
+              res.status(500).json({
+                error: 'Erro crítico: Pagamento aprovado mas não foi possível salvar nem estornar',
+                message: 'ATENÇÃO: Intervenção manual necessária - verifique os logs',
+                paymentId: result.id,
+                pedidoId: req.body.pedidoId,
+                valor: result.transaction_details.total_paid_amount,
+                detalhes: {
+                  dbError: error.message,
+                  refundError: refundError.message
+                }
+              });
+            }
+          } else {
+            // Se era pagamento pendente, apenas retorna o erro normal
+            res.status(500).json({
+              error: 'Erro ao salvar pagamento no banco de dados',
+              detalhes: error.message
+            });
+          }
           return;
         }
 
       })
       .catch((error) => {
         console.log('ERRO na criação do pagamento: ', error);
-        res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error }); // <-- envia erro ao frontend
-        // console.log('ERRO na criação do pagamento: ', error.cause);
-        // console.log('ERRO na criação do pagamento: ', error.cause[0]);
-        // res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error });
+        res.status(500).json({ error: 'Erro ao criar pagamento', detalhes: error });
       });
 
   } catch (dbError) {
@@ -521,7 +584,10 @@ router.post('/criar-cartao', auth, async (req, res) => {
   }
 });
 
-// --- NOVA ROTA DE WEBHOOK COM VALIDAÇÃO DE ASSINATURA ---
+
+
+// --------- WEBHOOK MERCADOPAGO ----------
+
 router.post('/webhook', async (req, res) => {
   try {
     const signatureHeader = req.get('x-signature');
@@ -533,7 +599,6 @@ router.post('/webhook', async (req, res) => {
     const timestamp = parts.find(part => part.startsWith('ts=')).split('=')[1];
     const receivedSignature = parts.find(part => part.startsWith('v1=')).split('=')[1];
 
-    // CORREÇÃO: Usamos req.body.data.id em vez de req.body.id
     const signedTemplate = `id:${req.body.data.id};request-id:${req.get('x-request-id')};ts:${timestamp};`;
 
     const hmac = crypto.createHmac('sha256', process.env.MERCADO_PAGO_WEBHOOK_SECRET);
@@ -542,7 +607,6 @@ router.post('/webhook', async (req, res) => {
 
     if (calculatedSignature !== receivedSignature) {
       console.error('Webhook com assinatura inválida!');
-      // Log para ajudar na depuração futura
       console.log('Template usado:', signedTemplate);
       console.log('Assinatura calculada:', calculatedSignature);
       console.log('Assinatura recebida:', receivedSignature);
@@ -563,24 +627,35 @@ router.post('/webhook', async (req, res) => {
         console.warn(`Webhook: Pagamento com ID de gateway ${paymentId} não encontrado.`);
         return res.status(200).send('Pagamento não encontrado no sistema.');
       }
-
-      // Lógica para atualizar o banco de dados
+      // PAGAMENTO APROVADO
       if (paymentDetails.status === 'approved' && nossoPagamento.status !== 'APROVADO') {
         await prisma.$transaction([
           prisma.pagamentos.update({ where: { id: nossoPagamento.id }, data: { status: 'APROVADO' } }),
           prisma.pedidos.update({ where: { id: nossoPagamento.pedidoId }, data: { status: 'PAGO' } }),
         ]);
 
-        // DIMINUIR ESTOQUE: Quando o pagamento é aprovado via webhook (PIX ou cartão pendente)
         await diminuirEstoque(nossoPagamento.pedidoId);
 
         console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para PAGO e estoque diminuído.`);
+
+        // PAGAMENTO CANCELADO / REJEITADO
       } else if (['cancelled', 'rejected'].includes(paymentDetails.status) && nossoPagamento.status !== 'FALHOU') {
         await prisma.$transaction([
           prisma.pagamentos.update({ where: { id: nossoPagamento.id }, data: { status: 'FALHOU' } }),
           prisma.pedidos.update({ where: { id: nossoPagamento.pedidoId }, data: { status: 'CANCELADO' } }),
         ]);
         console.log(`Pedido ${nossoPagamento.pedidoId} atualizado para CANCELADO.`);
+
+        // PAGAMENTO REEMBOLSADO
+      } else if (paymentDetails.status === 'refunded' && !['REEMBOLSADO', 'FALHOU'].includes(nossoPagamento.status)) {
+        await prisma.$transaction([
+          prisma.pagamentos.update({ where: { id: nossoPagamento.id }, data: { status: 'REEMBOLSADO' } }),
+          prisma.pedidos.update({ where: { id: nossoPagamento.pedidoId }, data: { status: 'REEMBOLSADO' } }),
+        ]);
+
+        await restaurarEstoque(nossoPagamento.pedidoId);
+
+        console.log(`Pedido ${nossoPagamento.pedidoId} REEMBOLSADO via app MP e estoque restaurado.`);
       }
     }
 
@@ -592,91 +667,7 @@ router.post('/webhook', async (req, res) => {
   }
 });
 
-// --- ROTA PARA ESTORNO DE PAGAMENTO ---
-// router.post('/estornar/:pedidoId', verifyAdmin, async (req, res) => {
-//   const { pedidoId } = req.params;
 
-//   try {
-//     // Busca o pedido e pagamento
-//     const pedido = await prisma.pedidos.findUnique({
-//       where: { id: pedidoId },
-//       include: {
-//         pagamento: true,
-//         itens: {
-//           include: { produto: true }
-//         }
-//       }
-//     });
-
-//     if (!pedido) {
-//       return res.status(404).json({ error: 'Pedido não encontrado' });
-//     }
-
-//     if (!pedido.pagamento) {
-//       return res.status(400).json({ error: 'Pedido não possui pagamento associado' });
-//     }
-
-//     if (pedido.pagamento.status !== 'APROVADO') {
-//       return res.status(400).json({ error: 'Apenas pagamentos aprovados podem ser estornados' });
-//     }
-
-//     if (!pedido.pagamento.gatewayTransactionId) {
-//       return res.status(400).json({ error: 'ID da transação no gateway não encontrado' });
-//     }
-
-//     // Processa o estorno no Mercado Pago
-//     try {
-//       const refundResponse = await payment.refund({
-//         id: pedido.pagamento.gatewayTransactionId,
-//         body: {
-//           amount: pedido.pagamento.valorTotal
-//         }
-//       });
-
-//       console.log('Resposta do estorno Mercado Pago:', refundResponse);
-
-//       // Atualiza o status no banco de dados
-//       await prisma.$transaction([
-//         prisma.pagamentos.update({
-//           where: { id: pedido.pagamento.id },
-//           data: { status: 'FALHOU' } // Marca como falhou pois foi estornado
-//         }),
-//         prisma.pedidos.update({
-//           where: { id: pedidoId },
-//           data: { status: 'REEMBOLSADO' } // Usa o status REEMBOLSADO já existente
-//         })
-//       ]);
-
-//       // Restaura o estoque dos produtos
-//       await restaurarEstoque(pedidoId);
-
-//       res.json({
-//         success: true,
-//         message: 'Estorno processado com sucesso',
-//         estorno: {
-//           id: refundResponse.id,
-//           status: refundResponse.status,
-//           valor: refundResponse.amount
-//         }
-//       });
-
-//     } catch (mpError) {
-//       console.error('Erro no Mercado Pago:', mpError);
-
-//       // Verifica se é um erro específico do MP
-//       const errorMessage = mpError.cause?.[0]?.description || mpError.message || 'Erro ao processar estorno no gateway';
-
-//       return res.status(400).json({ 
-//         error: 'Falha ao processar estorno', 
-//         details: errorMessage 
-//       });
-//     }
-
-//   } catch (error) {
-//     console.error('Erro geral ao processar estorno:', error);
-//     res.status(500).json({ error: 'Erro interno do servidor' });
-//   }
-// });
 
 
 module.exports = router;
