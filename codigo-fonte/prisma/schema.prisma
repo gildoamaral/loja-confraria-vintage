@@ -42,11 +42,15 @@ model Usuarios {
 model produtos {
   id               String          @id @default(cuid())
   nome             String
-  descricao        String          @db.VarChar(500)
+  descricao        String?         @db.Text // Permite texto longo com formatação
   preco            Float
+  peso             Float?          // Peso em kg
+  altura           Float?          // Altura em cm
+  largura          Float?          // Largura em cm
+  comprimento      Float?          // Comprimento em cm
   quantidade       Int
-  cor              Cor
-  tamanho          Tamanho
+  cor              String          // Mudou de enum para String
+  tamanho          Tamanho        
   categoria        Categoria
   ocasiao          Ocasiao?
   precoPromocional Float?
@@ -77,7 +81,7 @@ model Pedidos {
   pagamento      Pagamentos?
   dataFinalizado DateTime?
   codigoRastreio String?
-  empresaFrete   String? // Nome da empresa de frete, se aplicável
+  empresaFrete   String? // CORREIOS, JADLOG, ETC.
   QrCode         String? // QR Code para pagamento, se aplicável
 
   enderecoEntrega String?
@@ -194,30 +198,6 @@ enum MetodoPagamento {
   PIX
 }
 
-enum Tamanho {
-  P
-  M
-  G
-  GG
-}
-
-enum Cor {
-  VERMELHO
-  AZUL
-  AMARELO
-  VERDE
-  PRETO
-  BRANCO
-  ROSA
-  CINZA
-  BEGE
-  ROXO
-  LARANJA
-  MARROM
-  PRATA
-  DOURADO
-}
-
 enum Categoria {
   SAIA
   SHORT
@@ -229,6 +209,14 @@ enum Categoria {
   CALCADO
   ACESSORIOS
   OUTROS
+}
+
+enum Tamanho {
+  PP
+  P
+  M
+  G
+  GG
 }
 
 enum Ocasiao {

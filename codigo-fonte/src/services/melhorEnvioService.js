@@ -69,19 +69,19 @@ async function gerarEtiquetaComRetentativas(pedidoId) {
           own_hand: false,
           reverse: false,
           non_commercial: false,
-          invoice: { key: pedido.chaveNotaFiscal }
+          invoice: { key: pedido.chaveNotaFiscal } || ""
         }
       };
 
       const response = await axios.post(
-        'https://sandbox.melhorenvio.com.br/api/v2/me/cart',
+        `${process.env.MELHOR_ENVIO_ORIGIN}/cart`,
         bodyMelhorEnvio,
         {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5NTYiLCJqdGkiOiIxYTEzMzJiZDg4MDM5ZDMxNzM3YjQ2NWRiODVhZWE2NjQ2MzhmZThhOWM0ZjZmZjVjYWUwMzQ3YTUwNzkwNzdlMGEyZTE3OTI4NDRhMzc3NyIsImlhdCI6MTc1NTgyMTU0OC4wOTQ2NjMsIm5iZiI6MTc1NTgyMTU0OC4wOTQ2NjYsImV4cCI6MTc4NzM1NzU0OC4wODA2NjcsInN1YiI6IjlmODkxZDJiLTgyYTAtNGRjMi04YjRjLTRjYTIxMGIzNDFmNyIsInNjb3BlcyI6WyJjYXJ0LXJlYWQiLCJjYXJ0LXdyaXRlIiwiY29tcGFuaWVzLXJlYWQiLCJjb21wYW5pZXMtd3JpdGUiLCJjb3Vwb25zLXJlYWQiLCJjb3Vwb25zLXdyaXRlIiwibm90aWZpY2F0aW9ucy1yZWFkIiwib3JkZXJzLXJlYWQiLCJwcm9kdWN0cy1yZWFkIiwicHJvZHVjdHMtZGVzdHJveSIsInByb2R1Y3RzLXdyaXRlIiwicHVyY2hhc2VzLXJlYWQiLCJzaGlwcGluZy1jYWxjdWxhdGUiLCJzaGlwcGluZy1jYW5jZWwiLCJzaGlwcGluZy1jaGVja291dCIsInNoaXBwaW5nLWNvbXBhbmllcyIsInNoaXBwaW5nLWdlbmVyYXRlIiwic2hpcHBpbmctcHJldmlldyIsInNoaXBwaW5nLXByaW50Iiwic2hpcHBpbmctc2hhcmUiLCJzaGlwcGluZy10cmFja2luZyIsImVjb21tZXJjZS1zaGlwcGluZyIsInRyYW5zYWN0aW9ucy1yZWFkIiwidXNlcnMtcmVhZCIsInVzZXJzLXdyaXRlIiwid2ViaG9va3MtcmVhZCIsIndlYmhvb2tzLXdyaXRlIiwid2ViaG9va3MtZGVsZXRlIiwidGRlYWxlci13ZWJob29rIl19.dHbl3c7zYdpbgyKMAH-KXGs8T1C4LIRMMvC12sgk_pm0IBu2r02CdCpUcX-bBhmsLjw5x2UImcqzg9V04ZqZoPOXRSWy2YcgEhg68v4S5oQtk8sjyHLS4a-U-EWDrWkTilQdIGdwbib-wdfy5kR3Of8BtkaYGC-AjkU7EggHQfcLVEw8N7M51OwYRdGOG7376B42SCQfj5lB-AKXG85LpqfpGF-Y4fWm-XcMnOErlFpyF5GhM6xMmKJTeHkuuCxpr-HC-ERsqCYaD82GeOyKZXjc7jkK4HEjCLLhO9xDdi-FGoYQG3Y3DXYo4EHTwpRUPOVtvs1VZQagfIRbLGq0_arIjuJiMP4nSITGtZRGywbjy31gMqmyHxZazPywF_KZUK7apelPpxHCwjx8cFnGET2cRg9o9HTCIvo4L_FOhhv1m3xHArWLoTp-GKGtV2v8Tgn26RmrMxRhIqehkwS9TERm4Y-ziM9PwdTFNxsRucnq4YGw7BKUr6OLKmdDMnTjVzAULSbGj6EuaLDdU1Rk0NhacT8T3KdJiYoFYf_Asu_nT0V2T0e4HCKpa7mdEom1KO6iXh3NDljDKcqESrW1jucQN2gvrLZWXDPiAKM1dT7Rd2Q7ob0sMdhH9E-2jNKS7fd3h5h4_lgQ2uLTG_fIlMtqh1ILThAXD36jTAvXwFs`,
-            'User-Agent': 'Nome do Seu App (seu@email.com)'
+            'Authorization': `Bearer ${process.env.MELHOR_ENVIO_TOKEN}`,
+            'User-Agent': `${process.env.MELHOR_ENVIO_USER_AGENT}`
           }
         }
       );

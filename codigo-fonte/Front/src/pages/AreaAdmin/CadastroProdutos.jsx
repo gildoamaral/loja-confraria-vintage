@@ -25,17 +25,17 @@ const categorias = [
   'SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 'VESTIDO',
   'CALCADO', 'ACESSORIOS', 'OUTROS'
 ];
-const coresValidas = [
-  'VERMELHO', 'AZUL', 'AMARELO', 'VERDE', 'PRETO', 'BRANCO', 'ROSA',
-  'CINZA', 'BEGE', 'ROXO', 'LARANJA', 'MARROM', 'PRATA', 'DOURADO'
-];
 const ocasioes = ['FESTAS', 'OCASIOES_ESPECIAIS', 'CASUAL'];
-const tamanhosValidos = ['P', 'M', 'G', 'GG'];
+const tamanhosValidos = ['PP', 'P', 'M', 'G', 'GG'];
 
 const CadastroProdutos = () => {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [preco, setPreco] = useState('');
+  const [peso, setPeso] = useState(0.3);
+  const [altura, setAltura] = useState(10);
+  const [largura, setLargura] = useState(20);
+  const [comprimento, setComprimento] = useState(25);
   const [imagens, setImagens] = useState([]);
   const [quantidade, setQuantidade] = useState('');
   const [tamanho, setTamanho] = useState('');
@@ -72,11 +72,7 @@ const CadastroProdutos = () => {
       setIsSubmitting(false);
       return;
     }
-    if (!coresValidas.includes(cor)) {
-      setMessage(`Cor inválida. Escolha: ${coresValidas.join(', ')}`);
-      setIsSubmitting(false);
-      return;
-    }
+
     if (!categorias.includes(categoria)) {
       setMessage(`Categoria inválida. Escolha: ${categorias.join(', ')}`);
       setIsSubmitting(false);
@@ -106,6 +102,10 @@ const CadastroProdutos = () => {
         nome,
         descricao,
         preco: parseFloat(preco),
+        peso: peso ? parseFloat(peso) : null,
+        altura: altura ? parseFloat(altura) : null,
+        largura: largura ? parseFloat(largura) : null,
+        comprimento: comprimento ? parseFloat(comprimento) : null,
         quantidade: parseInt(quantidade, 10),
         tamanho,
         cor,
@@ -120,6 +120,10 @@ const CadastroProdutos = () => {
       setNome('');
       setDescricao('');
       setPreco('');
+      setPeso('');
+      setAltura('');
+      setLargura('');
+      setComprimento('');
       setImagens([]);
       setQuantidade('');
       setTamanho('');
@@ -129,7 +133,7 @@ const CadastroProdutos = () => {
 
     } catch (error) {
       console.error('Erro no processo de criação:', error);
-      
+
       // Verificação específica para erro 400 (arquivos muito grandes)
       if (error.response?.status === 400) {
         setMessage('Um ou mais arquivos possuem mais do que 7MB');
@@ -173,234 +177,299 @@ const CadastroProdutos = () => {
     <Container >
       <Paper elevation={3} sx={{ p: 4 }} >
         <Box maxWidth='sm' mx="auto">
-        <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 5 }}>
-          Cadastro de Produtos
-        </Typography>
+          <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 5 }}>
+            Cadastro de Produtos
+          </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <Grid container spacing={3}>
-            {/* LINHA 1: Nome, Preço, Quantidade */}
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField
-                required
-                fullWidth
-                label="Nome"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                variant="outlined"
-                sx={inputStyles}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField
-                required
-                fullWidth
-                label="Preço"
-                type="number"
-                inputProps={{ step: "0.01" }}
-                value={preco}
-                onChange={(e) => setPreco(e.target.value)}
-                variant="outlined"
-                sx={inputStyles}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField
-                required
-                fullWidth
-                label="Quantidade"
-                type="number"
-                value={quantidade}
-                onChange={(e) => setQuantidade(e.target.value)}
-                variant="outlined"
-                sx={inputStyles}
-              />
-            </Grid>
-
-            {/* LINHA 2: Tamanho, Cor, Categoria, Ocasião */}
-            <Grid size={{ xs: 12, sm: 3 }}>
-              <FormControl required fullWidth sx={inputStyles}>
-                <InputLabel>Tamanho</InputLabel>
-                <Select
-                  value={tamanho}
-                  label="Tamanho"
-                  onChange={(e) => setTamanho(e.target.value)}
-                >
-                  {tamanhosValidos.map((t) => (
-                    <MenuItem key={t} value={t}>
-                      {t}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 3 }}>
-              <FormControl required fullWidth sx={inputStyles}>
-                <InputLabel>Cor</InputLabel>
-                <Select
-                  value={cor}
-                  label="Cor"
-                  onChange={(e) => setCor(e.target.value)}
-                >
-                  {coresValidas.map((c) => (
-                    <MenuItem key={c} value={c}>
-                      {c.charAt(0) + c.slice(1).toLowerCase()}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 3 }}>
-              <FormControl required fullWidth sx={inputStyles}>
-                <InputLabel>Categoria</InputLabel>
-                <Select
-                  value={categoria}
-                  label="Categoria"
-                  onChange={(e) => setCategoria(e.target.value)}
-                >
-                  {categorias.map((cat) => (
-                    <MenuItem key={cat} value={cat}>
-                      {cat.charAt(0) + cat.slice(1).toLowerCase()}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 3 }}>
-              <FormControl fullWidth sx={inputStyles}>
-                <InputLabel>Ocasião</InputLabel>
-                <Select
-                  value={ocasiao}
-                  label="Ocasião"
-                  onChange={(e) => setOcasiao(e.target.value)}
-                >
-                  <MenuItem value="">Selecione</MenuItem>
-                  {ocasioes.map((o) => (
-                    <MenuItem key={o} value={o}>
-                      {getOcasiaoLabel(o)}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {/* LINHA 3: Descrição */}
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                fullWidth
-                label="Descrição"
-                multiline
-                required
-                rows={4}
-                value={descricao}
-                sx={inputStyles}
-                onChange={(e) => {
-                  if (e.target.value.length <= 500) {
-                    setDescricao(e.target.value);
-                  }
-                }}
-                variant="outlined"
-                inputProps={{ maxLength: 500 }}
-                helperText={`${descricao.length}/500 caracteres`}
-              />
-            </Grid>
-
-            {/* LINHA 4: Upload de Imagens */}
-            <Grid size={{ xs: 12 }}>
-              <Box>
-                <Typography variant="h6" gutterBottom>
-                  Imagens (máx. 5) *
-                </Typography>
-                <Button
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Grid container spacing={3}>
+              {/* LINHA 1: Nome, Preço, Quantidade */}
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Nome"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
                   variant="outlined"
-                  component="label"
-                  startIcon={<PhotoCamera />}
-                  disabled={imagens.length >= 5}
-                  sx={{ mb: 2, borderColor: '#000',
+                  sx={inputStyles}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Preço"
+                  type="number"
+                  inputProps={{ step: "0.01" }}
+                  value={preco}
+                  onChange={(e) => setPreco(e.target.value)}
+                  variant="outlined"
+                  sx={inputStyles}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Quantidade"
+                  type="number"
+                  value={quantidade}
+                  onChange={(e) => setQuantidade(e.target.value)}
+                  variant="outlined"
+                  sx={inputStyles}
+                />
+              </Grid>
+
+
+              {/* LINHA 2: Tamanho, Cor, Categoria, Ocasião */}
+              <Grid size={{ xs: 12, sm: 3 }}>
+                <FormControl required fullWidth sx={inputStyles}>
+                  <InputLabel>Tamanho</InputLabel>
+                  <Select
+                    value={tamanho}
+                    label="Tamanho"
+                    onChange={(e) => setTamanho(e.target.value)}
+                  >
+                    {tamanhosValidos.map((t) => (
+                      <MenuItem key={t} value={t}>
+                        {t}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 3 }}>
+                <TextField
+                  required
+                  fullWidth
+                  label="Cor"
+                  value={cor}
+                  onChange={(e) => setCor(e.target.value)}
+                  placeholder="Ex: Azul, Vermelho, Preto..."
+                  sx={inputStyles}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 3 }}>
+                <FormControl required fullWidth sx={inputStyles}>
+                  <InputLabel>Categoria</InputLabel>
+                  <Select
+                    value={categoria}
+                    label="Categoria"
+                    onChange={(e) => setCategoria(e.target.value)}
+                  >
+                    {categorias.map((cat) => (
+                      <MenuItem key={cat} value={cat}>
+                        {cat.charAt(0) + cat.slice(1).toLowerCase()}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 3 }}>
+                <FormControl fullWidth sx={inputStyles}>
+                  <InputLabel>Ocasião</InputLabel>
+                  <Select
+                    value={ocasiao}
+                    label="Ocasião"
+                    onChange={(e) => setOcasiao(e.target.value)}
+                  >
+                    <MenuItem value="">Selecione</MenuItem>
+                    {ocasioes.map((o) => (
+                      <MenuItem key={o} value={o}>
+                        {getOcasiaoLabel(o)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* LINHA 3: Descrição */}
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  fullWidth
+                  label="Descrição"
+                  multiline
+                  required
+                  rows={4}
+                  value={descricao}
+                  sx={inputStyles}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 500) {
+                      setDescricao(e.target.value);
+                    }
+                  }}
+                  variant="outlined"
+                  inputProps={{ maxLength: 500 }}
+                  helperText={`${descricao.length}/500 caracteres`}
+                />
+              </Grid>
+
+
+
+              {/* LINHA 4: Upload de Imagens */}
+              <Grid size={{ xs: 12 }}>
+                <Box>
+                  <Typography variant="h6" gutterBottom>
+                    Imagens (máx. 5) *
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    startIcon={<PhotoCamera />}
+                    disabled={imagens.length >= 5}
+                    sx={{
+                      mb: 2, borderColor: '#000',
                       color: '#000',
                       '&:hover': {
-                        backgroundColor: 'rgba(0, 0, 0, 0.08)', }}}
-                >
-                  Adicionar Imagens
-                  <input
-                    type="file"
-                    hidden
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChangeCadastro}
-                  />
-                </Button>
-                <FormHelperText>
-                  {imagens.length}/5 imagens selecionadas
-                </FormHelperText>
+                        backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                      }
+                    }}
+                  >
+                    Adicionar Imagens
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChangeCadastro}
+                    />
+                  </Button>
+                  <FormHelperText>
+                    {imagens.length}/5 imagens selecionadas
+                  </FormHelperText>
 
-                {imagens.length > 0 && (
-                  <ImageList sx={{ width: '100%', height: 200 }} cols={5} rowHeight={160}>
-                    {imagens.map((img, idx) => (
-                      <ImageListItem key={idx} sx={{ position: 'relative' }}>
-                        <img
-                          src={URL.createObjectURL(img)}
-                          alt={`Preview ${idx}`}
-                          loading="lazy"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                        <IconButton
-                          size="small"
-                          onClick={() => handleRemoveImage(idx)}
-                          sx={{
-                            position: 'absolute',
-                            top: 4,
-                            right: 4,
-                            backgroundColor: 'rgba(0,0,0,0.6)',
-                            color: 'white',
-                            '&:hover': {
-                              backgroundColor: 'rgba(0,0,0,0.8)',
-                            },
-                          }}
-                        >
-                          <Close fontSize="small" />
-                        </IconButton>
-                      </ImageListItem>
-                    ))}
-                  </ImageList>
-                )}
-              </Box>
-            </Grid>
-
-            {/* Botão Submit */}
-            <Grid size={{ xs: 12 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  size="large"
-                  disabled={isSubmitting}
-                  sx={{ px: 6, py: 1.5, bgcolor: 'black', color: 'white' }}
-                >
-                  {isSubmitting ? 'Enviando...' : 'Criar Produto'}
-                </Button>
-              </Box>
-            </Grid>
-
-            {/* Mensagem */}
-            {message && (
-              <Grid size={{ xs: 12 }}>
-                <Alert
-                  severity={message.includes('sucesso') ? 'success' : 'error'}
-                  sx={{ mt: 2 }}
-                >
-                  {message}
-                </Alert>
+                  {imagens.length > 0 && (
+                    <ImageList sx={{ width: '100%', height: 200 }} cols={5} rowHeight={160}>
+                      {imagens.map((img, idx) => (
+                        <ImageListItem key={idx} sx={{ position: 'relative' }}>
+                          <img
+                            src={URL.createObjectURL(img)}
+                            alt={`Preview ${idx}`}
+                            loading="lazy"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                          <IconButton
+                            size="small"
+                            onClick={() => handleRemoveImage(idx)}
+                            sx={{
+                              position: 'absolute',
+                              top: 4,
+                              right: 4,
+                              backgroundColor: 'rgba(0,0,0,0.6)',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                              },
+                            }}
+                          >
+                            <Close fontSize="small" />
+                          </IconButton>
+                        </ImageListItem>
+                      ))}
+                    </ImageList>
+                  )}
+                </Box>
               </Grid>
-            )}
-          </Grid>
+              <Grid size={12}>
+                <Typography variant='caption' color='textSecondary'>
+                  Obs: Os campos abaixo não serão exibidos para o cliente, mas são necessários para o cálculo do frete. Considere Altura, Largura e Comprimento do produto dobrado para embalagem.
+                </Typography>
+              </Grid>
+              <Grid size={{ xs: 12, sm: 3 }}>
+                <TextField
+                  fullWidth
+                  label="Altura (cm)"
+                  type="number"
+                  step="0.1"
+                  inputProps={{ step: 0.1 }}
+                  value={altura}
+                  onChange={(e) => setAltura(e.target.value)}
+                  variant="outlined"
+                  placeholder="Ex: 30.0"
+                  sx={inputStyles}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 3 }}>
+                <TextField
+                  fullWidth
+                  label="Largura (cm)"
+                  type="number"
+                  step="0.1"
+                  inputProps={{ step: 0.1 }}
+                  value={largura}
+                  onChange={(e) => setLargura(e.target.value)}
+                  variant="outlined"
+                  placeholder="Ex: 25.5"
+                  sx={inputStyles}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 3 }}>
+                <TextField
+                  fullWidth
+                  label="Comprimento (cm)"
+                  type="number"
+                  step="0.1"
+                  inputProps={{ step: 0.1 }}
+                  value={comprimento}
+                  onChange={(e) => setComprimento(e.target.value)}
+                  variant="outlined"
+                  placeholder="Ex: 40.0"
+                  sx={inputStyles}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, sm: 3 }}>
+                <TextField
+                  fullWidth
+                  label="Peso (kg)"
+                  type="number"
+                  step="0.1"
+                  inputProps={{ step: 0.1 }}
+                  value={peso}
+                  onChange={(e) => setPeso(e.target.value)}
+                  variant="outlined"
+                  placeholder="Ex: 0.5"
+                  sx={inputStyles}
+                />
+              </Grid>
+
+              {/* Botão Submit */}
+              <Grid size={{ xs: 12 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    disabled={isSubmitting}
+                    sx={{ px: 6, py: 1.5, bgcolor: 'black', color: 'white' }}
+                  >
+                    {isSubmitting ? 'Enviando...' : 'Criar Produto'}
+                  </Button>
+                </Box>
+              </Grid>
+
+              {/* Mensagem */}
+              {message && (
+                <Grid size={{ xs: 12 }}>
+                  <Alert
+                    severity={message.includes('sucesso') ? 'success' : 'error'}
+                    sx={{ mt: 2 }}
+                  >
+                    {message}
+                  </Alert>
+                </Grid>
+              )}
+            </Grid>
+          </Box>
         </Box>
-      </Box>
       </Paper>
     </Container>
   );

@@ -455,7 +455,7 @@ router.post('/criar-cartao', auth, async (req, res) => {
         const taxaGateway = result.fee_details?.find(fee => fee.type === 'mercadopago_fee')?.amount || 0;
         const custoParcelamento = result.fee_details?.find(fee => fee.type === 'financing_fee')?.amount || 0;
 
-        // SALVAR NO BANCO E GERAR PEDIDO DE ETIQUETA
+        // SALVAR NO BANCO
         try {
           const resultado = await prisma.$transaction(async (tx) => {
             const pagamento = await tx.pagamentos.create({

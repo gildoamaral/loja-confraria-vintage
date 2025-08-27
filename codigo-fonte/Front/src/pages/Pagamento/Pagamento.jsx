@@ -215,7 +215,7 @@ const Pagamento = () => {
   async function renderFreteOptions(cep) {
     setCarregandoFrete(true);
     try {
-      const res = await api.post('/frete', {
+      const res = await api.post('/frete/pagamento', {
         cepDestino: cep,
         altura: 4,
         largura: 12,

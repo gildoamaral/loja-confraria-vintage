@@ -77,6 +77,7 @@ const InformProduto = () => {
     fetchProduto();
   }, [id]);
 
+
   // Inicializa cor e tamanho quando o produto é carregado
   useEffect(() => {
     if (produto) {
@@ -98,7 +99,13 @@ const InformProduto = () => {
     }
     setLoadingFrete(true);
     try {
-      const body = { cepDestino, altura: 4, largura: 12, comprimento: 17, peso: 0.3 };
+      const body = {
+        cepDestino,
+        altura: produto.altura,
+        largura: produto.largura,
+        comprimento: produto.comprimento,
+        peso: produto.peso
+      };
       const response = await api.post('/frete', body);
       const sorted = response.data
         .sort((a, b) => parseFloat(a.price || a.valor) - parseFloat(b.price || b.valor))
@@ -165,7 +172,7 @@ const InformProduto = () => {
   return (
     <>
       <Container maxWidth="lg" sx={{ my: { xs: 2, md: 5 } }}>
-          <Typography variant="overline" color="text.secondary">{produto.categoria.toLowerCase()} ♦ {produto.id}</Typography>
+        <Typography variant="overline" color="text.secondary">{produto.categoria.toLowerCase()} ♦ {produto.id}</Typography>
 
         <Paper elevation={3} sx={{ p: { xs: 2, md: 4 } }}>
           <Grid container spacing={{ xs: 2, md: 4 }}>
@@ -208,10 +215,10 @@ const InformProduto = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 5 }}>
                   <Typography variant="h4" component={'h1'} fontWeight={700} sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>{produto.nome}</Typography>
                   {!produto.ativo && (
-                    <Chip 
-                      label="Inativo" 
-                      color="error" 
-                      size="small" 
+                    <Chip
+                      label="Inativo"
+                      color="error"
+                      size="small"
                       variant="outlined"
                     />
                   )}
@@ -225,7 +232,7 @@ const InformProduto = () => {
                     {produto.cor && (
                       <Box>
                         <Typography variant="body2" fontWeight="medium" sx={{ mb: 0.4, fontFamily: 'Special Elite, Courier, monospace' }} >
-                          Cor: <span style={{color: 'gray'}}>{selectedCor}</span>
+                          Cor: <span style={{ color: 'gray' }}>{selectedCor}</span>
                         </Typography>
                       </Box>
                     )}
@@ -234,7 +241,7 @@ const InformProduto = () => {
                     {produto.tamanho && (
                       <Box>
                         <Typography variant="body2" fontWeight="medium" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>
-                          Tamanho: <span style={{color: 'gray'}}>{selectedTamanho}</span>
+                          Tamanho: <span style={{ color: 'gray' }}>{selectedTamanho}</span>
                         </Typography>
                       </Box>
                     )}
@@ -279,7 +286,16 @@ const InformProduto = () => {
                 </Grid>
 
 
-                <Typography variant="body1" color="text.secondary" paragraph sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>{produto.descricao}</Typography>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{
+                    fontFamily: 'Special Elite, Courier, monospace',
+                    whiteSpace: 'pre-wrap'
+                  }}
+                >
+                  {produto.descricao}
+                </Typography>
 
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 10 }}>
@@ -291,16 +307,16 @@ const InformProduto = () => {
                   </Box>
                   {/* <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'Special Elite, Courier, monospace' }}>( {produto.quantidade} unidades restantes )</Typography> */}
                 </Box>
-                
+
 
                 <Box mt={4} width={'50%'} sx={{ display: 'flex', justifyContent: 'center', width: '100%', pb: 5 }}>
-                  <Button 
-                    variant="contained" 
-                    size="large" 
-                    sx={{ bgcolor: produto.ativo ? 'black' : 'grey.400', color: 'white' }} 
-                    fullWidth 
-                    startIcon={<AddShoppingCartIcon />} 
-                    onClick={handleAddToCart} 
+                  <Button
+                    variant="contained"
+                    size="large"
+                    sx={{ bgcolor: produto.ativo ? 'black' : 'grey.400', color: 'white' }}
+                    fullWidth
+                    startIcon={<AddShoppingCartIcon />}
+                    onClick={handleAddToCart}
                     disabled={loading || !produto.ativo}
                   >
                     {loading ? 'Adicionando...' : produto.ativo ? 'Adicionar ao Carrinho' : 'Produto Inativo'}
@@ -320,10 +336,13 @@ const InformProduto = () => {
                       placeholder="00000-000"
                       sx={inputStyles}
                     />
-                    <Button variant="outlined" color="error" onClick={calcularFrete} disabled={loadingFrete}>
+                    <Button variant="outlined" color="warning" onClick={calcularFrete} disabled={loadingFrete}>
                       {loadingFrete ? <CircularProgress size={24} /> : 'Calcular'}
                     </Button>
                   </Box>
+                  <Typography variant='caption' color='text.secondary'>
+                    Isto é uma estimativa. O valor final, apenas na área de pagamento.
+                  </Typography>
 
                   {/* Exibição das opções de frete */}
                   {freteOptions.length > 0 && (
@@ -389,8 +408,8 @@ const InformProduto = () => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
+        <Alert
+          onClose={handleCloseSnackbar}
           severity={snackbar.severity}
           variant="filled"
           sx={{ width: '100%' }}
