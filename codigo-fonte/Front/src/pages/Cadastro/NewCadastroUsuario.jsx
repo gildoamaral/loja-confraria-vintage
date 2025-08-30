@@ -3,6 +3,7 @@ import { Container, Paper, Box, Typography, TextField, Button, Grid, Alert, Form
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useNavigate } from 'react-router-dom';
 import TextMaskAdapter from '../../components/TextMaskAdapter';
 import CpfMaskAdapter from '../../components/CpfMaskAdapter';
 import DddMaskAdapter from '../../components/DddMaskAdapter';
@@ -11,6 +12,7 @@ import api from '../../services/api';
 import inputStyles from '../../styles/inputStyles';
 
 const Cadastro = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nome: '',
     sobrenome: '',
@@ -108,7 +110,12 @@ const Cadastro = () => {
           dataNascimento: formData.dataNascimento ? formData.dataNascimento.toISOString() : null
         };
         await api.post('/usuarios', dataParaEnviar);
-        setSuccess('Cadastro realizado! Verifique seu e-mail para confirmar a conta.');
+        setSuccess('Cadastro realizado! Você será redirecionado para o login...');
+        
+        // Redireciona para o login após 5 segundos
+        setTimeout(() => {
+          navigate('/login');
+        }, 5000);
       } catch (err) {
         setApiError(err.response?.data?.message || 'Erro ao realizar o cadastro.');
       } finally {

@@ -203,7 +203,7 @@ const NewEstoqueProdutos = () => {
         </Typography>
         <Grid container spacing={2} alignItems="center">
           {/* Campo de Pesquisa */}
-          <Grid item xs={12} md={2.5}>
+          <Grid size={{ xs: 12, md: 2.5 }}>
             <TextField
               fullWidth
               label="Pesquisar por nome"
@@ -215,7 +215,7 @@ const NewEstoqueProdutos = () => {
           </Grid>
 
           {/* Filtro Categoria */}
-          <Grid item xs={12} md={2}>
+          <Grid size={{ xs: 12, md: 2 }}>
             <FormControl fullWidth size="small">
               <InputLabel>Categoria</InputLabel>
               <Select
@@ -233,7 +233,7 @@ const NewEstoqueProdutos = () => {
           </Grid>
 
           {/* Filtro Ocasião */}
-          <Grid item xs={12} md={2}>
+          <Grid size={{ xs: 12, md: 2 }}>
             <FormControl fullWidth size="small">
               <InputLabel>Ocasião</InputLabel>
               <Select
@@ -252,7 +252,7 @@ const NewEstoqueProdutos = () => {
           </Grid>
 
           {/* Filtro Status */}
-          <Grid item xs={12} md={2}>
+          <Grid size={{ xs: 12, md: 2 }}>
             <FormControl fullWidth size="small">
               <InputLabel>Status</InputLabel>
               <Select
@@ -270,7 +270,7 @@ const NewEstoqueProdutos = () => {
           </Grid>
 
           {/* Botão de Pesquisa */}
-          <Grid item xs={12} md={1.5}>
+          <Grid size={{ xs: 12, md: 1.5 }}>
             <IconButton
               onClick={handleSearch}
               size="large"

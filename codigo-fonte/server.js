@@ -13,10 +13,13 @@ const cookieParser = require("cookie-parser");
 const { parseStringPromise } = require('xml2js');
 const axios = require('axios');
 const bodyParser = require('body-parser');
+const { getValidAccessToken } = require('./src/services/melhorEnvioAuthService.js');
 const uploadRouter = require('./src/routes/upload.routes.js');
 const carrosselRouter = require('./src/routes/carrossel.routes.js');
 const sobreRouter = require('./src/routes/sobre.routes.js');
 const adminRoutes = require('./src/routes/Admin');
+const freteRoutes = require('./src/routes/freteRoutes.js');
+const melhorEnvioTokenRoutes = require('./src/routes/melhorEnvioTokenRoutes.js');
 
 
 const { PrismaClient } = require('@prisma/client');
@@ -55,6 +58,8 @@ app.use('/api/cart', require('./src/routes/cartRoutes')); // Rotas do carrinho
 app.use('/api/carrossel', carrosselRouter);
 app.use('/api/sobre', sobreRouter);
 app.use('/admin', adminRoutes);
+app.use('/api/frete', freteRoutes);
+app.use('/api/melhor-envio-token', melhorEnvioTokenRoutes);
 
 app.get("/verify-email/:token", async (req, res) => {
   const { token } = req.params;
@@ -88,8 +93,11 @@ app.post('/frete', async (req, res) => {
   }
   
   try {
+    // Obter token válido do banco de dados
+    const accessToken = await getValidAccessToken();
+    
     const response = await axios.post(
-      `${process.env.MELHOR_ENVIO_ORIGIN}/shipment/calculate`,
+      `${process.env.MELHOR_ENVIO_ORIGIN}/api/v2/me/shipment/calculate`,
       {
         from: { postal_code: '45820440' }, // CEP de origem
         to: { postal_code: cepDestino },
@@ -105,7 +113,7 @@ app.post('/frete', async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.MELHOR_ENVIO_TOKEN}`,
+          Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
       }

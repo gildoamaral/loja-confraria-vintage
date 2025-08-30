@@ -1,75 +1,143 @@
 // routes/freteRoutes.js
 
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
-import { escolherEmbalagem } from '../services/freteService.js';
-// Supondo que você tenha um serviço para se comunicar com a API do Melhor Envio
-// import { calcularFreteMelhorEnvio } from '../services/melhorEnvioService.js';
+const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const { escolherEmbalagem } = require('../services/freteService.js');
+const { getValidAccessToken } = require('../services/melhorEnvioAuthService.js');
+const axios = require('axios');
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
 router.post('/calcular', async (req, res) => {
-  const { itens, cepDestino } = req.body; // Esperamos um array de itens e o CEP
+  const { cepDestino, userId, pedidoId } = req.body;
 
-  if (!itens || !Array.isArray(itens) || itens.length === 0 || !cepDestino) {
-    return res.status(400).json({ error: 'Dados inválidos. Forneça "itens" e "cepDestino".' });
+  if (!cepDestino) {
+    return res.status(400).json({ error: 'CEP de destino é obrigatório.' });
   }
 
   try {
-    // 1. Buscar os dados completos dos produtos no banco
-    const idsProdutos = itens.map(item => item.produtoId);
-    const produtosDoBanco = await prisma.produtos.findMany({
-      where: {
-        id: { in: idsProdutos },
-      },
-    });
+    let pedidoCarrinho;
+    
+    // 1. Tentativas de buscar o pedido carrinho em ordem de prioridade
+    if (pedidoId) {
+      // Se fornecido pedidoId específico
+      pedidoCarrinho = await prisma.pedidos.findUnique({
+        where: { id: pedidoId },
+        include: {
+          itens: {
+            include: {
+              produto: true
+            }
+          }
+        }
+      });
+    } else if (userId) {
+      // Se fornecido userId, busca o carrinho deste usuário
+      pedidoCarrinho = await prisma.pedidos.findFirst({
+        where: {
+          usuarioId: parseInt(userId),
+          status: 'CARRINHO'
+        },
+        include: {
+          itens: {
+            include: {
+              produto: true
+            }
+          }
+        },
+        orderBy: {
+          criadoEm: 'desc'
+        }
+      });
+    } else {
+      // Fallback: busca o último pedido em carrinho
+      pedidoCarrinho = await prisma.pedidos.findFirst({
+        where: {
+          status: 'CARRINHO'
+        },
+        include: {
+          itens: {
+            include: {
+              produto: true
+            }
+          }
+        },
+        orderBy: {
+          criadoEm: 'desc'
+        }
+      });
+    }
 
-    // Mapear para ter acesso fácil por ID
-    const produtosMap = new Map(produtosDoBanco.map(p => [p.id, p]));
+    if (!pedidoCarrinho || !pedidoCarrinho.itens || pedidoCarrinho.itens.length === 0) {
+      return res.status(400).json({ error: 'Nenhum item encontrado no carrinho.' });
+    }
 
-    const itensCompletos = itens.map(item => {
-      const produto = produtosMap.get(item.produtoId);
-      if (!produto) {
-        throw new Error(`Produto com ID ${item.produtoId} não encontrado.`);
-      }
-      return {
-        ...item,
-        produto, // Anexa os dados completos do produto
-      };
-    });
+    console.log(`Calculando frete para ${pedidoCarrinho.itens.length} itens`);
 
     // 2. Usar nosso serviço para escolher a embalagem e calcular o peso
-    const { embalagemEscolhida, pesoTotal } = escolherEmbalagem(itensCompletos);
+    const { embalagemEscolhida, pesoTotal, embalagemInfo } = escolherEmbalagem(pedidoCarrinho.itens);
 
-    // 3. (AQUI VOCÊ CHAMA A API DO MELHOR ENVIO)
-    // Os dados que você vai enviar para o Melhor Envio são:
+    console.log('Dados da embalagem:', embalagemInfo);
+
+    // 3. Chamar a API do Melhor Envio
     const dadosParaMelhorEnvio = {
-      cepOrigem: "45820-440",
-      cepDestino: cepDestino,
-      peso: pesoTotal, // 
-      altura: embalagemEscolhida.altura, // 
-      largura: embalagemEscolhida.largura,
-      comprimento: embalagemEscolhida.comprimento, // 
+      from: { postal_code: '45820440' }, // CEP de origem
+      to: { postal_code: cepDestino.replace(/\D/g, '') }, // Remove formatação do CEP
+      products: [{
+        height: embalagemEscolhida.altura,
+        width: embalagemEscolhida.largura,
+        length: embalagemEscolhida.comprimento,
+        weight: pesoTotal,
+      }],
+      services: "1,2,3" // SEDEX, PAC, etc.
     };
 
     console.log("Enviando para Melhor Envio:", dadosParaMelhorEnvio);
     
-    // const opcoesDeFrete = await calcularFreteMelhorEnvio(dadosParaMelhorEnvio);
+    // Obter token válido do banco de dados
+    const accessToken = await getValidAccessToken();
     
-    // MOCK DE RESPOSTA (substitua pela chamada real)
-    const opcoesDeFrete = [
-        { nome: "SEDEX", valor: 35.50, prazo: 3 },
-        { nome: "PAC", valor: 22.90, prazo: 7 },
-    ];
+    const response = await axios.post(
+      `${process.env.MELHOR_ENVIO_ORIGIN}/api/v2/me/shipment/calculate`,
+      dadosParaMelhorEnvio,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
+    // 4. Processar e retornar as opções de frete
+    const opcoesDeFrete = response.data.map(opcao => ({
+      id: opcao.id,
+      name: opcao.name,
+      price: parseFloat(opcao.price),
+      delivery_time: opcao.delivery_time,
+      company: opcao.company,
+      codigo: opcao.id
+    }));
+
+    console.log('Opções de frete retornadas:', opcoesDeFrete);
 
     res.status(200).json(opcoesDeFrete);
 
   } catch (error) {
-    console.error('Erro ao calcular frete:', error);
-    res.status(500).json({ error: error.message || 'Erro interno no servidor.' });
+    console.error('Erro ao calcular frete:', error.response?.data || error.message);
+    
+    // Se for erro da API do Melhor Envio, tentar retornar uma resposta mais amigável
+    if (error.response?.status === 400) {
+      return res.status(400).json({ 
+        error: 'Não foi possível calcular o frete para este CEP. Verifique se o CEP está correto.' 
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Erro interno no servidor ao calcular frete.',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
-export default router;
+module.exports = router;

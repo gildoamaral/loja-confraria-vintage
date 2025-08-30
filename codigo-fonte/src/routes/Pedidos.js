@@ -5,6 +5,32 @@ const prisma = new PrismaClient();
 const auth = require('../middlewares/Auth'); // <-- Importa o middleware de autenticação
 const crypto = require('crypto');
 
+// Função para gerar ID personalizado de 8 caracteres
+const gerarIdPedido = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
+// Função para garantir ID único
+const gerarIdUnico = async () => {
+  let id;
+  let existe = true;
+  
+  while (existe) {
+    id = gerarIdPedido();
+    const pedidoExistente = await prisma.pedidos.findUnique({
+      where: { id: id }
+    });
+    existe = !!pedidoExistente;
+  }
+  
+  return id;
+};
+
 // Criar novo pedido com item
 router.post('/criar', auth, async (req, res) => {
   const usuarioId = req.user.userId; // Obtém o ID do usuário do token JWT
@@ -26,8 +52,10 @@ router.post('/criar', auth, async (req, res) => {
 
     // Se não existe, cria novo pedido
     if (!pedido) {
+      const idUnico = await gerarIdUnico();
       pedido = await prisma.pedidos.create({
         data: {
+          id: idUnico,
           usuarioId,
           status: 'CARRINHO',
         },
@@ -343,7 +371,7 @@ router.put('/:id/status', async (req, res) => {
 
   try {
     const pedidoAtualizado = await prisma.pedidos.update({
-      where: { id: parseInt(id) },
+      where: { id: id },
       data: { status },
     });
     res.json(pedidoAtualizado);
@@ -382,7 +410,7 @@ function validarAssinatura(payload, signature, secret) {
 router.post('/webhook/melhor-envio', async (req, res) => {
   try {
     console.log('=== WEBHOOK MELHOR ENVIO RECEBIDO ===');
-    console.log('Headers:', req.headers);
+    // console.log('Headers:', req.headers);
     console.log('Payload completo:', JSON.stringify(req.body, null, 2));
     
     const webhookData = req.body;
@@ -451,8 +479,8 @@ router.post('/webhook/melhor-envio', async (req, res) => {
     let novoStatusPedido = null;
     let novoStatusEtiqueta = null;
     let codigoRastreio = null;
-    let empresaFrete = null;
-    let dataFinalizado = null;
+    // let empresaFrete = null;
+    // let dataFinalizado = null;
 
     switch (event) {
       case 'order.created':

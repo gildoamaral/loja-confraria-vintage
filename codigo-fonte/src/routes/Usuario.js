@@ -57,9 +57,8 @@ router.post('/', async (req, res) => {
   const salt = await bcrypt.genSalt(12);
   const hashedPassword = await bcrypt.hash(senha, salt);
 
-  const token = crypto.randomBytes(32).toString("hex");
-  const tokenExpires = new Date(Date.now() + 1000 * 60 * 60); // 1h
-
+  // const token = crypto.randomBytes(32).toString("hex");
+  // const tokenExpires = new Date(Date.now() + 1000 * 60 * 60);
   try {
     const novoUsuario = await prisma.usuarios.create({
       data: {
@@ -80,14 +79,14 @@ router.post('/', async (req, res) => {
         telefone,
         senha: hashedPassword,
         posicao: posicao || "USER",
-        emailVerifyToken: token,
-        emailTokenExpires: tokenExpires,
+        // emailVerifyToken: token,
+        // emailTokenExpires: tokenExpires,
       },
     });
 
     // const link = `http://localhost:3000/verify-email/${token}`;
-    const link = `${process.env.BACK_ORIGIN}/verify-email/${token}`;
-    await sendVerificationEmail(email, link);
+    // const link = `${process.env.BACK_ORIGIN}/verify-email/${token}`;
+    // await sendVerificationEmail(email, link);
 
     console.log(`Novo usuário registrado: ${nome}, ${email}`);
     res.status(201).json({ message: 'Usuário registrado com sucesso!', usuario: novoUsuario });

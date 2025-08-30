@@ -33,9 +33,9 @@ const CadastroProdutos = () => {
   const [descricao, setDescricao] = useState('');
   const [preco, setPreco] = useState('');
   const [peso, setPeso] = useState(0.3);
-  const [altura, setAltura] = useState(10);
-  const [largura, setLargura] = useState(20);
-  const [comprimento, setComprimento] = useState(25);
+  const [altura, setAltura] = useState(3);
+  const [largura, setLargura] = useState(18);
+  const [comprimento, setComprimento] = useState(20);
   const [imagens, setImagens] = useState([]);
   const [quantidade, setQuantidade] = useState('');
   const [tamanho, setTamanho] = useState('');

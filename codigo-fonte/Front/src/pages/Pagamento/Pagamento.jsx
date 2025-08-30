@@ -53,6 +53,7 @@ const Pagamento = () => {
   const [enderecoSelecionado, setEnderecoSelecionado] = useState(null);
   const [valorFrete, setValorFrete] = useState(0);
   const [nomeFrete, setNomeFrete] = useState('');
+  const [idFrete, setIdFrete] = useState(null);
   const [subtotal, setSubtotal] = useState(valorTotal);
   const [metodo, setMetodo] = useState('');
   const [loading, setLoading] = useState(false);
@@ -215,13 +216,17 @@ const Pagamento = () => {
   async function renderFreteOptions(cep) {
     setCarregandoFrete(true);
     try {
-      const res = await api.post('/frete/pagamento', {
-        cepDestino: cep,
-        altura: 4,
-        largura: 12,
-        comprimento: 17,
-        peso: 0.3,
-      });
+      // Nova chamada para a rota de frete customizada
+      const requestData = {
+        cepDestino: cep
+      };
+
+      // Se tiver pedidoId, inclui na requisição
+      if (pedidoId) {
+        requestData.pedidoId = pedidoId;
+      }
+
+      const res = await api.post('/api/frete/calcular', requestData);
 
       // Filtra apenas as opções que não têm erro
       const opcoesValidas = Array.isArray(res.data) ? res.data.filter(opcao => {
@@ -252,6 +257,7 @@ const Pagamento = () => {
         pedidoId,
         valorFrete,
         nomeFrete,
+        idFrete,
       });
 
       // 3. Redireciona para a nova página de confirmação, passando os dados
@@ -398,7 +404,9 @@ const Pagamento = () => {
       return;
     }
     const nome = frete.company.name;
+    const id = frete.id || frete.codigo; // Pega o ID do serviço
     setNomeFrete(nome);
+    setIdFrete(id);
     const valor = Number(frete.preco || frete.price || 0);
     setValorFrete(valor);
     setSubtotal(valorTotal + valor);
@@ -637,7 +645,7 @@ const Pagamento = () => {
                     <Paper elevation={0} sx={{ 
                       border: '1px solid #e9ecef', 
                       borderRadius: 3, 
-                      p: 4,
+                      py: 4,
                       display: 'flex',
                       flexDirection: 'column',
                     }}>
@@ -648,6 +656,7 @@ const Pagamento = () => {
                         valorTotal={valorTotal}
                         valorFrete={valorFrete}
                         nomeFrete={nomeFrete}
+                        idFrete={idFrete}
                         onFinalizarPix={handleFinalizarComPix}
                         loadingPix={loading}
                     />

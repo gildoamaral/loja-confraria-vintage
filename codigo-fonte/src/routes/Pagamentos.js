@@ -80,7 +80,7 @@ router.get('/por-pedido/:pedidoId', auth, async (req, res) => {
 // });
 
 router.post('/criar-pix', auth, async (req, res) => {
-  const { pedidoId, valorFrete, nomeFrete } = req.body;
+  const { pedidoId, valorFrete, nomeFrete, idFrete } = req.body;
 
   console.log("PEDIDO ID ---------------", req.body)
 
@@ -175,6 +175,7 @@ router.post('/criar-pix', auth, async (req, res) => {
         status: 'AGUARDANDO_PAGAMENTO',
         dataFinalizado: new Date(),
         empresaFrete: nomeFrete || null,
+        empresaFreteId: idFrete ? parseInt(idFrete) : null,
       },
     });
 
@@ -331,7 +332,7 @@ router.post('/criar-pix', auth, async (req, res) => {
 // });
 
 router.post('/criar-cartao', auth, async (req, res) => {
-  const { deviceId, pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete, nomeFrete } = req.body;
+  const { deviceId, pedidoId, token, description, installments, payment_method_id, issuer_id, payer, valorFrete, nomeFrete, idFrete } = req.body;
 
   try {
     const pedido = await prisma.pedidos.findUnique({
@@ -392,7 +393,6 @@ router.post('/criar-cartao', auth, async (req, res) => {
       payment_method_id,
       issuer_id,
       payer: {
-        entity_type: 'individual',
         type: 'customer',
         email: payer.email,
         first_name: pedido.usuario.nome,
@@ -483,6 +483,7 @@ router.post('/criar-cartao', auth, async (req, res) => {
                   status: novoStatus,
                   dataFinalizado: new Date(),
                   empresaFrete: nomeFrete || null,
+                  empresaFreteId: idFrete ? parseInt(idFrete) : null,
                   statusEtiqueta: statusPayment === "APROVADO" ? 'AGUARDANDO_DADOS' : null,
                 }
               });

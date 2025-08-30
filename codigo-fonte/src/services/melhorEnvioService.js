@@ -1,6 +1,7 @@
 // services/melhorEnvioService.js
 const axios = require('axios');
 const { PrismaClient } = require('@prisma/client');
+const { getValidAccessToken } = require('./melhorEnvioAuthService.js');
 
 const prisma = new PrismaClient();
 
@@ -18,7 +19,7 @@ async function gerarEtiquetaComRetentativas(pedidoId) {
       });
 
       const bodyMelhorEnvio = {
-        service: 2, // ATENÇÃO: O ID do serviço precisa ser dinâmico ou definido
+        service: pedido.empresaFreteId,
         from: {
           // Dados do seu e-commerce (remetente) - idealmente viriam de uma config
           name: "Confraria Vintage",
@@ -41,14 +42,14 @@ async function gerarEtiquetaComRetentativas(pedidoId) {
           phone: pedido.usuario.ddd && pedido.usuario.telefone ? `${pedido.usuario.ddd}${pedido.usuario.telefone}` : pedido.usuario.telefone,
           email: pedido.usuario.email,
           document: pedido.usuario.cpf,       // Supondo que você tenha esse campo
-          address: pedido.usuario.rua,
-          complement: pedido.usuario.complemento || 'S/N',
-          number: pedido.usuario.numero || 'S/N',
-          district: pedido.usuario.bairro,
-          city: pedido.usuario.cidade,
+          address: pedido.rua,
+          complement: pedido.complemento || 'S/N',
+          number: pedido.numero || 'S/N',
+          district: pedido.bairro,
+          city: pedido.cidade,
           country_id: "BR",
-          state_abbr: pedido.usuario.estado,
-          postal_code: pedido.usuario.cep,
+          state_abbr: pedido.estado,
+          postal_code: pedido.cep,
         },
         products: pedido.itens.map(item => ({
           name: item.produto.nome,
@@ -73,14 +74,16 @@ async function gerarEtiquetaComRetentativas(pedidoId) {
         }
       };
 
+      const accessToken = await getValidAccessToken();
+
       const response = await axios.post(
-        `${process.env.MELHOR_ENVIO_ORIGIN}/cart`,
+        `${process.env.MELHOR_ENVIO_ORIGIN}/api/v2/me/cart`,
         bodyMelhorEnvio,
         {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.MELHOR_ENVIO_TOKEN}`,
+            'Authorization': `Bearer ${accessToken}`,
             'User-Agent': `${process.env.MELHOR_ENVIO_USER_AGENT}`
           }
         }

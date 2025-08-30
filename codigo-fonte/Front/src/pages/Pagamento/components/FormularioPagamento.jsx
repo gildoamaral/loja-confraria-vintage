@@ -16,7 +16,7 @@ const FormularioPagamento = ({ metodo, setMetodo, pedidoId, valorTotal, valorFre
   return (
     <Box>
       {/* Método de Pagamento */}
-      <FormControl component="fieldset" fullWidth>
+      <FormControl component="fieldset" fullWidth sx={{ px: 3 }}>
         <FormLabel component="legend" color='error'>
           Método de Pagamento
         </FormLabel>

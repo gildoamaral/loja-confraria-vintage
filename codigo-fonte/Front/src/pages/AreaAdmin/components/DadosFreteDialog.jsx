@@ -80,8 +80,11 @@ const DadosFreteDialog = ({ open, onClose, pedido, onConfirm }) => {
       </DialogTitle>
       
       <DialogContent>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="body2" color="text.secondary" >
           Preencha os dados do pacote para gerar a etiqueta no Melhor Envio.
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Os valores de frete pagos pelo usuário são baseados numa simulação. O valor real do frete será baseado nestas informações abaixo.
         </Typography>
 
         {error && (
