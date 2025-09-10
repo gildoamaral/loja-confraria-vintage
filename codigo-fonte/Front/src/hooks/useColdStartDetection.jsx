@@ -15,7 +15,7 @@ const useColdStartDetection = () => {
     try {
       // Usa timeout baixo para detectar rapidamente se o servidor não está respondendo
       const response = await api.get('/', { 
-        timeout: 5000,
+        timeout: 1000,
         // Não intercepta erros para este ping específico
         transformResponse: [(data) => data]
       });
