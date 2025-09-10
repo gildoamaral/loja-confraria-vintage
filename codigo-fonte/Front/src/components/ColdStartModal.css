@@ -1,0 +1,235 @@
+/* Overlay que cobre toda a tela */
+.cold-start-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(99, 98, 98, 0.294);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+/* Modal principal */
+.cold-start-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 100%;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Conteúdo do modal */
+.cold-start-content {
+  padding: 40px 30px;
+  text-align: center;
+}
+
+/* Ícone de loading */
+.cold-start-icon {
+  margin-bottom: 24px;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--cor-marca);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Título */
+.cold-start-title {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Descrição */
+.cold-start-description {
+  margin: 0 0 30px 0;
+  color: #666;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Container da barra de progresso */
+.progress-container {
+  margin-bottom: 24px;
+}
+
+/* Barra de progresso */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cor-marca), #b35700);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Texto do progresso */
+.progress-text {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Container do botão retry */
+.retry-container {
+  margin-top: 20px;
+}
+
+.retry-message {
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* Botão de tentar novamente */
+.retry-button {
+  background: var(--cor-marca);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.retry-button:hover {
+  background: #b35700;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.retry-button:active {
+  transform: translateY(0);
+}
+
+/* Loading dots */
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--cor-marca);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsividade para dispositivos móveis */
+@media (max-width: 480px) {
+  .cold-start-overlay {
+    padding: 15px;
+  }
+  
+  .cold-start-content {
+    padding: 30px 20px;
+  }
+  
+  .cold-start-title {
+    font-size: 20px;
+  }
+  
+  .cold-start-description {
+    font-size: 14px;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Responsividade para tablets */
+@media (max-width: 768px) and (min-width: 481px) {
+  .cold-start-modal {
+    max-width: 350px;
+  }
+}
+
+/* Garantir que o modal funcione bem em telas muito pequenas */
+@media (max-height: 600px) {
+  .cold-start-content {
+    padding: 20px 30px;
+  }
+  
+  .cold-start-icon {
+    margin-bottom: 16px;
+  }
+  
+  .cold-start-description {
+    margin-bottom: 20px;
+  }
+}
