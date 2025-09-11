@@ -15,6 +15,7 @@ function App() {
     progress,
     showRetryButton,
     retryConnection,
+    isServerOnline,
     maxAttempts
   } = useColdStartDetection();
 
@@ -37,6 +38,7 @@ function App() {
             maxAttempts={maxAttempts}
             isConnecting={isConnecting}
             showRetryButton={showRetryButton}
+            isServerOnline={isServerOnline}
             onRetry={retryConnection}
           />
 

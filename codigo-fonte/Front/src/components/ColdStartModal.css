@@ -62,6 +62,36 @@
   100% { transform: rotate(360deg); }
 }
 
+/* Ícone de sucesso */
+.success-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: bold;
+  margin: 0 auto;
+  animation: successPulse 0.6s ease-in-out;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* Título */
 .cold-start-title {
   margin: 0 0 12px 0;
@@ -70,12 +100,28 @@
   color: #333;
 }
 
+.cold-start-title.success {
+  color: #4CAF50;
+}
+
 /* Descrição */
 .cold-start-description {
   margin: 0 0 30px 0;
   color: #666;
   font-size: 16px;
   line-height: 1.5;
+}
+
+.cold-start-description-small {
+  margin: 10px 0 20px 0;
+  color: #999;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.cold-start-description.success {
+  color: #4CAF50;
+  margin-bottom: 20px;
 }
 
 /* Container da barra de progresso */
@@ -161,7 +207,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--cor-marca);
+  background-color: green;
   animation: pulse 1.5s ease-in-out infinite;
 }
 

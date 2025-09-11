@@ -7,15 +7,16 @@ const useColdStartDetection = () => {
   const [attempts, setAttempts] = useState(0);
   const [progress, setProgress] = useState(0);
   const [showRetryButton, setShowRetryButton] = useState(false);
+  const [isServerOnline, setIsServerOnline] = useState(false);
 
   const MAX_ATTEMPTS = 8;
-  const PING_INTERVAL = 3000; // 3 segundos
+  const PING_INTERVAL = 5000; // 5 segundos
 
-  const pingServer = useCallback(async () => {
+  const pingServer = useCallback(async (timeoutMs = 3000) => {
     try {
       // Usa timeout baixo para detectar rapidamente se o servidor não está respondendo
       const response = await api.get('/', { 
-        timeout: 1000,
+        timeout: timeoutMs,
         // Não intercepta erros para este ping específico
         transformResponse: [(data) => data]
       });
@@ -41,10 +42,15 @@ const useColdStartDetection = () => {
       const isConnected = await pingServer();
 
       if (isConnected) {
-        // Servidor conectado, esconder modal e recarregar página
-        setIsColdStart(false);
+        // Servidor conectado, mostrar mensagem de sucesso
         setIsConnecting(false);
-        window.location.reload();
+        setIsServerOnline(true);
+        
+        // Aguardar 3 segundos e recarregar a página
+        setTimeout(() => {
+          setIsColdStart(false);
+          window.location.reload();
+        }, 5000);
         return;
       }
 
@@ -55,7 +61,7 @@ const useColdStartDetection = () => {
         return;
       }
 
-      // Continuar tentando após 3 segundos
+      // Continuar tentando após 5 segundos
       setTimeout(checkConnection, PING_INTERVAL);
     };
 
@@ -63,7 +69,7 @@ const useColdStartDetection = () => {
   }, [pingServer]);
 
   const checkInitialConnection = useCallback(async () => {
-    const isConnected = await pingServer();
+    const isConnected = await pingServer(1000);
     
     if (!isConnected) {
       // Servidor não está respondendo, iniciar detecção de cold start
@@ -89,6 +95,7 @@ const useColdStartDetection = () => {
     progress,
     showRetryButton,
     retryConnection,
+    isServerOnline,
     maxAttempts: MAX_ATTEMPTS
   };
 };
