@@ -32,7 +32,7 @@ const ProdutoCard = ({ produto }) => {
             },
           }}
         >
-          <CardActionArea component={Link} to={`/produto/${produto.id}`} sx={{ position: "relative",textDecoration: 'none', color: 'inherit' }}>
+          <CardActionArea component={Link} to={`/produto/${produto.id}`} sx={{ position: "relative", textDecoration: 'none', color: 'inherit' }}>
             {temPromocao && (
               <Chip
                 label={`- ${Math.round(((produto.preco - produto.precoPromocional) / produto.preco) * 100)}%`}
@@ -53,25 +53,32 @@ const ProdutoCard = ({ produto }) => {
               image={imagemPrincipalUrl}
               alt={produto.nome}
             />
-            <CardContent sx={{ textAlign: 'center', minHeight: {sm: '117px', xs: 'auto'}}}>
-              <Typography variant="h6" component="h3" sx={{ fontSize: '1rem', fontWeight: 'bol' }}>
-                {produto.nome}
-              </Typography>
-              <Box position={'relative'}>
-                {temPromocao && (
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ textDecoration: 'line-through', display: 'inline', position: 'absolute', left:{sm: 1, xs: 12}, top: 3 }}
-                  >
-                    R$ {produto.preco.toFixed(2).replace('.', ',')}
-                  </Typography>
-                )}
-                <Typography variant="h6" color="erro" sx={{ display: 'inline', fontWeight: '700' }}>
-                  R$ {precoFinal.toFixed(2).replace('.', ',')}
+            <CardContent sx={{ minHeight: { sm: '117px', xs: 'auto' }, pb: { sm: 0, xs: "auto"}, display: 'flex', flexDirection: 'column',justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h6" component="h3" sx={{ fontSize: '1rem', lineHeight: 1.3 }}>
+                  {produto.nome}
                 </Typography>
+
+                <Box position={'relative'}>
+                  <Typography variant="h6" color="erro" sx={{ display: 'inline', fontWeight: '700' }}>
+                    R$ {precoFinal.toFixed(2).replace('.', ',')} {temPromocao && (
+                      <Typography
+                        variant="caption"
+                        component='span'
+                        color="text.secondary"
+                        sx={{ textDecoration: 'line-through' }}
+                      >
+                        R$ {produto.preco.toFixed(2).replace('.', ',')}
+                      </Typography>
+                    )}
+                  </Typography>
+                </Box>
               </Box>
+              <Typography variant="caption" gutterBottom>
+                {produto.tamanho ? `Tamanho: ${produto.tamanho}` : 'Tamanho único'}
+              </Typography>
             </CardContent>
+
           </CardActionArea>
         </Card>
       </Fade>

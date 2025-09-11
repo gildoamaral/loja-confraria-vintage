@@ -294,11 +294,11 @@ const NewEstoqueProdutos = () => {
         <Table sx={{ minWidth: 650 }} aria-label="tabela de produtos" size="small">
           <TableHead>
             <TableRow sx={{ '& .MuiTableCell-root': { py: 2 } }}>
-              <TableCell>Foto</TableCell>
-              <TableCell>ID</TableCell>
+              <TableCell sx={{ width: '60px' }}>Foto</TableCell>
+              <TableCell sx={{ width: '80px' }}>ID</TableCell>
               
               {/* Nome - ordenável */}
-              <TableCell>
+              <TableCell sx={{ width: '300px', minWidth: '250px' }}>
                 <TableSortLabel
                   active={orderBy === 'nome'}
                   direction={orderBy === 'nome' ? orderDirection : 'asc'}
@@ -388,10 +388,10 @@ const NewEstoqueProdutos = () => {
                   '&:hover': { backgroundColor: '#f5f5f5' }
                 }}
               >
-                <TableCell >
+                <TableCell sx={{ width: '60px' }}>
                   <Avatar variant='rounded' src={produto.imagens?.[0]?.urls?.thumbnail} alt={produto.nome} />
                 </TableCell>
-                <TableCell> 
+                <TableCell sx={{ width: '80px' }}> 
                   <Link 
                     to={`/produto/${produto.id}`}
                     style={{ 
@@ -405,7 +405,7 @@ const NewEstoqueProdutos = () => {
                     {produto.id}
                   </Link>
                 </TableCell>
-                <TableCell>{produto.nome}</TableCell>
+                <TableCell sx={{ width: '300px', minWidth: '250px' }}>{produto.nome}</TableCell>
                 <TableCell align="right">R$ {produto.preco.toFixed(2)}</TableCell>
                 <TableCell align="right">{produto.quantidade}</TableCell>
                 <TableCell>{produto.categoria}</TableCell>
