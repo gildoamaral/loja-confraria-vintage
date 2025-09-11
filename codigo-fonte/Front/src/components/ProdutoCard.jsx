@@ -29,7 +29,7 @@ const ProdutoCard = ({ produto }) => {
             '&:hover': {
               transform: 'translateY(-1px)',
               boxShadow: 6,
-            }
+            },
           }}
         >
           <CardActionArea component={Link} to={`/produto/${produto.id}`} sx={{ position: "relative",textDecoration: 'none', color: 'inherit' }}>
@@ -45,13 +45,15 @@ const ProdutoCard = ({ produto }) => {
               component="img"
               sx={{
                 aspectRatio: '4/5', // Proporção da imagem para manter a consistência
+                width: '100%',
+                objectPosition: 'top',
                 objectFit: 'cover',
                 height: 270,
               }}
               image={imagemPrincipalUrl}
               alt={produto.nome}
             />
-            <CardContent sx={{ textAlign: 'center' }}>
+            <CardContent sx={{ textAlign: 'center', minHeight: {sm: '117px', xs: 'auto'}}}>
               <Typography variant="h6" component="h3" sx={{ fontSize: '1rem', fontWeight: 'bol' }}>
                 {produto.nome}
               </Typography>
