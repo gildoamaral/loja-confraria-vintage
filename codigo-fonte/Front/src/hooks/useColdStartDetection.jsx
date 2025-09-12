@@ -40,16 +40,19 @@ const useColdStartDetection = () => {
       setProgress((currentAttempt / MAX_ATTEMPTS) * 100);
 
       const isConnected = await pingServer();
+      console.log(`Tentativa ${currentAttempt}: Servidor ${isConnected ? 'online' : 'offline'}`);
 
       if (isConnected) {
-        // Servidor conectado, mostrar mensagem de sucesso
-        setIsConnecting(false);
-        setIsServerOnline(true);
-        
-        // Aguardar 3 segundos e recarregar a página
+        // Servidor conectado, aguardar 5 segundos antes de mostrar mensagem de sucesso
         setTimeout(() => {
-          setIsColdStart(false);
-          window.location.reload();
+          setIsConnecting(false);
+          setIsServerOnline(true);
+          
+          // Aguardar mais 5 segundos e recarregar a página (total: 10 segundos)
+          setTimeout(() => {
+            setIsColdStart(false);
+            window.location.reload();
+          }, 5000);
         }, 5000);
         return;
       }
