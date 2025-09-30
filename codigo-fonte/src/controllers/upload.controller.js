@@ -1,5 +1,4 @@
-const { PutObjectCommand } = require('@aws-sdk/client-s3');
-const { s3Client, bucketName } = require('../config/aws.js');
+const cloudinary = require('../config/cloudinary.js');
 const crypto = require('crypto');
 const sharp = require('sharp');
 
@@ -26,24 +25,29 @@ const uploadImage = async (req, res) => {
         // Para cada arquivo, processamos os 3 tamanhos.
         for (const sizeName in sizes) {
           const { width, height } = sizes[sizeName];
-          const fileName = `${baseFileName}-${sizeName}.webp`;
 
           const processedImageBuffer = await sharp(file.buffer)
             .resize(width, height, { fit: 'cover' })
             .webp({ quality: 80 })
             .toBuffer();
 
-          const params = {
-            Bucket: bucketName,
-            Key: fileName,
-            Body: processedImageBuffer,
-            ContentType: 'image/webp',
-          };
-          
-          const command = new PutObjectCommand(params);
-          await s3Client.send(command); // Envia para o S3
+          // Upload para Cloudinary
+          const uploadResult = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+              {
+                resource_type: 'image',
+                folder: 'produtos', // Coloca todas as imagens na pasta "produtos"
+                public_id: `${baseFileName}-${sizeName}`,
+                format: 'webp',
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            ).end(processedImageBuffer);
+          });
 
-          uploadedUrls[sizeName] = `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+          uploadedUrls[sizeName] = uploadResult.secure_url;
         }
         
         // Retorna um objeto com as URLs das 3 versões para este arquivo específico

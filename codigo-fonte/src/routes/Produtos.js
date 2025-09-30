@@ -2,7 +2,6 @@
 const express = require('express');
 const { PrismaClient, Ocasiao } = require('@prisma/client');
 const AuthAdmin = require('../middlewares/AuthAdmin'); // Importa o middleware AuthAdmin
-const { deleteImageVersionsFromS3 } = require('../services/s3Service.js');
 
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -344,53 +343,5 @@ router.put('/:id', AuthAdmin, async (req, res) => {
     return res.status(500).json({ error: 'Erro interno', details: err.message });
   }
 });
-
-
-// DELETE - Excluir produto
-router.delete('/:id', AuthAdmin, async (req, res) => {
-  const { id } = req.params;
-  
-  try {
-    // 1. Primeiro, buscamos o produto E as imagens relacionadas que precisam ser deletadas.
-    const produtoParaDeletar = await prisma.produtos.findUnique({
-      where: { id },
-      include: {
-        imagens: true, // Crucial: precisamos das informações das imagens
-      },
-    });
-
-    if (!produtoParaDeletar) {
-      return res.status(404).json({ error: 'Produto não encontrado' });
-    }
-
-    // 2. Se o produto tiver imagens, deletamos cada uma do S3.
-    if (produtoParaDeletar.imagens && produtoParaDeletar.imagens.length > 0) {
-      // Importe o seu s3Service no topo do arquivo se ainda não o fez
-      // const { deleteImageVersionsFromS3 } = require('../services/s3Service.js');
-      
-      console.log(`Deletando ${produtoParaDeletar.imagens.length} imagem(ns) do S3...`);
-      // Criamos uma promessa para cada deleção de imagem
-      const deletePromises = produtoParaDeletar.imagens.map(imagem => 
-        deleteImageVersionsFromS3(imagem.urls)
-      );
-      // Esperamos que todas as imagens sejam deletadas do S3
-      await Promise.all(deletePromises);
-    }
-
-    // 3. Finalmente, após limpar o S3, deletamos o produto do banco de dados.
-    // A deleção em cascata do Prisma já cuidará de remover os registros da tabela 'produto_imagens'.
-    await prisma.produtos.delete({
-      where: { id },
-    });
-
-    console.log('Produto e imagens associadas foram excluídos com sucesso.');
-    res.status(204).send(); // Resposta de sucesso sem conteúdo
-
-  } catch (error) {
-    console.error('Erro ao excluir produto:', error);
-    res.status(500).json({ error: 'Erro ao excluir produto' });
-  }
-});
-
 
 module.exports = router;

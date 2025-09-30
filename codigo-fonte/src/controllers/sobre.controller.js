@@ -1,13 +1,13 @@
 const { PrismaClient } = require('@prisma/client');
-const { PutObjectCommand } = require('@aws-sdk/client-s3');
-const { s3Client, bucketName } = require('../config/aws.js');
+const cloudinary = require('../config/cloudinary.js');
+const { deleteImageVersionsFromCloudinary } = require('../services/cloudinaryService.js');
 const crypto = require('crypto');
 const sharp = require('sharp');
 
 const prisma = new PrismaClient();
 
-// Função para processar e fazer upload da imagem para S3
-const uploadImageToS3 = async (imageBuffer) => {
+// Função para processar e fazer upload da imagem para Cloudinary
+const uploadImageToCloudinary = async (imageBuffer) => {
   const baseFileName = crypto.randomBytes(16).toString('hex');
   
   const sizes = {
@@ -20,22 +20,28 @@ const uploadImageToS3 = async (imageBuffer) => {
 
   for (const sizeName in sizes) {
     const { width, height } = sizes[sizeName];
-    const fileName = `sobre/${baseFileName}-${sizeName}.webp`;
 
     const processedImageBuffer = await sharp(imageBuffer)
       .resize(width, height, { fit: 'cover' })
-      .webp({ quality: 80 })
+      .webp({ quality: 100 })
       .toBuffer();
 
-    const command = new PutObjectCommand({
-      Bucket: bucketName,
-      Key: fileName,
-      Body: processedImageBuffer,
-      ContentType: 'image/webp',
+    const uploadResult = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          resource_type: 'image',
+          folder: 'sobre', // Coloca todas as imagens na pasta "sobre"
+          public_id: `${baseFileName}-${sizeName}`,
+          format: 'webp',
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(processedImageBuffer);
     });
 
-    await s3Client.send(command);
-    uploadedUrls[sizeName] = `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+    uploadedUrls[sizeName] = uploadResult.secure_url;
   }
 
   return uploadedUrls;
@@ -65,7 +71,19 @@ const updateSobreSecao = async (req, res) => {
 
     // Se uma nova imagem foi enviada, faz o upload
     if (req.file) {
-      const imageUrls = await uploadImageToS3(req.file.buffer);
+      // 1. Primeiro, busca a seção atual para verificar se já tem imagem
+      const secaoAtual = await prisma.conteudoSobreNos.findUnique({
+        where: { secao }
+      });
+
+      // 2. Se existe uma seção com imagem anterior, deleta do Cloudinary
+      if (secaoAtual && secaoAtual.urlsImagem && Object.keys(secaoAtual.urlsImagem).length > 0) {
+        console.log(`Deletando imagem anterior da seção "${secao}"...`);
+        await deleteImageVersionsFromCloudinary(secaoAtual.urlsImagem);
+      }
+
+      // 3. Faz upload da nova imagem
+      const imageUrls = await uploadImageToCloudinary(req.file.buffer);
       updateData.urlsImagem = imageUrls;
     }
 

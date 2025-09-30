@@ -1,8 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { deleteImageVersionsFromS3 } = require('../services/s3Service.js');
-const { PutObjectCommand } = require('@aws-sdk/client-s3');
-const { s3Client, bucketName } = require('../config/aws.js');
+const { deleteImageVersionsFromCloudinary } = require('../services/cloudinaryService.js');
+const cloudinary = require('../config/cloudinary.js');
 const crypto = require('crypto');
 const sharp = require('sharp');
 
@@ -65,7 +64,7 @@ const createCarrosselImagem = async (req, res) => {
       .extract({ left, top, width, height })
       .toBuffer();
 
-    // ... O resto da sua função (redimensionamento e upload) continua exatamente igual ...
+    // Processamento e upload para Cloudinary
     const baseFileName = crypto.randomBytes(16).toString('hex');
     const sizes = {
       thumbnail: { width: 250, height: 141 },
@@ -77,20 +76,32 @@ const createCarrosselImagem = async (req, res) => {
     const uploadPromises = [];
 
     for (const sizeName in sizes) {
-      const { sizeWidth, sizeHeight } = sizes[sizeName];
-      const fileName = `carrossel/${baseFileName}-${sizeName}.webp`;
+      const { width, height } = sizes[sizeName];
 
       const processedBuffer = await sharp(croppedImageBuffer)
-        .resize(sizes[sizeName].width, sizes[sizeName].height)
-        .webp({ quality: 80 })
+        .resize(width, height)
+        .webp({ quality: 100 })
         .toBuffer();
       
-      const params = { Bucket: bucketName, Key: fileName, Body: processedBuffer, ContentType: 'image/webp' };
-      const command = new PutObjectCommand(params);
+      const uploadPromise = new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'image',
+            folder: 'carrossel', // Coloca todas as imagens na pasta "carrossel"
+            public_id: `${baseFileName}-${sizeName}`,
+            format: 'webp',
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else {
+              uploadedUrls[sizeName] = result.secure_url;
+              resolve();
+            }
+          }
+        ).end(processedBuffer);
+      });
       
-      uploadPromises.push(s3Client.send(command).then(() => {
-        uploadedUrls[sizeName] = `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
-      }));
+      uploadPromises.push(uploadPromise);
     }
 
     await Promise.all(uploadPromises);
@@ -119,7 +130,7 @@ const deleteCarrosselImagem = async (req, res) => {
     if (!imagemParaDeletar) {
       return res.status(404).json({ error: 'Imagem do carrossel não encontrada.' });
     }
-    await deleteImageVersionsFromS3(imagemParaDeletar.urls);
+    await deleteImageVersionsFromCloudinary(imagemParaDeletar.urls);
     await prisma.carrosselImagem.delete({ where: { id } });
     res.status(204).send();
   } catch (error) {
