@@ -2,7 +2,7 @@
 
 `REACT` `NODE` `PRISMA` `MYSQL` `MUI` `AWS S3` `KANBAN` `SCRUM` `REACT ROUTER`
 
-Link para o site: https://confraria-vintage.vercel.app/
+Link para o site: [Confraria Vintage](https://front-production-8ec4.up.railway.app/)
 
 (Por se tratar de uma mostra, o deploy do backEnd e DB podem demorar em torno de 5 segundos para iniciar (cold start))
 
