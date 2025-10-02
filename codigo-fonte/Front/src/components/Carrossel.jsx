@@ -11,6 +11,42 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import api from '../services/api';
 
+// Estilos CSS customizados para mobile
+const mobileCarouselStyles = `
+  .mobile-carousel .swiper-pagination {
+    bottom: 20px;
+  }
+  
+  .mobile-carousel .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    margin: 0 4px;
+  }
+  
+  .mobile-carousel .swiper-pagination-bullet-active {
+    background: white;
+    width: 20px;
+    border-radius: 4px;
+  }
+  
+  @media (max-width: 640px) {
+    .mobile-carousel .swiper-pagination {
+      bottom: 15px;
+    }
+    
+    .mobile-carousel .swiper-pagination-bullet {
+      width: 6px;
+      height: 6px;
+      margin: 0 3px;
+    }
+    
+    .mobile-carousel .swiper-pagination-bullet-active {
+      width: 16px;
+    }
+  }
+`;
+
 const arrowStyles = {
   position: 'absolute',
   top: '50%',
@@ -24,6 +60,33 @@ const arrowStyles = {
 const Carrossel = () => {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Adiciona os estilos CSS customizados ao DOM
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = mobileCarouselStyles;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
+  // Forçar autoplay no mobile após carregar as imagens
+  useEffect(() => {
+    if (!loading && slides.length > 0) {
+      // Pequeno delay para garantir que o Swiper foi inicializado
+      const timer = setTimeout(() => {
+        const swiperElement = document.querySelector('.mobile-carousel .swiper');
+        if (swiperElement && swiperElement.swiper) {
+          swiperElement.swiper.autoplay.start();
+          console.log('Autoplay forçado a iniciar no mobile');
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [loading, slides]);
 
     useEffect(() => {
       const originalOverflowX = document.body.style.overflowX
@@ -70,7 +133,11 @@ const Carrossel = () => {
   }
 
   return (
-    <Box sx={{ height: '100vh', width: '100vw', position: 'relative'}}>
+    <Box sx={{ 
+      height: { xs: '30vh', sm: '70vh', md: '100vh' }, // Altura responsiva
+      width: '100vw', 
+      position: 'relative'
+    }}>
       <Swiper
         // 4. Instala os módulos que vamos usar
         modules={[Navigation, Pagination, Autoplay, EffectFade]}
@@ -78,17 +145,56 @@ const Carrossel = () => {
         slidesPerView={1}
         loop={true}
         autoplay={{
-          delay: 4000,
-          disableOnInteraction: false,
+          delay: 3000, // Configuração padrão para todos os dispositivos
+          disableOnInteraction: false, // Mantém autoplay mesmo após interação
+          pauseOnMouseEnter: false, // Não pausa no hover (melhor para mobile)
         }}
         effect="fade"
-        pagination={{ clickable: true }}
+        pagination={{ 
+          clickable: true,
+          dynamicBullets: true, // Melhor para mobile
+        }}
         // 5. Conecta nossas setas customizadas
         navigation={{
           nextEl: '.swiper-button-next-custom',
           prevEl: '.swiper-button-prev-custom',
         }}
+        // Configurações específicas para mobile
+        breakpoints={{
+          // Mobile (até 640px)
+          320: {
+            autoplay: {
+              delay: 3000,
+              disableOnInteraction: false, // CORRIGIDO: mantém autoplay no mobile
+              pauseOnMouseEnter: false,
+            },
+            pagination: {
+              clickable: true,
+              dynamicBullets: true,
+            },
+            allowTouchMove: true, // Permite swipe no mobile
+          },
+          // Tablet (641px até 1024px)
+          641: {
+            autoplay: {
+              delay: 4000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true, // Pode pausar no hover em tablets
+            },
+            allowTouchMove: true,
+          },
+          // Desktop (1025px+)
+          1025: {
+            autoplay: {
+              delay: 5000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            },
+            allowTouchMove: false, // Desabilita swipe no desktop
+          },
+        }}
         style={{ height: '100%' }}
+        className="mobile-carousel"
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
@@ -97,14 +203,25 @@ const Carrossel = () => {
                 <img
                   src={slide.urls.large}
                   alt={`Slide ${slide.posicao + 1}`}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover',
+                    // Melhora a qualidade da imagem no mobile
+                    imageRendering: 'crisp-edges'
+                  }}
                 />
               </Link>
             ) : (
               <img
                 src={slide.urls.large}
                 alt={`Slide ${slide.posicao + 1}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  objectFit: 'cover',
+                  imageRendering: 'crisp-edges'
+                }}
               />
             )}
           </SwiperSlide>
@@ -112,10 +229,25 @@ const Carrossel = () => {
       </Swiper>
 
       {/* 6. Nossos botões customizados que o Swiper vai controlar */}
-      <IconButton className="swiper-button-prev-custom" sx={{ ...arrowStyles, left: 16 }}>
+      {/* Botões ocultos no mobile para melhor experiência com swipe */}
+      <IconButton 
+        className="swiper-button-prev-custom" 
+        sx={{ 
+          ...arrowStyles, 
+          left: 16,
+          display: { xs: 'none', sm: 'flex' } // Oculto no mobile
+        }}
+      >
         <ArrowBackIosNewIcon />
       </IconButton>
-      <IconButton className="swiper-button-next-custom" sx={{ ...arrowStyles, right: {sm: 26, xs: 16} }}>
+      <IconButton 
+        className="swiper-button-next-custom" 
+        sx={{ 
+          ...arrowStyles, 
+          right: { sm: 26, md: 16 },
+          display: { xs: 'none', sm: 'flex' } // Oculto no mobile
+        }}
+      >
         <ArrowForwardIosIcon />
       </IconButton>
     </Box>
