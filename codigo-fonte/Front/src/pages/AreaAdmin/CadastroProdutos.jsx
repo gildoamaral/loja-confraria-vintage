@@ -15,7 +15,9 @@ import {
   ImageListItem,
   FormHelperText,
   Paper,
-  Container
+  Container,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { PhotoCamera, Close } from '@mui/icons-material';
 import api from '../../services/api';
@@ -120,10 +122,6 @@ const CadastroProdutos = () => {
       setNome('');
       setDescricao('');
       setPreco('');
-      setPeso('');
-      setAltura('');
-      setLargura('');
-      setComprimento('');
       setImagens([]);
       setQuantidade('');
       setTamanho('');
@@ -172,6 +170,27 @@ const CadastroProdutos = () => {
   const handleRemoveImage = (idx) => {
     setImagens(prev => prev.filter((_, i) => i !== idx));
   };
+
+  const theme = useTheme();
+
+  // Define os breakpoints
+  // theme.breakpoints.down('sm') será true para telas pequenas (mobile)
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // theme.breakpoints.down('md') será true para telas médias (tablet)
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Define o número de colunas dinamicamente
+  let cols;
+  let rowH;
+  if (isMobile) {
+    cols = 4; // 3 colunas para telas de celular
+    rowH = 100;
+  } else if (isTablet) {
+    cols = 4; // 4 colunas para telas de tablet
+  } else {
+    rowH = 200;
+    cols = 5; // 5 colunas para telas maiores (desktop)
+  }
 
   return (
     <Container >
@@ -345,7 +364,7 @@ const CadastroProdutos = () => {
                   </FormHelperText>
 
                   {imagens.length > 0 && (
-                    <ImageList sx={{ width: '100%', height: 200 }} cols={5} rowHeight={160}>
+                    <ImageList sx={{ width: '100%', height: { sm: 200, xs: 140 } }} cols={cols} rowHeight={rowH}>
                       {imagens.map((img, idx) => (
                         <ImageListItem key={idx} sx={{ position: 'relative' }}>
                           <img

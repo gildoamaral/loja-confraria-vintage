@@ -16,7 +16,10 @@ import {
   DialogTitle,
   DialogActions,
   Snackbar,
-  Alert
+  Alert,
+  Modal,
+  Backdrop,
+  Fade
 } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import AddIcon from '@mui/icons-material/Add';
@@ -24,6 +27,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import api from '../../services/api';
 import { useAuth } from '../../contexts'; // Importa nosso contexto de autenticação
 import inputStyles from '../../styles/inputStyles';
+import CloseIcon from '@mui/icons-material/Close';
 
 const InformProduto = () => {
   const { id } = useParams();
@@ -42,6 +46,7 @@ const InformProduto = () => {
   const [loadingFrete, setLoadingFrete] = useState(false);
   // Novo estado para controlar o modal de sucesso
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   // Estados para controlar as mensagens
   const [snackbar, setSnackbar] = useState({
@@ -61,6 +66,13 @@ const InformProduto = () => {
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
+  const handleImageClick = () => {
+    setImageModalOpen(true);
+  };
+
+  const handleCloseImageModal = () => {
+    setImageModalOpen(false);
+  }
 
   useEffect(() => {
     const fetchProduto = async () => {
@@ -178,11 +190,11 @@ const InformProduto = () => {
           <Grid container spacing={{ xs: 2, md: 4 }}>
             {/* Coluna da Galeria de Imagens (Esquerda) */}
             <Grid size={{ xs: 12, md: 7.3 }}  >
-              <Box sx={{ mb: 2, borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
+              <Box onClick={handleImageClick} sx={{ mb: 2, borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}>
                 <img
                   src={imagemPrincipal}
                   alt={produto.nome}
-                  style={{ display: 'block', objectFit: 'cover', width: '100%', height: 500, objectPosition: 'top' }}
+                  style={{ cursor: 'zoom-in',display: 'block', objectFit: 'cover', width: '100%', height: 500, objectPosition: 'top' }}
                 />
               </Box>
               <Grid container spacing={1} justifyContent="start">
@@ -389,6 +401,54 @@ const InformProduto = () => {
           </Grid>
         </Paper>
       </Container>
+
+      <Modal
+        open={imageModalOpen}
+        onClose={handleCloseImageModal}
+        closeAfterTransition
+        // BackdropComponent={Backdrop}
+        // BackdropProps={}
+        slotProps={{
+          backdrop: {
+            timeout: 300,
+            sx: {
+              backgroundColor: "rgba(0, 0, 0, 0.9)",
+              backdropFilter: "blur(3px)"
+            }
+          }
+        }}
+        slots={{ Backdrop }}
+      >
+        <Fade in={imageModalOpen}>
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            maxWidth: '95vw',
+            maxHeight: '95vh',
+            outline: 'none',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            minHeight: 300,
+            minWidth: 300
+          }}>
+            <Box
+              component="img"
+              src={imagemPrincipal}
+              alt={produto?.nome}
+              sx={{
+                maxWidth: '100%',
+                maxHeight: '85vh',
+                objectFit: 'contain',
+                borderRadius: 2,
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+              }}
+            />
+          </Box>
+        </Fade>
+      </Modal>
 
       <Dialog open={successModalOpen} onClose={() => setSuccessModalOpen(false)}>
         <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>Produto Adicionado!</DialogTitle>

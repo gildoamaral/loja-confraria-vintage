@@ -37,7 +37,7 @@ const NewEstoqueProdutos = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  
+
   // Estados para controlar o modal de edição
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -47,13 +47,13 @@ const NewEstoqueProdutos = () => {
   const [categoria, setCategoria] = useState('TODAS');
   const [ocasiao, setOcasiao] = useState('TODAS');
   const [ativo, setAtivo] = useState('TODOS');
-  
+
   // Estados para inputs dos filtros - valores temporários
   const [searchInput, setSearchInput] = useState('');
   const [categoriaInput, setCategoriaInput] = useState('TODAS');
   const [ocasiaoInput, setOcasiaoInput] = useState('TODAS');
   const [ativoInput, setAtivoInput] = useState('TODOS');
-  
+
   const [orderBy, setOrderBy] = useState('criadoEm');
   const [orderDirection, setOrderDirection] = useState('desc');
 
@@ -66,13 +66,12 @@ const NewEstoqueProdutos = () => {
 
   // Opções para os filtros
   const categorias = [
-    'TODAS', 'SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS', 
+    'TODAS', 'SAIA', 'SHORT', 'CALÇA', 'BLUSA', 'CAMISA', 'CONJUNTOS',
     'VESTIDO', 'CALCADO', 'ACESSORIOS', 'OUTROS'
   ];
 
   const ocasioes = [
-    'TODAS', 'SEM_OCASIAO', 'CASAMENTO', 'BATIZADO', 'MADRINHAS', 
-    'FORMATURA', 'OCASIOES_ESPECIAIS', 'CASUAL', 'FESTAS', 'OUTROS'
+    'TODAS', 'SEM_OCASIAO', 'OCASIOES_ESPECIAIS', 'CASUAL', 'FESTAS'
   ];
 
   const statusOptions = [
@@ -183,7 +182,7 @@ const NewEstoqueProdutos = () => {
       showMessage('Produto atualizado com sucesso!', 'success');
     } catch (error) {
       console.error("Erro ao salvar produto:", error);
-      
+
       // MUDANÇA AQUI: Tenta pegar a mensagem de erro específica da API
       const errorMessage = error.response?.data?.error || 'Falha ao atualizar o produto.';
       showMessage(errorMessage, 'error');
@@ -195,7 +194,7 @@ const NewEstoqueProdutos = () => {
   }
 
   return (
-    <Box sx={{maxWidth: '1400px', mx: 'auto' }}>
+    <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
       {/* Filtros e Pesquisa */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>
@@ -243,8 +242,9 @@ const NewEstoqueProdutos = () => {
               >
                 {ocasioes.map((oc) => (
                   <MenuItem key={oc} value={oc}>
-                    {oc === 'TODAS' ? 'Todas' : 
-                     oc === 'SEM_OCASIAO' ? 'Sem Ocasião' : oc}
+                    {oc === 'TODAS' ? 'Todas' :
+                      oc === 'OCASIOES_ESPECIAIS' ? 'OCASIOES ESPECIAIS' :
+                        oc === 'SEM_OCASIAO' ? 'Não possui ocasião' : oc}
                   </MenuItem>
                 ))}
               </Select>
@@ -296,9 +296,9 @@ const NewEstoqueProdutos = () => {
             <TableRow sx={{ '& .MuiTableCell-root': { py: 2 } }}>
               <TableCell sx={{ width: '60px' }}>Foto</TableCell>
               <TableCell sx={{ width: '80px' }}>ID</TableCell>
-              
+
               {/* Nome - ordenável */}
-              <TableCell sx={{ width: '300px', minWidth: '250px' }}>
+              <TableCell sx={{ width: 'auto', minWidth: '250px' }}>
                 <TableSortLabel
                   active={orderBy === 'nome'}
                   direction={orderBy === 'nome' ? orderDirection : 'asc'}
@@ -309,7 +309,7 @@ const NewEstoqueProdutos = () => {
                   Nome
                 </TableSortLabel>
               </TableCell>
-              
+
               {/* Preço - ordenável */}
               <TableCell>
                 <TableSortLabel
@@ -322,11 +322,11 @@ const NewEstoqueProdutos = () => {
                   Preço
                 </TableSortLabel>
               </TableCell>
-              
+
               <TableCell align="right">Qtd.</TableCell>
-              
+
               {/* Categoria - ordenável */}
-              <TableCell>
+              {/* <TableCell>
                 <TableSortLabel
                   active={orderBy === 'categoria'}
                   direction={orderBy === 'categoria' ? orderDirection : 'asc'}
@@ -336,10 +336,10 @@ const NewEstoqueProdutos = () => {
                 >
                   Categoria
                 </TableSortLabel>
-              </TableCell>
-              
+              </TableCell> */}
+
               {/* Ocasião - ordenável */}
-              <TableCell>
+              {/* <TableCell>
                 <TableSortLabel
                   active={orderBy === 'ocasiao'}
                   direction={orderBy === 'ocasiao' ? orderDirection : 'asc'}
@@ -349,8 +349,8 @@ const NewEstoqueProdutos = () => {
                 >
                   Ocasião
                 </TableSortLabel>
-              </TableCell>
-              
+              </TableCell> */}
+
               {/* Data Criação - ordenável */}
               <TableCell>
                 <TableSortLabel
@@ -363,7 +363,7 @@ const NewEstoqueProdutos = () => {
                   Data Criação
                 </TableSortLabel>
               </TableCell>
-              
+
               {/* Ativo - ordenável */}
               <TableCell>
                 <TableSortLabel
@@ -376,31 +376,40 @@ const NewEstoqueProdutos = () => {
                   Ativo
                 </TableSortLabel>
               </TableCell>
-              
+
               <TableCell align="center">Ações</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {produtos.map((produto) => (
-              <TableRow 
-                key={produto.id} 
-                sx={{ 
+              <TableRow
+                key={produto.id}
+                sx={{
                   '&:hover': { backgroundColor: '#f5f5f5' }
                 }}
               >
                 <TableCell sx={{ width: '60px' }}>
-                  <Avatar variant='rounded' src={produto.imagens?.[0]?.urls?.thumbnail} alt={produto.nome} />
-                </TableCell>
-                <TableCell sx={{ width: '80px' }}> 
-                  <Link 
+                  <Link
                     to={`/produto/${produto.id}`}
-                    style={{ 
-                      textDecoration: 'none', 
+                    style={{
+                      textDecoration: 'none',
                       color: 'inherit',
                       cursor: 'pointer',
                     }}
-                    onMouseEnter={(e) => {e.target.style.color = 'gray', e.target.style.textDecoration = 'underline'}}
-                    onMouseLeave={(e) => {e.target.style.color = 'inherit', e.target.style.textDecoration = 'none'}}
+                  >
+                    <Avatar variant='rounded' src={produto.imagens?.[0]?.urls?.thumbnail} alt={produto.nome} />
+                  </Link>
+                </TableCell>
+                <TableCell sx={{ width: '80px' }}>
+                  <Link
+                    to={`/produto/${produto.id}`}
+                    style={{
+                      textDecoration: 'none',
+                      color: 'inherit',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => { e.target.style.color = 'gray', e.target.style.textDecoration = 'underline' }}
+                    onMouseLeave={(e) => { e.target.style.color = 'inherit', e.target.style.textDecoration = 'none' }}
                   >
                     {produto.id}
                   </Link>
@@ -408,8 +417,8 @@ const NewEstoqueProdutos = () => {
                 <TableCell sx={{ width: '300px', minWidth: '250px' }}>{produto.nome}</TableCell>
                 <TableCell align="right">R$ {produto.preco.toFixed(2)}</TableCell>
                 <TableCell align="right">{produto.quantidade}</TableCell>
-                <TableCell>{produto.categoria}</TableCell>
-                <TableCell>{produto.ocasiao || '-'}</TableCell>
+                {/* <TableCell>{produto.categoria}</TableCell> */}
+                {/* <TableCell>{produto.ocasiao || '-'}</TableCell> */}
                 <TableCell>
                   {new Date(produto.criadoEm).toLocaleDateString('pt-BR', {
                     day: '2-digit',
@@ -418,9 +427,9 @@ const NewEstoqueProdutos = () => {
                   })}
                 </TableCell>
                 <TableCell>
-                  <Chip 
-                    label={produto.ativo ? 'Sim' : 'Não'} 
-                    color={produto.ativo ? 'success' : 'error'} 
+                  <Chip
+                    label={produto.ativo ? 'Sim' : 'Não'}
+                    color={produto.ativo ? 'success' : 'error'}
                     size="small"
                   />
                 </TableCell>
@@ -435,10 +444,10 @@ const NewEstoqueProdutos = () => {
         </Table>
       </TableContainer>
       <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-        <Pagination 
-          count={totalPages} 
-          page={page} 
-          onChange={(event, value) => setPage(value)} 
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(event, value) => setPage(value)}
         />
       </Box>
 
@@ -457,8 +466,8 @@ const NewEstoqueProdutos = () => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
+        <Alert
+          onClose={handleCloseSnackbar}
           severity={snackbar.severity}
           variant="filled"
           sx={{ width: '100%' }}
