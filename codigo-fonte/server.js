@@ -20,20 +20,22 @@ const sobreRouter = require('./src/routes/sobre.routes.js');
 const adminRoutes = require('./src/routes/Admin');
 const freteRoutes = require('./src/routes/freteRoutes.js');
 const melhorEnvioTokenRoutes = require('./src/routes/melhorEnvioTokenRoutes.js');
-
+const path = require('path');
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const app = express();
 
+if (process.env.NODE_ENV !== 'production') {
 app.use(cors({
-  origin: process.env.CORS_ORIGIN,   // <--- Colocar o link do fron no .env
+  origin: process.env.CORS_ORIGIN,  
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   exposedHeaders: ["Set-Cookie"]
 }));
+}
 app.use(express.json({
   limit: '50mb'
 }));
@@ -45,23 +47,23 @@ app.use(express.urlencoded({
 app.use(cookieParser());
 
 // ROTAS PÚBLICAS
-app.get('/', (req, res) => { res.send('Servidor rodando...'); });
-app.use('/usuarios', Usuario);
-app.use('/produtos', Produtos);
-app.use('/pagamentos', Pagamentos);
-app.post('/login', Login)
-app.use('/pedidos', Pedidos);
-app.use('/auth', Check);
-app.use('/api', uploadRouter);
-app.use('/api/auth', require('./src/routes/authRoutes')); // Rotas de autenticação
-app.use('/api/cart', require('./src/routes/cartRoutes')); // Rotas do carrinho
-app.use('/api/carrossel', carrosselRouter);
-app.use('/api/sobre', sobreRouter);
-app.use('/admin', adminRoutes);
-app.use('/api/frete', freteRoutes);
-app.use('/api/melhor-envio-token', melhorEnvioTokenRoutes);
+app.get('/api', (req, res) => { res.send('Servidor rodando...'); });
+app.use('/api/usuarios', Usuario);
+app.use('/api/produtos', Produtos);
+app.use('/api/pagamentos', Pagamentos);
+app.post('/api/login', Login)
+app.use('/api/pedidos', Pedidos);
+app.use('/api/auth', Check);
+app.use('/api/api/upload', uploadRouter);
+app.use('/api/api/auth', require('./src/routes/authRoutes')); // Rotas de autenticação
+app.use('/api/api/cart', require('./src/routes/cartRoutes')); // Rotas do carrinho
+app.use('/api/api/carrossel', carrosselRouter);
+app.use('/api/api/sobre', sobreRouter);
+app.use('/api/admin', adminRoutes);
+app.use('/api/api/frete', freteRoutes);
+app.use('/api/api/melhor-envio-token', melhorEnvioTokenRoutes);
 
-app.get("/verify-email/:token", async (req, res) => {
+app.get("/api/verify-email/:token", async (req, res) => {
   const { token } = req.params;
 
   const user = await prisma.usuarios.findFirst({
@@ -85,7 +87,7 @@ app.get("/verify-email/:token", async (req, res) => {
   res.send("E-mail verificado com sucesso!");
 });
 
-app.post('/frete', async (req, res) => {
+app.post('/api/frete', async (req, res) => {
   const { cepDestino, altura, largura, comprimento, peso } = req.body;
   
   if (!cepDestino) {
@@ -127,9 +129,17 @@ app.post('/frete', async (req, res) => {
   }
 });
 
+const distPath = path.join(__dirname, 'Front', 'dist');
+app.use(express.static(distPath));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
 
 module.exports = app; // Exporta o app para testes

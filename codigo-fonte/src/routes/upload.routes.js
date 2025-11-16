@@ -24,6 +24,6 @@ const handleMulterError = (req, res, next) => {
 };
 
 
-uploadRouter.post('/upload', AuthAdmin, handleMulterError, uploadImage);
+uploadRouter.post('/', AuthAdmin, handleMulterError, uploadImage);
 
 module.exports = uploadRouter;
