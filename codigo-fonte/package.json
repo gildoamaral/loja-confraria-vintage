@@ -7,7 +7,7 @@
     "test": "jest",
     "start": "node server.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "build": "cd ./Front && npm ci --include=dev && ./node_modules/.bin/vite build && cd .. && npx prisma generate"
+    "build": "npm install && cd ./Front && npm ci --include=dev && ./node_modules/.bin/vite build && cd .. && npx prisma generate"
   },
   "keywords": [],
   "author": "",
