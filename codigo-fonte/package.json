@@ -7,19 +7,19 @@
     "test": "jest",
     "start": "node server.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "build": "npm install && cd ./Front && npm ci --include=dev && ./node_modules/.bin/vite build && cd .. && npx prisma generate"
+    "build": "cd ./Front && npm ci --include=dev && ./node_modules/.bin/vite build && cd .. && npx prisma generate"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cloudinary": "^2.7.0",
     "compressorjs": "^1.2.1",
     "cookie-parser": "^1.4.7",
-    "correios-brasil": "^3.0.6",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
@@ -34,8 +34,6 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
-    "@prisma/client": "^6.19.0",
-    "@types/mercadopago-sdk-js": "^2.0.17",
     "cross-env": "^10.1.0",
     "jest": "^29.7.0",
     "jest-mock-extended": "^4.0.0-beta1",
