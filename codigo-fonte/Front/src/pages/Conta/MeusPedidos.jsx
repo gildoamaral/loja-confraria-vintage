@@ -106,7 +106,7 @@ const MeusPedidos = () => {
             <Button 
               variant="contained" 
               component={RouterLink} 
-              to="/produtos"
+              to="/"
               sx={{ 
                 backgroundColor: 'var(--cor-marca-escuro)', 
                 '&:hover': { backgroundColor: 'brown' },

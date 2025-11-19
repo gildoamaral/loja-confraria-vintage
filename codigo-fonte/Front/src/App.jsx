@@ -4,6 +4,7 @@ import { AuthProvider, ProductProvider } from './contexts';
 import useTokenExpiredNotification from './hooks/useTokenExpiredNotification.jsx';
 import useColdStartDetection from './hooks/useColdStartDetection.jsx';
 import ColdStartModal from './components/ColdStartModal.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 
 
 function App() {
@@ -21,12 +22,12 @@ function App() {
 
   return (
     <BrowserRouter>
-    
+      <ScrollToTop />
       <AuthProvider>
         <ProductProvider>
 
           <AppRoutes />
-          
+
           {/* Componente global para notificações de token expirado */}
           <NotificationComponent />
 
